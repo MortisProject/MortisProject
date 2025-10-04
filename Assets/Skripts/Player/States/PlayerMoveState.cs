@@ -25,7 +25,7 @@ namespace Player.States
             base.Update();
 
             // 이동 입력이 없다면, Idle 상태로 전환합니다.
-            if (_input.MoveInput == Vector2.zero)
+            if (_input.MoveInput.sqrMagnitude < 0.01f)
             {
                 _stateMachine.ChangeState(_player.IdleState);
                 return; 
@@ -42,10 +42,12 @@ namespace Player.States
             float targetSpeed = _input.IsRunning ? _stats.runSpeed : _stats.walkSpeed;
             _motor.Move(moveDirection * targetSpeed);
 
-            Vector3 localMove = _player.transform.InverseTransformDirection(moveDirection);
-            float runMultiplier = _input.IsRunning ? 2f : 1f;
-            _animController.SetMove(localMove.x * runMultiplier, localMove.z * runMultiplier); // 애니메이션 컨트롤러 사용
+            //Vector3 localMove = _player.transform.InverseTransformDirection(moveDirection);
+            //float runMultiplier = _input.IsRunning ? 2f : 1f;
+            //_animController.SetMove(localMove.x * runMultiplier, localMove.z * runMultiplier); // 애니메이션 컨트롤러 사용
 
+            float runMultiplier = _input.IsRunning ? 2f : 1f;
+            _animController.SetMove(_input.MoveInput.x * runMultiplier, _input.MoveInput.y * runMultiplier);
         }
 
         public override void Exit()

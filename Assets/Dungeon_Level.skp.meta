@@ -33,7 +33,7 @@ SketchUpImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.0000254
+    globalScale: 0.00000025399999
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -88,7 +88,7 @@ SketchUpImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.0000254
+    globalScale: 0.00000025399999
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
@@ -111,4 +111,4 @@ SketchUpImporter:
   assetHash:
     serializedVersion: 2
     Hash: 6d508a1db12fcd75f1477e6c0b7b821a
-  fileUnit: 2
+  fileUnit: 0

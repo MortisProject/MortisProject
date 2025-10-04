@@ -25,7 +25,7 @@ namespace Player.States
 
             _animController.SetMove(0f, 0f);
             // 이동 입력이 있는지 확인
-            if (_input.MoveInput.sqrMagnitude < 0.01f)
+            if (_input.MoveInput.sqrMagnitude > 0.01f)
             {
                 // 이동 입력이 있다면, Move 상태로 전환
                 _stateMachine.ChangeState(_player.MoveState);

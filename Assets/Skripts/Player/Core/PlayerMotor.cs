@@ -12,6 +12,9 @@ namespace Player
         [Header("Settings")]
         [SerializeField] private float _gravity = -19.62f;
 
+        // 캐릭터의 현재 월드 수평속도 반환
+        public Vector3 HorizontalVelocity => new Vector3(_controller.velocity.x, 0, _controller.velocity.z);
+
         // 외부(State)에서 전달받는 값
         private Vector3 _movementVelocity;
 

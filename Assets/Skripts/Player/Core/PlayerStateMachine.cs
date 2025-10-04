@@ -63,6 +63,8 @@ namespace Player
                 _stateStack.Remove(CurrentState);
             }
 
+            Debug.Log($"[State] {CurrentState} -> {newState}");
+
             _stateStack.Add(newState);
             newState.Enter();
         }
