@@ -1,17 +1,18 @@
 // Assets/Scripts/Player/States/Grounded/PlayerMoveState.cs
 using Player.Animation;
+using Player.Data;
 using UnityEngine;
 
 namespace Player.States
 {
     public class PlayerMoveState : PlayerGroundedState
     {
-        private readonly CharacterStats _stats;
+        private readonly PlayerSO _data;
 
-        public PlayerMoveState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, CharacterStats stats, PlayerAnimationController animController)
+        public PlayerMoveState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, PlayerSO data, PlayerAnimationController animController)
             : base(player, stateMachine, input, motor, animController)
         {
-            _stats = stats;
+            _data = data; // 참조 할당
         }
 
         public override void Enter()
@@ -25,10 +26,11 @@ namespace Player.States
             base.Update();
 
             // 이동 입력이 없다면, Idle 상태로 전환합니다.
-            if (_input.MoveInput.sqrMagnitude < 0.01f)
+            if (_motor.VerticalVelocity < -2.5f)
             {
-                _stateMachine.ChangeState(_player.IdleState);
-                return; 
+                // FallState로 전환합니다.
+                _stateMachine.ChangeState(_player.FallState);
+                return;
             }
 
             Vector3 cameraForward = Camera.main.transform.forward;
@@ -39,12 +41,8 @@ namespace Player.States
             cameraRight.Normalize();
             Vector3 moveDirection = (cameraForward * _input.MoveInput.y + cameraRight * _input.MoveInput.x).normalized;
 
-            float targetSpeed = _input.IsRunning ? _stats.runSpeed : _stats.walkSpeed;
+            float targetSpeed = _input.IsRunning ? _data.runSpeed : _data.walkSpeed;
             _motor.Move(moveDirection * targetSpeed);
-
-            //Vector3 localMove = _player.transform.InverseTransformDirection(moveDirection);
-            //float runMultiplier = _input.IsRunning ? 2f : 1f;
-            //_animController.SetMove(localMove.x * runMultiplier, localMove.z * runMultiplier); // 애니메이션 컨트롤러 사용
 
             float runMultiplier = _input.IsRunning ? 1f : 0.5f; // 걷기는 0.5, 달리기는 1의 크기를 갖도록 설정
             _animController.SetMove(_input.MoveInput.x * runMultiplier, _input.MoveInput.y * runMultiplier);

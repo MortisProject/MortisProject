@@ -1,6 +1,7 @@
 // Assets/Scripts/Player/States/Airborne/PlayerJumpState.cs
-using UnityEngine;
 using Player.Animation;
+using Player.Data;
+using UnityEngine;
 
 namespace Player.States
 {
@@ -10,38 +11,54 @@ namespace Player.States
         private readonly Player _player;
         private readonly PlayerStateMachine _stateMachine;
         private readonly PlayerMotor _motor;
-        private readonly CharacterStats _stats;
+        private readonly PlayerSO _data;
         private readonly PlayerAnimationController _animController;
-        
-        public PlayerJumpState(Player player, PlayerStateMachine stateMachine, PlayerMotor motor, CharacterStats stats, PlayerAnimationController animController)
+       
+        private float _jumpStartTime;
+
+        public PlayerJumpState(Player player, 
+            PlayerStateMachine stateMachine, 
+            PlayerMotor motor, PlayerSO data, 
+            PlayerAnimationController animController)
         {
             _player = player;
             _stateMachine = stateMachine;
             _motor = motor;
-            _stats = stats;
+            _data = data;
             _animController = animController;
         }
 
         public void Enter()
         {
             // Motor에 점프 명령
-            _motor.Jump(_stats.jumpHeight);
+            _motor.Jump(_data.jumpHeight);
             _animController.PlayJump();
+            _jumpStartTime = Time.time;
+
+            // TODO: 점프 도움닫기 애니메이션 출력 대기시간
         }
 
 
         public void Update()
         {
-            // 착지 감지는 PlayerStateMachine이 하므로, 그 값을 읽어오기만 하면 됩니다.
-            if (_stateMachine.IsGrounded)
+            float verticalVelocity = _motor.VerticalVelocity;
+
+            // 점프 시작 후 0.5초의 유예 시간이 지나기 전까지는 하강 판정을 하지 않습니다.
+            if (Time.time < _jumpStartTime + 0.5f)
             {
-                _stateMachine.ChangeState(_player.IdleState);
+                return;
             }
+
+            // 유예 시간이 지난 후, 수직 속도가 음수가 되면(하강 시작) FallState로 전환합니다.
+            if (_motor.VerticalVelocity < 0f)
+            {
+                _stateMachine.ChangeState(_player.FallState);
+            }
+
         }
 
         public void Exit()
         {
-            // 점프 상태에서 나갈 때 필요한 정리 로직 (예: 점프 애니메이션 트리거 리셋 등)
         }
     }
 }

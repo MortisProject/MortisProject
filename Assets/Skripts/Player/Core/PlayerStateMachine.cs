@@ -31,13 +31,29 @@ namespace Player
         public bool IsGrounded { get; private set; }
 
         /// <summary>
+        /// 캐릭터가 공중에 떠 있던 시간을 기록합니다.
+        /// </summary>
+        public float Flytime { get; private set; }
+
+        /// <summary>
         /// 매 프레임마다 호출됩니다.
         /// 상태 로직을 실행하기 전에 먼저 지면 감지를 수행합니다.
         /// </summary>
         private void Update()
         {
+
             CheckGrounded();
 
+            if (IsGrounded)
+            {
+                // 땅에 있으면 Flytime을 0으로 초기화
+                Flytime = 0f;
+            }
+            else
+            {
+                // 공중에 있으면 Flytime을 계속 증가시킴
+                Flytime += Time.deltaTime;
+            }
             CurrentState?.Update();
         }
 
@@ -113,5 +129,25 @@ namespace Player
                 _groundCheckDistance,
                 _groundLayerMask);
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// 유니티 에디터의 Scene 뷰에서만 작동하며, 디버깅 목적으로 도형을 그려줍니다.
+        /// </summary>
+        private void OnDrawGizmos()
+        {
+            if (_footTransform == null) return;
+
+            Gizmos.color = Color.red;
+
+            // SphereCast의 시작점과 끝점을 계산합니다.
+            Vector3 origin = _footTransform.position;
+            Vector3 destination = origin + Vector3.down * _groundCheckDistance;
+
+            // SphereCast의 경로를 선으로 그리고, 최종 위치에 구체를 그립니다.
+            Gizmos.DrawLine(origin, destination);
+            Gizmos.DrawWireSphere(destination, _groundCheckRadius);
+        }
+#endif
     }
 }

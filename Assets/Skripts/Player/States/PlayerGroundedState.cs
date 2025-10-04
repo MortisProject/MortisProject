@@ -13,7 +13,7 @@ namespace Player.States
         protected readonly PlayerMotor _motor;
         protected readonly PlayerAnimationController _animController;
 
-        // TODO: 점프 상태로 전환하기 위해 점프 상태의 인스턴스가 필요합니다.
+        private float _fallGraceTimer; // 유예 시간 타이머 변수
 
         public PlayerGroundedState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, PlayerAnimationController animController)
         {
@@ -31,10 +31,11 @@ namespace Player.States
 
         public virtual void Update()
         {
-            // 땅 위에 있을 때 공통적으로 체크할 전환 조건들
-            if (_input.IsJumpPressed)
+            // 점프 입력만 확인합니다.
+            if (_input.IsJumpPressed && _stateMachine.IsGrounded)
             {
-                _stateMachine.ChangeState(_player.JumpState); // 점프 상태로 전환
+                _stateMachine.ChangeState(_player.JumpState);
+                return;
             }
         }
 

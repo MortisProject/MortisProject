@@ -1,6 +1,8 @@
 // Assets/Scripts/Player/Player.cs
 using Player.Animation;
+using Player.Data;
 using Player.States;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace Player
@@ -11,9 +13,11 @@ namespace Player
     /// </summary>
     public class Player : MonoBehaviour
     {
+        [Header("Data")]
+        [Tooltip("플레이어의 모든 데이터를 담고 있는 ScriptableObject 입니다.")]
+        public PlayerSO Data; // CharacterStats 대신 PlayerSO 참조
+
         [Header("Component References")]
-        [Tooltip("플레이어의 모든 수치 데이터")]
-        public CharacterStats Stats;
         [Tooltip("플레이어의 입력 처리기")]
         public PlayerInput Input;
         [Tooltip("플레이어의 상태 머신")]
@@ -27,6 +31,7 @@ namespace Player
         public PlayerIdleState IdleState { get; private set; }
         public PlayerMoveState MoveState { get; private set; }
         public PlayerJumpState JumpState { get; private set; }
+        public PlayerFallState FallState { get; private set; }
         // TODO: 추후 Attack, Dodge 등의 상태를 여기에 추가합니다.
 
         /// <summary>
@@ -37,8 +42,9 @@ namespace Player
             // 모든 상태 클래스의 인스턴스를 생성합니다.
             // 이 때, 각 상태가 필요로 하는 모든 컴포넌트와 참조를 '생성자'를 통해 전달해줍니다. (의존성 주입)
             IdleState = new PlayerIdleState(this, StateMachine, Input, Motor, AnimController);
-            MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Stats, AnimController);
-            JumpState = new PlayerJumpState(this, StateMachine, Motor, Stats, AnimController);
+            MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Data, AnimController);
+            JumpState = new PlayerJumpState(this, StateMachine, Motor, Data, AnimController);
+            FallState = new PlayerFallState(this, StateMachine, Motor, AnimController);
         }
 
         /// <summary>
