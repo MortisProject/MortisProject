@@ -5,43 +5,29 @@ using UnityEngine;
 
 namespace Player.States
 {
-    public class PlayerJumpState : IState
+    public class PlayerJumpState : PlayerAirborneState
     {
-        // 필요한 컴포넌트 참조 변수들
-        private readonly Player _player;
-        private readonly PlayerStateMachine _stateMachine;
-        private readonly PlayerMotor _motor;
-        private readonly PlayerSO _data;
-        private readonly PlayerAnimationController _animController;
-       
         private float _jumpStartTime;
 
-        public PlayerJumpState(Player player, 
-            PlayerStateMachine stateMachine, 
-            PlayerMotor motor, PlayerSO data, 
-            PlayerAnimationController animController)
+        // 생성자에서 부모 클래스에 필요한 모든 참조를 전달합니다.
+        public PlayerJumpState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, PlayerSO data, PlayerAnimationController animController)
+            : base(player, stateMachine, input, motor, data, animController)
         {
-            _player = player;
-            _stateMachine = stateMachine;
-            _motor = motor;
-            _data = data;
-            _animController = animController;
         }
 
-        public void Enter()
+        public override void Enter()
         {
-            // Motor에 점프 명령
+            base.Enter(); // 부모의 Enter 호출 (현재는 비어있음)
+
             _motor.Jump(_data.jumpHeight);
             _animController.PlayJump();
             _jumpStartTime = Time.time;
-
-            // TODO: 점프 도움닫기 애니메이션 출력 대기시간
         }
 
 
-        public void Update()
+        public override void Update()
         {
-            float verticalVelocity = _motor.VerticalVelocity;
+            base.Update();
 
             // 점프 시작 후 0.5초의 유예 시간이 지나기 전까지는 하강 판정을 하지 않습니다.
             if (Time.time < _jumpStartTime + 0.5f)
@@ -57,7 +43,7 @@ namespace Player.States
 
         }
 
-        public void Exit()
+        public override void Exit()
         {
         }
     }

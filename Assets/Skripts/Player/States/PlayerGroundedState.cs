@@ -14,6 +14,7 @@ namespace Player.States
         protected readonly PlayerAnimationController _animController;
 
         private float _fallGraceTimer; // 유예 시간 타이머 변수
+        private const float FallGracePeriod = 0.2f; // 유예 시간을 상수
 
         public PlayerGroundedState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, PlayerAnimationController animController)
         {
@@ -27,6 +28,7 @@ namespace Player.States
         public virtual void Enter()
         {
             // grounded 상태에 진입할 때 공통적으로 할 로직 (예: 중력 값 변경 등)
+            _fallGraceTimer = FallGracePeriod;
         }
 
         public virtual void Update()
@@ -36,6 +38,22 @@ namespace Player.States
             {
                 _stateMachine.ChangeState(_player.JumpState);
                 return;
+            }
+
+            if (!_stateMachine.IsGrounded)
+            {
+                // 땅에 없다면 유예 시간 감소
+                _fallGraceTimer -= Time.deltaTime;
+                if (_fallGraceTimer <= 0f)
+                {
+                    // 유예 시간이 다 되면 추락 상태로 전환
+                    _stateMachine.ChangeState(_player.FallState);
+                }
+            }
+            else
+            {
+                // 땅에 있다면 유예 시간을 계속 초기화
+                _fallGraceTimer = FallGracePeriod;
             }
         }
 

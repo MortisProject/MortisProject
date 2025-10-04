@@ -43,8 +43,8 @@ namespace Player
             // 이 때, 각 상태가 필요로 하는 모든 컴포넌트와 참조를 '생성자'를 통해 전달해줍니다. (의존성 주입)
             IdleState = new PlayerIdleState(this, StateMachine, Input, Motor, AnimController);
             MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Data, AnimController);
-            JumpState = new PlayerJumpState(this, StateMachine, Motor, Data, AnimController);
-            FallState = new PlayerFallState(this, StateMachine, Motor, AnimController);
+            JumpState = new PlayerJumpState(this, StateMachine, Input, Motor, Data, AnimController);
+            FallState = new PlayerFallState(this, StateMachine, Input, Motor, Data, AnimController);
         }
 
         /// <summary>

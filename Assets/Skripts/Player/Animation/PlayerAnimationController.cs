@@ -18,7 +18,7 @@ namespace Player.Animation
         private readonly int _moveXHash = Animator.StringToHash("MoveX");
         private readonly int _moveYHash = Animator.StringToHash("MoveY");
         private readonly int _jumpHash = Animator.StringToHash("Jump");
-        private readonly int _landHash = Animator.StringToHash("Land");
+        private readonly int _isGroundedHash = Animator.StringToHash("IsGrounded");
 
         // TODO: 추후 공격, 닷지 등의 애니메이션 해시값을 여기에 추가합니다.
         // private readonly int _attackTriggerHash = Animator.StringToHash("Attack");
@@ -78,13 +78,9 @@ namespace Player.Animation
         {
             _animator.SetTrigger(_jumpHash);
         }
-
-        /// <summary>
-        /// 착지 애니메이션을 재생합니다.
-        /// </summary>
-        public void PlayLand()
+        public void SetGrounded(bool isGrounded)
         {
-            _animator.SetTrigger(_landHash);
+            _animator.SetBool(_isGroundedHash, isGrounded);
         }
     }
 }

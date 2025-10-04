@@ -26,10 +26,9 @@ namespace Player.States
             base.Update();
 
             // 이동 입력이 없다면, Idle 상태로 전환합니다.
-            if (_motor.VerticalVelocity < -2.5f)
+            if (_input.MoveInput.sqrMagnitude < 0.01f)
             {
-                // FallState로 전환합니다.
-                _stateMachine.ChangeState(_player.FallState);
+                _stateMachine.ChangeState(_player.IdleState);
                 return;
             }
 

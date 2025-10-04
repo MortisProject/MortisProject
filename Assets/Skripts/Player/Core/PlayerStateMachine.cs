@@ -1,4 +1,5 @@
 // Assets/Scripts/Player/Core/PlayerStateMachine.cs
+using Player.Animation;
 using Player.States;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,9 @@ namespace Player
 
         [Tooltip("지면 감지 SphereCast의 반지름입니다.")]
         [SerializeField] private float _groundCheckRadius = 0.2f;
+
+        [Header("Component References")]
+        [SerializeField] private PlayerAnimationController _animController;
 
         // Push Pop State를 사용하기위한 스택
         private readonly List<IState> _stateStack = new List<IState>();
@@ -43,6 +47,8 @@ namespace Player
         {
 
             CheckGrounded();
+
+            _animController.SetGrounded(IsGrounded);
 
             if (IsGrounded)
             {
@@ -147,6 +153,15 @@ namespace Player
             // SphereCast의 경로를 선으로 그리고, 최종 위치에 구체를 그립니다.
             Gizmos.DrawLine(origin, destination);
             Gizmos.DrawWireSphere(destination, _groundCheckRadius);
+        }
+        /// <summary>
+        /// 디버깅을 위해 현재 상태와 IsGrounded 값을 게임 화면에 표시합니다.
+        /// </summary>
+        private void OnGUI()
+        {
+            GUI.color = Color.black;
+            GUI.Label(new Rect(10, 10, 500, 20), $"Current State: {CurrentState}");
+            GUI.Label(new Rect(10, 30, 500, 20), $"IsGrounded: {IsGrounded}");
         }
 #endif
     }
