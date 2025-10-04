@@ -1,6 +1,6 @@
 // Assets/Scripts/Player/States/Grounded/PlayerMoveState.cs
-using UnityEngine;
 using Player.Animation;
+using UnityEngine;
 
 namespace Player.States
 {
@@ -46,7 +46,7 @@ namespace Player.States
             //float runMultiplier = _input.IsRunning ? 2f : 1f;
             //_animController.SetMove(localMove.x * runMultiplier, localMove.z * runMultiplier); // 애니메이션 컨트롤러 사용
 
-            float runMultiplier = _input.IsRunning ? 2f : 1f;
+            float runMultiplier = _input.IsRunning ? 1f : 0.5f; // 걷기는 0.5, 달리기는 1의 크기를 갖도록 설정
             _animController.SetMove(_input.MoveInput.x * runMultiplier, _input.MoveInput.y * runMultiplier);
         }
 
