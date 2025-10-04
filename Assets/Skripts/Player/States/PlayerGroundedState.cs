@@ -33,6 +33,13 @@ namespace Player.States
 
         public virtual void Update()
         {
+            // 조준 입력을 점프보다 먼저 확인합니다. (조준 중 점프 방지) 
+            if (_input.IsWireAiming)
+            {
+                _stateMachine.ChangeState(_player.WireAimState);
+                return;
+            }
+
             // 점프 입력만 확인합니다.
             if (_input.IsJumpPressed && _stateMachine.IsGrounded)
             {

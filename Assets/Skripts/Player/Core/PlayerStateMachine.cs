@@ -40,6 +40,11 @@ namespace Player
         public float Flytime { get; private set; }
 
         /// <summary>
+        /// 현재 조준하고 있거나 부착된 와이어 타겟입니다.
+        /// </summary>
+        public Transform WireTarget { get; set; }
+
+        /// <summary>
         /// 매 프레임마다 호출됩니다.
         /// 상태 로직을 실행하기 전에 먼저 지면 감지를 수행합니다.
         /// </summary>

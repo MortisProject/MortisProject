@@ -24,6 +24,9 @@ namespace Player
         // 내부(Motor)에서만 관리하는 값
         private Vector3 _verticalVelocity;
 
+        // 충돌 시 호출될 이벤트
+        public System.Action OnControllerHit; 
+
         private void Awake()
         {
             // 컴포넌트가 할당되지 않았다면 직접 찾아옵니다.
@@ -57,7 +60,7 @@ namespace Player
             _controller.Move(finalVelocity * Time.deltaTime);
 
             // 매 프레임 수평 이동 속도를 초기화하여, 명령이 없으면 멈추도록 합니다.
-            _movementVelocity = Vector3.zero;
+            //_movementVelocity = Vector3.zero;
         }
 
         /// <summary>
@@ -78,6 +81,18 @@ namespace Player
             {
                 _verticalVelocity.y = Mathf.Sqrt(jumpHeight * -2f * _gravity);
             }
+        }
+
+        /// <summary>
+        /// CharacterController가 다른 콜라이더와 충돌했을 때 호출되는 Unity 내장 메시지입니다.
+        /// </summary>
+        private void OnControllerColliderHit(ControllerColliderHit hit)
+        {
+            // 땅과의 충돌은 무시합니다 (IsGrounded로 이미 처리 중)
+            if (hit.gameObject.layer == LayerMask.NameToLayer("Ground")) return;
+
+            // 충돌 이벤트를 외부에 알립니다.
+            OnControllerHit?.Invoke();
         }
     }
 }

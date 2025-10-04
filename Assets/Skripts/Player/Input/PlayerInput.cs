@@ -26,7 +26,19 @@ namespace Player
         [Tooltip("점프 입력 여부 (bool, 1프레임)")]
         public bool IsJumpPressed { get; private set; }
 
+        [Tooltip("와이어 조준 입력 여부 (bool)")]
+        public bool IsWireAiming { get; private set; }
+
+        [Tooltip("와이어 발사 입력 여부 (bool, 1프레임)")]
+        public bool IsWireFirePressed { get; private set; }
+
         // TODO: 공격, 닷지 등 추후 추가될 액션에 대한 프로퍼티를 여기에 선언합니다.
+
+        private void Start()
+        {
+            // 게임 시작 시 커서를 잠금 상태로 설정
+            LockCursor();
+        }
 
         /// <summary>
         /// 컴포넌트가 활성화될 때 Input Actions 인스턴스를 생성하고 이벤트를 구독합니다.
@@ -53,6 +65,11 @@ namespace Player
             _input.Player.Run.canceled += OnRun;
 
             _input.Player.Jump.performed += OnJump;
+
+            _input.Player.WireAim.performed += OnWireAim;
+            _input.Player.WireAim.canceled += OnWireAim;
+
+            _input.Player.WireFire.performed += OnWireFire;
         }
 
         /// <summary>
@@ -73,6 +90,11 @@ namespace Player
             _input.Player.Run.canceled -= OnRun;
 
             _input.Player.Jump.performed -= OnJump;
+
+            _input.Player.WireAim.performed -= OnWireAim;
+            _input.Player.WireAim.canceled -= OnWireAim;
+
+            _input.Player.WireFire.performed -= OnWireFire;
         }
 
         /// <summary>
@@ -82,6 +104,8 @@ namespace Player
         {
             // 점프는 한 프레임에만 감지되어야 하므로 매 프레임 끝에 false로 초기화합니다.
             IsJumpPressed = false;
+
+            IsWireFirePressed = false;
         }
 
         // 각 콜백 메서드는 private으로 선언하여 외부에서 직접 호출하지 않도록 합니다.
@@ -104,6 +128,34 @@ namespace Player
         private void OnJump(InputAction.CallbackContext context)
         {
             IsJumpPressed = true;
+        }
+
+        private void OnWireAim(InputAction.CallbackContext context)
+        {
+            IsWireAiming = context.ReadValueAsButton();
+        }
+
+        private void OnWireFire(InputAction.CallbackContext context)
+        {
+            IsWireFirePressed = true;
+        }
+
+        /// <summary>
+        /// 마우스 커서를 숨기고 화면 중앙에 고정합니다.
+        /// </summary>
+        private void LockCursor()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        /// <summary>
+        /// 마우스 커서를 보이게 하고 자유롭게 움직일 수 있도록 합니다.
+        /// </summary>
+        private void UnlockCursor()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
     }
 }

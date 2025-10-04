@@ -15,3 +15,9 @@ MonoBehaviour:
   walkSpeed: 5
   runSpeed: 9
   jumpHeight: 5
+  wireMaxLength: 30
+  wireAimSearchRadius: 0.5
+  wireLaunchDelay: 0.8
+  wireLaunchSpeed: 25
+  wireAirDashSpeed: 30
+  wireTurnSpeed: 180

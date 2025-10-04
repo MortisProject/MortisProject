@@ -30,6 +30,12 @@ namespace Player.States
 
         public virtual void Update()
         {
+            // 조준 입력을 최우선으로 확인합니다.
+            if (_input.IsWireAiming)
+            {
+                _stateMachine.ChangeState(_player.WireAimState);
+                return;
+            }
             // 공중제어
             HandleAirControl();
         }

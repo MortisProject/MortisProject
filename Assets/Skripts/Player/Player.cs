@@ -32,6 +32,9 @@ namespace Player
         public PlayerMoveState MoveState { get; private set; }
         public PlayerJumpState JumpState { get; private set; }
         public PlayerFallState FallState { get; private set; }
+        public PlayerWireAimState WireAimState { get; private set; }
+        public PlayerWireLaunchState WireLaunchState { get; private set; }
+        public PlayerWireMoveState WireMoveState { get; private set; }
         // TODO: 추후 Attack, Dodge 등의 상태를 여기에 추가합니다.
 
         /// <summary>
@@ -45,6 +48,9 @@ namespace Player
             MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Data, AnimController);
             JumpState = new PlayerJumpState(this, StateMachine, Input, Motor, Data, AnimController);
             FallState = new PlayerFallState(this, StateMachine, Input, Motor, Data, AnimController);
+            WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data);
+            WireLaunchState = new PlayerWireLaunchState(this, StateMachine, Motor, Data, AnimController);
+            WireMoveState = new PlayerWireMoveState(this, StateMachine, Input, Motor, Data, AnimController);
         }
 
         /// <summary>
