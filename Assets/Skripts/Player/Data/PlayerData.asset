@@ -15,14 +15,19 @@ MonoBehaviour:
   walkSpeed: 5
   runSpeed: 9
   maxSlopeAngle: 45
-  jumpForce: 6
+  jumpForce: 10
+  airControlForce: 1
+  hoverTime: 1
   mouseSensitivity: 4
   pitchMinMax: {x: -60, y: 85}
-  wireMaxLength: 30
+  wireHookPrefab: {fileID: 4005168796454646291, guid: 3f52e78106a5c574898e945f994d0324, type: 3}
+  wireMaxLength: 100
   wireAimSearchRadius: 0.5
   wireLaunchDelay: 0.8
-  wireLaunchSpeed: 40
-  wireAirDashSpeed: 50
+  wireLaunchSpeed: 20
+  wireAirDashSpeed: 30
   wireTurnSpeed: 30
-  wireDetachVerticalBonus: 5
+  wireDetachVerticalBonus: 15
   wireLaunchBackwardImpulse: 10
+  wireSpringForce: 1000
+  wireDamper: 100

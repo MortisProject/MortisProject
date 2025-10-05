@@ -26,17 +26,30 @@ namespace Player.States
 
         public void Enter()
         {
-            _launchStartTime = Time.time;
+            // WireHook 프리팹을 생성합니다.
+            GameObject hookObject = Object.Instantiate(_data.wireHookPrefab, _player.WireOrigin.position, Quaternion.identity);
 
-            // 뒤로 살짝 점프하는 움직임 실행
-            _motor.Jump(_data.wireLaunchBackwardImpulse);
-            _motor.Move(_player.transform.forward * _data.wireLaunchBackwardImpulse);
+            // 생성된 훅의 목표 지점을 설정합니다.
+            hookObject.GetComponent<WireHook>().target = _stateMachine.WireTarget;
 
-            // 애니메이션 컨트롤러에 발사 신호 전달
-            // 와이어 발사애니 (유지)
+            // WireRenderer를 활성화하고, 시작점/끝점/그리고 '날아가는 훅'의 transform을 전달합니다.
+            _player.WireRenderer.Activate(_player.WireOrigin, _stateMachine.WireTarget, hookObject.transform);
+
+            // 애니메이션 컨트롤러에 발사 신호를 전달합니다.
+
+
+            // 땅에 있다면 와이어 던지는 애니 실행
+            if(_stateMachine.IsGrounded)
+            {
+                _animController.PlayWireLaunch();
+            }
             // 와이어 애니 프레임에 이벤트로 와이어 발사.
             // 와이어가 이어졌는 신호를 받으면 뒤로 점프 애니
             _animController.PlayWireStartJump();
+            // 모터에서 뒤로 점프 호출
+            _motor.Jump(_data.wireLaunchBackwardImpulse);
+            _motor.Move(_player.transform.forward * _data.wireLaunchBackwardImpulse);
+
             // 와이어 이동 시작 알림
             _animController.SetWireMove(true);
 

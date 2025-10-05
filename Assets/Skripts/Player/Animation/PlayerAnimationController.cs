@@ -95,7 +95,7 @@ namespace Player.Animation
         public void PlayWireLaunch()
         {
             // TODO: 와이어 발사 애니메이션을 재생하는 트리거를 여기에 설정합니다.
-            // 예: _animator.SetTrigger("WireLaunch");
+            _animator.SetTrigger("WireLaunch");
         }
         public void PlayWireStartJump()
         {

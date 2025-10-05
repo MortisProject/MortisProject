@@ -2,6 +2,7 @@
 using Player.Data;
 using System;
 using UnityEngine;
+using System.Collections;
 
 namespace Player
 {
@@ -16,6 +17,7 @@ namespace Player
         // Rigidbody의 현재 속도를 외부에서 읽을 수 있도록 프로퍼티로 제공
         public Vector3 Velocity => _rigidbody.linearVelocity;
         public event Action<Collision> OnCollision;
+        private Coroutine _hoverCoroutine;
 
         private void Awake()
         {
@@ -39,6 +41,15 @@ namespace Player
         {
             // Y축(수직) 속도는 유지한 채, X와 Z축(수평) 속도만 변경합니다.
             _rigidbody.linearVelocity = new Vector3(desiredVelocity.x, _rigidbody.linearVelocity.y, desiredVelocity.z);
+        }
+
+        /// <summary>
+        /// AirborneState로부터 호출되어, 공중에서 캐릭터에 힘을 가합니다.
+        /// </summary>
+        public void AirMove(Vector3 direction, float force)
+        {
+            // AddForce는 현재 속도에 힘을 더하는 방식이라 관성이 유지됩니다.
+            _rigidbody.AddForce(direction * force);
         }
 
         /// <summary>
@@ -89,6 +100,35 @@ namespace Player
                 Vector3 limitedVelocity = horizontalVelocity.normalized * _data.runSpeed;
                 _rigidbody.linearVelocity = new Vector3(limitedVelocity.x, _rigidbody.linearVelocity.y, limitedVelocity.z);
             }
+        }
+        /// <summary>
+        /// 지정된 시간 동안 캐릭터의 중력을 무시하고 공중에 떠 있도록 합니다.
+        /// </summary>
+        /// <param name="duration">체공할 시간(초)</param>
+        public void Hover(float duration)
+        {
+            // 이전에 실행 중이던 Hover 코루틴이 있다면 중지
+            if (_hoverCoroutine != null)
+            {
+                StopCoroutine(_hoverCoroutine);
+            }
+            // 새로운 Hover 코루틴 시작
+            _hoverCoroutine = StartCoroutine(HoverCoroutine(duration));
+        }
+
+        private IEnumerator HoverCoroutine(float duration)
+        {
+            // 1. 중력을 끕니다.
+            _rigidbody.useGravity = false;
+            // 2. 현재의 모든 수직 속도를 0으로 만들어 그 자리에 멈추게 합니다.
+            _rigidbody.linearVelocity = new Vector3(_rigidbody.linearVelocity.x, 0, _rigidbody.linearVelocity.z);
+
+            // 3. 지정된 시간만큼 기다립니다.
+            yield return new WaitForSeconds(duration);
+
+            // 4. 시간이 지나면 다시 중력을 켭니다.
+            _rigidbody.useGravity = true;
+            _hoverCoroutine = null;
         }
 
         /// <summary>

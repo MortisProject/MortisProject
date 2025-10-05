@@ -45,6 +45,8 @@ namespace Player.States
         /// </summary>
         private void HandleAirControl()
         {
+            if (_input.MoveInput.sqrMagnitude < 0.01f) return;
+
             Vector3 cameraForward = Camera.main.transform.forward;
             Vector3 cameraRight = Camera.main.transform.right;
             cameraForward.y = 0;
@@ -54,7 +56,7 @@ namespace Player.States
             Vector3 moveDirection = (cameraForward * _input.MoveInput.y + cameraRight * _input.MoveInput.x).normalized;
 
             // 공중 제어 시에는 걷는 속도를 사용 (나중에 별도 변수로 분리 가능)
-            _motor.Move(moveDirection * _data.walkSpeed);
+            _motor.AirMove(moveDirection, _data.airControlForce);
         }
 
         public virtual void Exit()

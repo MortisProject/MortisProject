@@ -2,7 +2,6 @@
 using Player.Animation;
 using Player.Data;
 using Player.States;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +26,16 @@ namespace Player
         public PlayerMotor Motor;
         [Tooltip("애니메이션 중앙 컨트롤러")]
         public PlayerAnimationController AnimController;
+        [Tooltip("플레이어의 콜라이더")]
+        public CapsuleCollider CapsuleCollider;
+        [Tooltip("와이어가 시작될 위치의 Transform 입니다.")]
+        public Transform WireOrigin;
+        [Tooltip("와이어의 시각적 표현을 담당하는 스크립트입니다.")]
+        public WireRenderer WireRenderer;
+
+        [Header("Physics Materials")]
+        public PhysicsMaterial HighFrictionMaterial;
+        public PhysicsMaterial FrictionlessMaterial;
 
         [Header("UI References")]
         [Tooltip("와이어 조준점(Reticle)으로 사용할 UI Image 입니다.")]

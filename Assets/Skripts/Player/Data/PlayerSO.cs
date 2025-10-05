@@ -25,6 +25,12 @@ namespace Player.Data
         [Tooltip("Rigidbody.AddForce로 가해지는 점프의 힘입니다.")]
         public float jumpForce = 15f;
 
+        [Tooltip("공중에서 좌우로 움직일 때 가해지는 힘입니다.")]
+        public float airControlForce = 20f;
+
+        [Tooltip("공중 체공 유지시간입니다. (ex. 와이어 대쉬)")]
+        public float hoverTime = 1f;
+
 
 
         [Header("Camera Control")]
@@ -36,6 +42,9 @@ namespace Player.Data
 
 
         [Header("Wire Action Stats")]
+        [Tooltip("발사될 와이어 훅의 프리팹입니다.")]
+        public GameObject wireHookPrefab;
+
         [Tooltip("와이어의 최대 사거리 및 스윙 반경입니다.")]
         public float wireMaxLength = 30f;
 
@@ -60,6 +69,15 @@ namespace Player.Data
 
         [Tooltip("와이어 발사 시 뒤로 살짝 점프하는 힘의 크기입니다.")]
         public float wireLaunchBackwardImpulse = 3f;
+
+
+        [Header("Spring Joint Settings")]
+        [Tooltip("와이어의 탄성 계수입니다. 높을수록 팽팽해집니다.")]
+        public float wireSpringForce = 1000f;
+
+        [Tooltip("와이어의 출렁임을 흡수하는 정도입니다. 높을수록 빨리 안정됩니다.")]
+        public float wireDamper = 100f;
+
         // TODO: 닷지 지속시간, 와이어 속도 등 플레이어 전용 데이터를 여기에 계속 추가합니다.
     }
 }

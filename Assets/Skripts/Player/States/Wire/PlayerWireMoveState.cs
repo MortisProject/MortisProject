@@ -16,6 +16,7 @@ namespace Player.States
 
         private Vector3 _currentVelocity; // 현재 관성 속도
         private bool _canAirDash; // 추가 대쉬 사용 가능 여부
+        private SpringJoint _springJoint;
 
         public PlayerWireMoveState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, PlayerSO data, PlayerAnimationController animController)
         {
@@ -29,16 +30,32 @@ namespace Player.States
 
         public void Enter()
         {
-            // 상태 진입 시, 카메라 방향으로 첫 대쉬를 '발사'
+            _player.CapsuleCollider.material = _player.FrictionlessMaterial; // 마찰력 없는 재질로 교체
+
+            // 1. 플레이어 오브젝트에 SpringJoint 컴포넌트를 동적으로 추가합니다.
+            _springJoint = _player.gameObject.AddComponent<SpringJoint>();
+
+            // 2. SpringJoint를 설정합니다.
+            _springJoint.autoConfigureConnectedAnchor = false;
+            _springJoint.connectedAnchor = _stateMachine.WireTarget.position;
+
+            // 와이어의 최소/최대 길이를 설정합니다. (거의 늘어나지 않도록 비슷하게 설정)
+            _springJoint.minDistance = 0.5f;
+            _springJoint.maxDistance = Vector3.Distance(_player.transform.position, _stateMachine.WireTarget.position) * 0.8f;
+
+            // SO 데이터에서 탄성/감쇠 값을 가져옵니다.
+            _springJoint.spring = _data.wireSpringForce;
+            _springJoint.damper = _data.wireDamper;
+
+            // 3. 초기 발사 속도를 부여합니다. (이전과 동일)
             Vector3 launchDirection = Camera.main.transform.forward;
             launchDirection.y = 0;
-            _currentVelocity = launchDirection.normalized * _data.wireLaunchSpeed;
+            _motor.ApplyRawVelocity(launchDirection.normalized * _data.wireLaunchSpeed);
+            _player.CapsuleCollider.material = _player.FrictionlessMaterial;
+            _motor.OnCollision += OnHitObject;
 
             // 추가 대쉬 사용 가능으로 초기화
             _canAirDash = true;
-
-            // 충돌 이벤트 구독
-            _motor.OnCollision += OnHitObject;
 
             // TODO: 와이어 이동 애니메이션 시작
         }
@@ -52,6 +69,10 @@ namespace Player.States
                 return;
             }
 
+            Vector3 controlDirection = new Vector3(_input.MoveInput.x, 0, _input.MoveInput.y);
+            _motor.AirMove(controlDirection, _data.airControlForce * 0.5f); // 공중 제어 힘을 약하게 적용
+
+
             // 2. 추가 대쉬 (LeftShift)
             if (_canAirDash && _input.IsRunning) // IsRunning이 LeftShift와 연결되어 있음
             {
@@ -61,66 +82,26 @@ namespace Player.States
                 _canAirDash = false;
             }
 
-            // 3. 궤도 수정 (A/D)
-            float turnAmount = _input.MoveInput.x * _data.wireTurnSpeed * Time.deltaTime;
-            Quaternion turnRotation = Quaternion.Euler(0f, turnAmount, 0f);
-            _currentVelocity = turnRotation * _currentVelocity;
-
-            // 4. 와이어 길이 체크 (스윙/탈출)
-            CheckWireLength();
-
-            // 5. 최종 속도로 모터에 이동 명령
-            _motor.Move(_currentVelocity);
-
             // TODO: 현재 속도에 맞춰 애니메이션 파라미터 설정
         }
 
         public void Exit()
         {
+            if (_springJoint != null)
+            {
+                Object.Destroy(_springJoint);
+            }
+
+            _player.WireRenderer.Deactivate();
+
             _stateMachine.WireTarget = null; // 와이어 타겟 정보 초기화
 
             // 충돌 이벤트 구독 해제
             _motor.OnCollision -= OnHitObject;
             // TODO: 와이어 이동 애니메이션 종료, 와이어 VFX 제거
             _animController.SetWireMove(false);
-        }
 
-        private void CheckWireLength()
-        {
-            if (_stateMachine.WireTarget == null) return;
-
-            Vector3 playerPos = _player.transform.position;
-            Vector3 targetPos = _stateMachine.WireTarget.position;
-
-            // Y축을 포함한 실제 3D 거리 계산
-            float distance = Vector3.Distance(playerPos, targetPos);
-
-            if (distance > _data.wireMaxLength)
-            {
-                // 와이어 포인트에서 플레이어로 향하는 벡터 (원의 반지름)
-                Vector3 radiusVector = (playerPos - targetPos).normalized;
-
-                // 플레이어가 원 밖으로 향하고 있을 때만 스윙/탈출 판정
-                if (Vector3.Dot(_currentVelocity, radiusVector) > 0)
-                {
-                    // 이동 방향과 반지름 벡터 사이의 각도 계산
-                    float angle = Vector3.Angle(_currentVelocity.normalized, radiusVector);
-
-                    // [탈출 조건] 각도가 120도 이상 벌어지면(거의 정면으로 당겨질 때) 탈출
-                    if (angle > 120f)
-                    {
-                        // 현재 속도를 그대로 유지한 채 FallState로 전환 (관성 유지)
-                        _motor.ApplyRawVelocity(_currentVelocity);
-                        _stateMachine.ChangeState(_player.FallState);
-                    }
-                    // [스윙 조건]
-                    else
-                    {
-                        // 속도를 원의 접선 방향으로 투영(Project)하여 부드럽게 방향을 틉니다.
-                        _currentVelocity = Vector3.ProjectOnPlane(_currentVelocity, radiusVector);
-                    }
-                }
-            }
+            _player.CapsuleCollider.material = _player.HighFrictionMaterial; // 원래의 마찰력 높은 재질로 복구
         }
 
         private void OnHitObject(Collision collision)
