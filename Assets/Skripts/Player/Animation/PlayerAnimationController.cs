@@ -19,6 +19,8 @@ namespace Player.Animation
         private readonly int _moveYHash = Animator.StringToHash("MoveY");
         private readonly int _jumpHash = Animator.StringToHash("Jump");
         private readonly int _isGroundedHash = Animator.StringToHash("IsGrounded");
+        private readonly int _wireStartJumpHash = Animator.StringToHash("WireStartJump");
+        private readonly int _isWrieMoveHash = Animator.StringToHash("isWireMove");
 
         // TODO: 추후 공격, 닷지 등의 애니메이션 해시값을 여기에 추가합니다.
         // private readonly int _attackTriggerHash = Animator.StringToHash("Attack");
@@ -81,6 +83,23 @@ namespace Player.Animation
         public void SetGrounded(bool isGrounded)
         {
             _animator.SetBool(_isGroundedHash, isGrounded);
+        }
+        public void SetWireMove(bool isWireMove)
+        {
+            _animator.SetBool(_isWrieMoveHash, isWireMove);
+        }
+
+        /// <summary>
+        /// 와이어 발사 애니메이션을 재생합니다.
+        /// </summary>
+        public void PlayWireLaunch()
+        {
+            // TODO: 와이어 발사 애니메이션을 재생하는 트리거를 여기에 설정합니다.
+            // 예: _animator.SetTrigger("WireLaunch");
+        }
+        public void PlayWireStartJump()
+        {
+            _animator.SetTrigger(_wireStartJumpHash);
         }
     }
 }

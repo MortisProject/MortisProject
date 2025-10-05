@@ -4,6 +4,7 @@ using Player.Data;
 using Player.States;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Player
 {
@@ -27,6 +28,10 @@ namespace Player
         [Tooltip("애니메이션 중앙 컨트롤러")]
         public PlayerAnimationController AnimController;
 
+        [Header("UI References")]
+        [Tooltip("와이어 조준점(Reticle)으로 사용할 UI Image 입니다.")]
+        public Image WireReticuleUI;
+
         // --- 상태 클래스 인스턴스 ---
         public PlayerIdleState IdleState { get; private set; }
         public PlayerMoveState MoveState { get; private set; }
@@ -48,7 +53,7 @@ namespace Player
             MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Data, AnimController);
             JumpState = new PlayerJumpState(this, StateMachine, Input, Motor, Data, AnimController);
             FallState = new PlayerFallState(this, StateMachine, Input, Motor, Data, AnimController);
-            WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data);
+            WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data, WireReticuleUI);
             WireLaunchState = new PlayerWireLaunchState(this, StateMachine, Motor, Data, AnimController);
             WireMoveState = new PlayerWireMoveState(this, StateMachine, Input, Motor, Data, AnimController);
         }

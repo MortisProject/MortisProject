@@ -1,98 +1,103 @@
 // Assets/Scripts/Player/Movement/PlayerMotor.cs
+using Player.Data;
+using System;
 using UnityEngine;
 
 namespace Player
 {
-    [RequireComponent(typeof(CharacterController))]
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(CapsuleCollider))]
     public class PlayerMotor : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private CharacterController _controller;
-        [SerializeField] private PlayerStateMachine _stateMachine;
+        [SerializeField] private Rigidbody _rigidbody;
+        [SerializeField] private PlayerSO _data; // ê°ì¢… ë°ì´í„°ë¥¼ ê°€ì ¸ì˜¤ê¸° ìœ„í•œ ì°¸ì¡°
 
-        [Header("Settings")]
-        [SerializeField] private float _gravity = -19.62f;
-
-        // Ä³¸¯ÅÍÀÇ ÇöÀç ¿ùµå ¼öÆò¼Óµµ ¹İÈ¯
-        public Vector3 HorizontalVelocity => new Vector3(_controller.velocity.x, 0, _controller.velocity.z);
-        // Ä³¸¯ÅÍÀÇ ÇöÀç ¿ùµå ¼öÁ÷¼Óµµ ¹İÈ¯
-        public float VerticalVelocity => _verticalVelocity.y;
-
-        // ¿ÜºÎ(State)¿¡¼­ Àü´Ş¹Ş´Â °ª
-        private Vector3 _movementVelocity;
-
-        // ³»ºÎ(Motor)¿¡¼­¸¸ °ü¸®ÇÏ´Â °ª
-        private Vector3 _verticalVelocity;
-
-        // Ãæµ¹ ½Ã È£ÃâµÉ ÀÌº¥Æ®
-        public System.Action OnControllerHit; 
+        // Rigidbodyì˜ í˜„ì¬ ì†ë„ë¥¼ ì™¸ë¶€ì—ì„œ ì½ì„ ìˆ˜ ìˆë„ë¡ í”„ë¡œí¼í‹°ë¡œ ì œê³µ
+        public Vector3 Velocity => _rigidbody.linearVelocity;
+        public event Action<Collision> OnCollision;
 
         private void Awake()
         {
-            // ÄÄÆ÷³ÍÆ®°¡ ÇÒ´çµÇÁö ¾Ê¾Ò´Ù¸é Á÷Á¢ Ã£¾Æ¿É´Ï´Ù.
-            if (_controller == null)
-                _controller = GetComponent<CharacterController>();
-        }
-
-        private void Update()
-        {
-            // Áö¸é °¨Áö
-            bool isGrounded = _stateMachine.IsGrounded;
-
-            if (isGrounded && _verticalVelocity.y < 0)
-            {
-                // ¶¥¿¡ ÀÖÀ» °æ¿ì:
-                // ¼öÁ÷ ¼Óµµ¸¦ ¹Ù´Ú¿¡ ºÙ¾îÀÖÀ» Á¤µµ·Î¸¸ À¯ÁöÇÏ°í, Áß·ÂÀ» ´©Àû½ÃÅ°Áö ¾Ê½À´Ï´Ù.
-                _verticalVelocity.y = -2f;
-            }
-            else
-            {
-                // °øÁß¿¡ ÀÖÀ» °æ¿ì:
-                // ¸Å ÇÁ·¹ÀÓ Áß·ÂÀ» Àû¿ëÇÏ¿© ¼öÁ÷ ¼Óµµ¸¦ ´©Àû½ÃÅµ´Ï´Ù.
-                _verticalVelocity.y += _gravity * Time.deltaTime;
-            }
-
-
-            // »óÅÂ°¡ Àü´ŞÇÑ ¼öÆò ÀÌµ¿°ú ³»ºÎ¿¡¼­ °è»êÇÑ ¼öÁ÷ ÀÌµ¿À» ÇÕÄ¨´Ï´Ù.
-            Vector3 finalVelocity = _movementVelocity + _verticalVelocity;
-
-            // ÃÖÁ¾ °è»êµÈ ¼Óµµ·Î CharacterController¸¦ ¿òÁ÷ÀÔ´Ï´Ù.
-            _controller.Move(finalVelocity * Time.deltaTime);
-
-            // ¸Å ÇÁ·¹ÀÓ ¼öÆò ÀÌµ¿ ¼Óµµ¸¦ ÃÊ±âÈ­ÇÏ¿©, ¸í·ÉÀÌ ¾øÀ¸¸é ¸ØÃßµµ·Ï ÇÕ´Ï´Ù.
-            //_movementVelocity = Vector3.zero;
+            if (_rigidbody == null) _rigidbody = GetComponent<Rigidbody>();
         }
 
         /// <summary>
-        /// »óÅÂ(State)·ÎºÎÅÍ ¸Å ÇÁ·¹ÀÓ È£ÃâµÉ ÀÌµ¿ ¸í·ÉÀÔ´Ï´Ù.
+        /// ë¬¼ë¦¬ ê³„ì‚°ì€ ê³ ì •ëœ ì£¼ê¸°ë¡œ í˜¸ì¶œë˜ëŠ” FixedUpdateì—ì„œ ì²˜ë¦¬í•´ì•¼ ì•ˆì •ì ì…ë‹ˆë‹¤.
         /// </summary>
-        public void Move(Vector3 movement)
+        private void FixedUpdate()
         {
-            _movementVelocity = movement;
+            // ìµœëŒ€ ì†ë„ë¥¼ ì´ˆê³¼í•˜ì§€ ì•Šë„ë¡ ì†ë„ë¥¼ ì œí•œí•©ë‹ˆë‹¤.
+
+            //LimitHorizontalVelocity();
         }
 
         /// <summary>
-        /// »óÅÂ(State)·ÎºÎÅÍ È£ÃâµÉ Á¡ÇÁ ¸í·ÉÀÔ´Ï´Ù.
+        /// MoveStateë¡œë¶€í„° í˜¸ì¶œë˜ì–´, ì›í•˜ëŠ” ë°©í–¥ìœ¼ë¡œ ìºë¦­í„°ë¥¼ ì›€ì§ì…ë‹ˆë‹¤.
         /// </summary>
-        public void Jump(float jumpHeight)
+        public void Move(Vector3 desiredVelocity)
         {
-            // ¶¥¿¡ ÀÖÀ» ¶§¸¸ Á¡ÇÁ°¡ °¡´ÉÇÏµµ·Ï ÇÕ´Ï´Ù.
-            if (_stateMachine.IsGrounded)
+            // Yì¶•(ìˆ˜ì§) ì†ë„ëŠ” ìœ ì§€í•œ ì±„, Xì™€ Zì¶•(ìˆ˜í‰) ì†ë„ë§Œ ë³€ê²½í•©ë‹ˆë‹¤.
+            _rigidbody.linearVelocity = new Vector3(desiredVelocity.x, _rigidbody.linearVelocity.y, desiredVelocity.z);
+        }
+
+        /// <summary>
+        /// JumpStateë¡œë¶€í„° í˜¸ì¶œë˜ì–´, ìºë¦­í„°ë¥¼ ì í”„ì‹œí‚µë‹ˆë‹¤.
+        /// </summary>
+        public void Jump(float jumpForce)
+        {
+            // ìˆœê°„ì ì¸ í˜ì„ ê°€í•˜ì—¬ ìœ„ë¡œ ë„ì›ë‹ˆë‹¤.
+            _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+
+        /// <summary>
+        /// IdleStateë¡œë¶€í„° í˜¸ì¶œë˜ì–´, ìºë¦­í„°ë¥¼ ë©ˆì¶¥ë‹ˆë‹¤.
+        /// </summary>
+        public void Stop()
+        {
+            // Yì¶• ì†ë„ëŠ” ìœ ì§€í•œ ì±„ ìˆ˜í‰ ì†ë„ë§Œ 0ìœ¼ë¡œ ë§Œë“­ë‹ˆë‹¤.
+            _rigidbody.linearVelocity = new Vector3(0f, _rigidbody.linearVelocity.y, 0f);
+        }
+
+        /// <summary>
+        /// ì™€ì´ì–´ íƒˆì¶œ ë“±, íŠ¹ìˆ˜í•œ ìƒí™©ì—ì„œ ìˆ˜ì§ ì†ë„ë¥¼ 0ìœ¼ë¡œ ì´ˆê¸°í™”í•©ë‹ˆë‹¤.
+        /// </summary>
+        public void ResetVerticalVelocity()
+        {
+            _rigidbody.linearVelocity = new Vector3(_rigidbody.linearVelocity.x, 0, _rigidbody.linearVelocity.z);
+        }
+
+        /// <summary>
+        /// ì™€ì´ì–´ íƒˆì¶œ ì í”„ ë“±, ê³„ì‚°ëœ íŠ¹ì • ì†ë„ë¥¼ Rigidbodyì— ì§ì ‘ ì£¼ì…í•©ë‹ˆë‹¤.
+        /// </summary>
+        public void ApplyRawVelocity(Vector3 velocity)
+        {
+            _rigidbody.linearVelocity = velocity;
+        }
+
+        /// <summary>
+        /// ìºë¦­í„°ì˜ ìˆ˜í‰ ì†ë„ê°€ ìµœëŒ€ ì†ë„ë¥¼ ë„˜ì§€ ì•Šë„ë¡ ì œí•œí•©ë‹ˆë‹¤.
+        /// </summary>
+        private void LimitHorizontalVelocity()
+        {
+            Vector3 horizontalVelocity = new Vector3(_rigidbody.linearVelocity.x, 0, _rigidbody.linearVelocity.z);
+
+            // í˜„ì¬ ìˆ˜í‰ ì†ë„ê°€ ìµœëŒ€ ì†ë„(runSpeed)ë¥¼ ì´ˆê³¼í•˜ë©´
+            if (horizontalVelocity.sqrMagnitude > _data.runSpeed * _data.runSpeed)
             {
-                _verticalVelocity.y = Mathf.Sqrt(jumpHeight * -2f * _gravity);
+                // ì†ë„ë¥¼ ìµœëŒ€ ì†ë„ë¡œ ì œí•œí•©ë‹ˆë‹¤.
+                Vector3 limitedVelocity = horizontalVelocity.normalized * _data.runSpeed;
+                _rigidbody.linearVelocity = new Vector3(limitedVelocity.x, _rigidbody.linearVelocity.y, limitedVelocity.z);
             }
         }
 
         /// <summary>
-        /// CharacterController°¡ ´Ù¸¥ Äİ¶óÀÌ´õ¿Í Ãæµ¹ÇßÀ» ¶§ È£ÃâµÇ´Â Unity ³»Àå ¸Ş½ÃÁöÀÔ´Ï´Ù.
+        /// Rigidbodyê°€ ë‹¤ë¥¸ ì½œë¼ì´ë”ì™€ ì¶©ëŒì„ ì‹œì‘í–ˆì„ ë•Œ í˜¸ì¶œë˜ëŠ” Unity ë‚´ì¥ ë©”ì‹œì§€ì…ë‹ˆë‹¤.
         /// </summary>
-        private void OnControllerColliderHit(ControllerColliderHit hit)
+        private void OnCollisionEnter(Collision collision)
         {
-            // ¶¥°úÀÇ Ãæµ¹Àº ¹«½ÃÇÕ´Ï´Ù (IsGrounded·Î ÀÌ¹Ì Ã³¸® Áß)
-            if (hit.gameObject.layer == LayerMask.NameToLayer("Ground")) return;
-
-            // Ãæµ¹ ÀÌº¥Æ®¸¦ ¿ÜºÎ¿¡ ¾Ë¸³´Ï´Ù.
-            OnControllerHit?.Invoke();
+            // ì¶©ëŒ ì´ë²¤íŠ¸ë¥¼ ì™¸ë¶€ì— ì•Œë¦½ë‹ˆë‹¤.
+            OnCollision?.Invoke(collision);
         }
     }
 }

@@ -13,9 +13,27 @@ namespace Player.Data
         [Tooltip("달리기 속도입니다.")]
         public float runSpeed = 9f;
 
+
+        [Header("Grounded Settings")]
+        [Tooltip("걸을 수 있는 최대 경사각입니다. (단위: 도)")]
+        [Range(0f, 90f)]
+        public float maxSlopeAngle = 45f;
+
+
+
         [Header("Acrobatic Stats")]
-        [Tooltip("점프 시 도달할 목표 높이입니다.")]
-        public float jumpHeight = 2.0f;
+        [Tooltip("Rigidbody.AddForce로 가해지는 점프의 힘입니다.")]
+        public float jumpForce = 15f;
+
+
+
+        [Header("Camera Control")]
+        [Tooltip("카메라 감도 조절입니다.")]
+        public float mouseSensitivity = 1.5f;
+
+        [Tooltip("카메라의 상하 회전 각도를 제한합니다. X = 최소, Y = 최대")]
+        public Vector2 pitchMinMax = new Vector2(-40, 85);
+
 
         [Header("Wire Action Stats")]
         [Tooltip("와이어의 최대 사거리 및 스윙 반경입니다.")]
@@ -37,6 +55,11 @@ namespace Player.Data
         [Tooltip("와이어 이동 중 A/D키로 방향을 트는 속도입니다.")]
         public float wireTurnSpeed = 180f; // 초당 180도
 
+        [Tooltip("와이어 탈출 시 추가되는 수직 점프 높이입니다.")]
+        public float wireDetachVerticalBonus = 2f;
+
+        [Tooltip("와이어 발사 시 뒤로 살짝 점프하는 힘의 크기입니다.")]
+        public float wireLaunchBackwardImpulse = 3f;
         // TODO: 닷지 지속시간, 와이어 속도 등 플레이어 전용 데이터를 여기에 계속 추가합니다.
     }
 }

@@ -28,13 +28,20 @@ namespace Player.States
         {
             _launchStartTime = Time.time;
 
-            // TODO: '뒤로 살짝 점프'하는 로직 추가
-            _motor.Jump(3f);
-            _motor.Move(-_player.transform.forward * 2f);
+            // 뒤로 살짝 점프하는 움직임 실행
+            _motor.Jump(_data.wireLaunchBackwardImpulse);
+            _motor.Move(_player.transform.forward * _data.wireLaunchBackwardImpulse);
+
+            // 애니메이션 컨트롤러에 발사 신호 전달
+            // 와이어 발사애니 (유지)
+            // 와이어 애니 프레임에 이벤트로 와이어 발사.
+            // 와이어가 이어졌는 신호를 받으면 뒤로 점프 애니
+            _animController.PlayWireStartJump();
+            // 와이어 이동 시작 알림
+            _animController.SetWireMove(true);
 
 
-            // TODO: 와이어 발사 애니메이션 및 VFX 재생
-            // _animController.PlayWireLaunch();
+            // TODO: 와이어가 날아가는 시각 효과(VFX)를 여기서 생성합니다.
         }
 
         public void Update()

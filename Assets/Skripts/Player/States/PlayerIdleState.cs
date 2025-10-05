@@ -17,12 +17,13 @@ namespace Player.States
 
             // Idle 상태에 진입했으므로, 이동 애니메이션 파라미터를 0으로 설정
             _animController.SetMove(0f, 0f);
-            _motor.Move(Vector3.zero);
         }
 
         public override void Update()
         {
             base.Update(); // 부모 클래스의 Update 로직(점프 등) 실행
+
+            _motor.Stop();
 
             _animController.SetMove(0f, 0f);
             // 이동 입력이 있는지 확인

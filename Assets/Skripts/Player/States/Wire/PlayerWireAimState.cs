@@ -1,6 +1,7 @@
 // Assets/Scripts/Player/States/Wire/PlayerWireAimState.cs
 using Player.Data;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Player.States
 {
@@ -10,48 +11,40 @@ namespace Player.States
         private readonly PlayerStateMachine _stateMachine;
         private readonly PlayerInput _input;
         private readonly PlayerSO _data;
+        private readonly Image _wireReticule;
 
         private Transform _bestTarget; // 현재 가장 적합한 타겟
 
-        public PlayerWireAimState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerSO data)
+        public PlayerWireAimState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerSO data, Image wireReticule)
         {
             _player = player;
             _stateMachine = stateMachine;
             _input = input;
             _data = data;
+            _wireReticule = wireReticule;
         }
 
         public void Enter()
         {
             _bestTarget = null;
-            // TODO: 조준 UI를 활성화하고 카메라를 줌인하는 로직을 여기에 추가합니다.
+            _wireReticule.gameObject.SetActive(true); // 조준 시작 시 UI 활성화
         }
 
         public void Update()
         {
-            // 조준을 취소했는지 확인
             if (!_input.IsWireAiming)
             {
-                // 이전 상태로 돌아가야 함 (Grounded 또는 Airborne)
-                // 현재는 IsGrounded 값에 따라 Idle 또는 Fall 상태로 전환
-                if (_stateMachine.IsGrounded)
-                {
-                    _stateMachine.ChangeState(_player.IdleState);
-                }
-                else
-                {
-                    _stateMachine.ChangeState(_player.FallState);
-                }
+                // 이전 상태로 복귀
+                if (_stateMachine.IsGrounded) _stateMachine.ChangeState(_player.IdleState);
+                else _stateMachine.ChangeState(_player.FallState);
                 return;
             }
 
-            // 최적의 와이어 타겟 탐색
             FindBestWireTarget();
+            UpdateReticulePosition();
 
-            // 타겟이 있고, 발사 키를 눌렀는지 확인
             if (_bestTarget != null && _input.IsWireFirePressed)
             {
-                // StateMachine에 현재 타겟을 저장하고 WireLaunchState로 전환
                 _stateMachine.WireTarget = _bestTarget;
                 _stateMachine.ChangeState(_player.WireLaunchState);
             }
@@ -59,6 +52,7 @@ namespace Player.States
 
         public void Exit()
         {
+            _wireReticule.gameObject.SetActive(false); // 조준 종료 시 UI 비활성화
             // TODO: 조준 UI를 비활성화하고 카메라 줌을 원래대로 되돌립니다.
             // TODO: 강조 표시된 타겟의 하이라이트를 해제합니다.
         }
@@ -69,31 +63,49 @@ namespace Player.States
         private void FindBestWireTarget()
         {
             _bestTarget = null;
-            float closestDot = -1f; // 1에 가까울수록 화면 중앙에 가까움
+            float closestAngle = float.MaxValue;
 
-            // 1. 플레이어 주변의 모든 와이어 포인트를 수집
             Collider[] colliders = Physics.OverlapSphere(_player.transform.position, _data.wireMaxLength);
 
             foreach (var collider in colliders)
             {
                 if (collider.TryGetComponent<WirePoint>(out WirePoint wirePoint))
                 {
-                    Vector3 directionToTarget = (wirePoint.transform.position - Camera.main.transform.position).normalized;
+                    Vector3 directionToTarget = (wirePoint.transform.position - Camera.main.transform.position);
 
-                    // 2. 화면 중앙과의 각도(내적)를 계산
-                    float dot = Vector3.Dot(Camera.main.transform.forward, directionToTarget);
+                    // 화면 밖에 있는 타겟은 제외
+                    if (Vector3.Dot(Camera.main.transform.forward, directionToTarget.normalized) < 0) continue;
 
-                    // 3. 화면 정면에 있고(dot > 0), 이전 타겟보다 더 중앙에 있다면
-                    if (dot > 0 && dot > closestDot)
+                    // 화면 좌표로 변환 (0~1 범위)
+                    Vector2 screenPoint = Camera.main.WorldToViewportPoint(wirePoint.transform.position);
+                    // 화면 중앙(0.5, 0.5)으로부터의 거리 계산
+                    float distanceFromCenter = Vector2.Distance(screenPoint, new Vector2(0.5f, 0.5f));
+
+                    // 설정한 탐색 반경 안에 있고, 이전 타겟보다 더 중앙에 가깝다면
+                    if (distanceFromCenter < _data.wireAimSearchRadius && distanceFromCenter < closestAngle)
                     {
-                        // TODO: 벽 뒤에 있는지 Raycast로 한번 더 확인하면 더 좋습니다.
-                        closestDot = dot;
+                        closestAngle = distanceFromCenter;
                         _bestTarget = wirePoint.transform;
                     }
                 }
             }
+        }
 
-            // TODO: _bestTarget이 정해졌다면 시각적으로 강조 표시(하이라이트)하는 로직을 여기에 추가합니다.
+        /// <summary>
+        /// 조준점 UI의 위치를 업데이트합니다.
+        /// </summary>
+        private void UpdateReticulePosition()
+        {
+            if (_bestTarget == null)
+            {
+                _wireReticule.enabled = false; // 타겟이 없으면 숨김
+            }
+            else
+            {
+                _wireReticule.enabled = true; // 타겟이 있으면 표시
+                // 타겟의 월드 좌표를 스크린 좌표로 변환하여 UI 위치 설정
+                _wireReticule.transform.position = Camera.main.WorldToScreenPoint(_bestTarget.position);
+            }
         }
     }
 }
