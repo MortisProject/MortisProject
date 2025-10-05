@@ -1,4 +1,5 @@
 // Assets/Scripts/Player/Input/PlayerInput.cs
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,6 +28,11 @@ namespace Player
         public bool IsJumpPressed { get; private set; }
 
         // TODO: 공격, 닷지 등 추후 추가될 액션에 대한 프로퍼티를 여기에 선언합니다.
+
+        public void Start()
+        {
+            LockCursor();
+        }
 
         /// <summary>
         /// 컴포넌트가 활성화될 때 Input Actions 인스턴스를 생성하고 이벤트를 구독합니다.
@@ -104,6 +110,24 @@ namespace Player
         private void OnJump(InputAction.CallbackContext context)
         {
             IsJumpPressed = true;
+        }
+
+        /// <summary>
+        /// 마우스 커서를 숨기고 화면 중앙에 고정합니다.
+        /// </summary>
+        private void LockCursor()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        /// <summary>
+        /// 마우스 커서를 보이게 하고 자유롭게 움직일 수 있도록 합니다.
+        /// </summary>
+        private void UnlockCursor()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
     }
 }
