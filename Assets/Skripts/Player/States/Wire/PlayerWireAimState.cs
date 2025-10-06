@@ -82,7 +82,7 @@ namespace Player.States
             _bestTarget = null;
             float closestAngle = float.MaxValue;
 
-            Collider[] colliders = Physics.OverlapSphere(_player.transform.position, _data.wireMaxLength);
+            Collider[] colliders = Physics.OverlapSphere(_player.transform.position, _data.wireGrappleRange);
 
             foreach (var collider in colliders)
             {

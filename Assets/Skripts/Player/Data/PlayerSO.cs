@@ -28,7 +28,11 @@ namespace Player.Data
         public float jumpForce = 15f;
 
         [Tooltip("공중에서 좌우로 움직일 때 가해지는 힘입니다.")]
-        public float airControlForce = 20f;
+        public float airControlForce = 1f;
+
+        [Tooltip("와이어, 점프 등 모든 움직임에서 도달할 수 있는 최대 '수평' 속도입니다.")]
+        public float maxHorizontalSpeed = 35f;
+
 
 
         [Header("Camera Control")]
@@ -44,8 +48,11 @@ namespace Player.Data
         [Tooltip("발사될 와이어 훅의 프리팹입니다.")]
         public GameObject wireHookPrefab;
 
-        [Tooltip("와이어의 최대 사거리 및 스윙 반경입니다.")]
-        public float wireMaxLength = 30f;
+        [Tooltip("와이어를 발사하여 타겟에 '걸 수 있는' 최대 사거리입니다.")]
+        public float wireGrappleRange = 50f;
+
+        [Tooltip("와이어에 매달려 '스윙할 때'의 실제 와이어 길이입니다. GrappleRange보다 짧게 설정하면 와이어가 감기는 효과를 냅니다.")]
+        public float wireSwingLength = 15f;
 
         [Tooltip("화면 중앙에서 와이어 포인트를 탐색할 반경입니다. (0~1 사이 값)")]
         [Range(0f, 1f)]

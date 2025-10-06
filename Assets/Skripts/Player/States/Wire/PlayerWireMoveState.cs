@@ -42,7 +42,7 @@ namespace Player.States
 
             // 와이어의 최소/최대 길이를 설정합니다. (거의 늘어나지 않도록 비슷하게 설정)
             _springJoint.minDistance = 0.5f;
-            _springJoint.maxDistance = Vector3.Distance(_player.transform.position, _stateMachine.WireTarget.position) * 0.8f;
+            _springJoint.maxDistance = _data.wireSwingLength;
 
             // SO 데이터에서 탄성/감쇠 값을 가져옵니다.
             _springJoint.spring = _data.wireSpringForce;
@@ -71,7 +71,7 @@ namespace Player.States
             }
 
             Vector3 controlDirection = new Vector3(_input.MoveInput.x, 0, _input.MoveInput.y);
-            _motor.AirMove(controlDirection, _data.airControlForce * 0.5f); // 공중 제어 힘을 약하게 적용
+            _motor.AirMove(controlDirection, _data.airControlForce); // 공중 제어 힘을 약하게 적용
 
 
             // 2. 추가 대쉬 (LeftShift)
@@ -79,7 +79,7 @@ namespace Player.States
             {
                 Vector3 dashDirection = Camera.main.transform.forward;
                 dashDirection.y = 0;
-                _currentVelocity = dashDirection.normalized * _data.wireAirDashSpeed;
+                _motor.GetComponent<Rigidbody>().AddForce(dashDirection.normalized * _data.wireAirDashSpeed, ForceMode.Impulse);
                 _canAirDash = false;
             }
 
@@ -115,7 +115,7 @@ namespace Player.States
 
             // 캐릭터의 이동 방향(속도)과 충돌 지점의 법선이 거의 반대 방향일 때(정면 충돌)만 탈출합니다.
             // Vector3.Dot() 결과가 -1에 가까울수록 정면 충돌입니다.
-            if (Vector3.Dot(_currentVelocity.normalized, normal) < -0.7f)
+            if (Vector3.Dot(_motor.Velocity.normalized, normal) < -0.7f)
             {
                 HandleDetach();
             }

@@ -31,7 +31,7 @@ namespace Player
         {
             // 최대 속도를 초과하지 않도록 속도를 제한합니다.
 
-           // LimitHorizontalVelocity();
+           LimitHorizontalVelocity();
         }
 
         /// <summary>
@@ -91,13 +91,15 @@ namespace Player
         /// </summary>
         private void LimitHorizontalVelocity()
         {
+            // 현재 속도에서 수직(Y) 성분을 제외하여 순수 수평 속도를 계산합니다.
             Vector3 horizontalVelocity = new Vector3(_rigidbody.linearVelocity.x, 0, _rigidbody.linearVelocity.z);
 
-            // 현재 수평 속도가 최대 속도(runSpeed)를 초과하면
-            if (horizontalVelocity.sqrMagnitude > _data.runSpeed * _data.runSpeed)
+            // 현재 수평 속도가 PlayerSO에 정의된 최대 수평 속도를 초과하면
+            if (horizontalVelocity.sqrMagnitude > _data.maxHorizontalSpeed * _data.maxHorizontalSpeed)
             {
-                // 속도를 최대 속도로 제한합니다.
-                Vector3 limitedVelocity = horizontalVelocity.normalized * _data.runSpeed;
+                // 속도를 최대 속도로 제한합니다. (이동 방향은 유지)
+                Vector3 limitedVelocity = horizontalVelocity.normalized * _data.maxHorizontalSpeed;
+                // 제한된 수평 속도와 원래의 수직 속도를 합쳐 최종 속도를 설정합니다.
                 _rigidbody.linearVelocity = new Vector3(limitedVelocity.x, _rigidbody.linearVelocity.y, limitedVelocity.z);
             }
         }
