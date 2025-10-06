@@ -47,9 +47,6 @@ namespace Player
         public Image NormalWireReticuleUI; // Normal Target UI
         public GameObject WireFireEffectPrefab; // 발사 효과 프리팹
 
-        [Header("Camera References")]
-        public CinemachineCamera AimCamera; // 조준용 가상 카메라
-
         // --- 상태 클래스 인스턴스 ---
         public PlayerIdleState IdleState { get; private set; }
         public PlayerMoveState MoveState { get; private set; }

@@ -38,8 +38,6 @@ namespace Player.States
         {
             _bestTarget = null;
             // 카메라 연출: AimCamera의 우선순위를 높여 줌인 효과 시작
-            _player.AimCamera.Priority = 20;
-            //_wireReticule.gameObject.SetActive(true); // 조준 시작 시 UI 활성화
         }
 
         public void Update()
@@ -71,8 +69,6 @@ namespace Player.States
 
         public void Exit()
         {
-            // 카메라 연출: AimCamera의 우선순위를 낮춰 원래 카메라로 복귀
-            _player.AimCamera.Priority = 9;
             // 모든 조준 UI 숨기기
             HideAllReticules();
         }

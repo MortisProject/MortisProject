@@ -20,10 +20,10 @@ MonoBehaviour:
   hoverTime: 1
   mouseSensitivity: 4
   pitchMinMax: {x: -60, y: 85}
-  aimFov: 40
-  aimShoulderOffset: {x: 0.5, y: 0, z: 0}
+  aimFov: 50
+  aimShoulderOffset: {x: 0.5, y: 0, z: 2}
   wireHookPrefab: {fileID: 4005168796454646291, guid: 3f52e78106a5c574898e945f994d0324, type: 3}
-  wireMaxLength: 60
+  wireMaxLength: 100
   wireAimSearchRadius: 0.5
   wireLaunchDelay: 0.8
   wireLaunchSpeed: 30

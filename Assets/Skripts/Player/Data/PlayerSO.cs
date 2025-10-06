@@ -30,10 +30,6 @@ namespace Player.Data
         [Tooltip("공중에서 좌우로 움직일 때 가해지는 힘입니다.")]
         public float airControlForce = 20f;
 
-        [Tooltip("공중 체공 유지시간입니다. (ex. 와이어 대쉬)")]
-        public float hoverTime = 1f;
-
-
 
         [Header("Camera Control")]
         [Tooltip("카메라 감도 조절입니다.")]
@@ -41,15 +37,6 @@ namespace Player.Data
 
         [Tooltip("카메라의 상하 회전 각도를 제한합니다. X = 최소, Y = 최대")]
         public Vector2 pitchMinMax = new Vector2(-40, 85);
-
-
-
-        [Header("Wire Aim Camera Settings")]
-        [Tooltip("조준 시 카메라의 시야각(FOV)입니다.")]
-        public float aimFov = 40f;
-
-        [Tooltip("조준 시 카메라의 어깨 너머 위치 오프셋입니다.")]
-        public Vector3 aimShoulderOffset = new Vector3(0.5f, 0.2f, -0.5f);
 
 
 
@@ -64,17 +51,11 @@ namespace Player.Data
         [Range(0f, 1f)]
         public float wireAimSearchRadius = 0.5f;
 
-        [Tooltip("와이어 발사 후 대쉬가 시작되기까지의 대기 시간입니다.")]
-        public float wireLaunchDelay = 0.3f;
-
         [Tooltip("와이어 이동 시작 시의 초기 대쉬 속도입니다.")]
         public float wireLaunchSpeed = 25f;
 
         [Tooltip("공중에서 사용하는 추가 대쉬의 속도입니다.")]
         public float wireAirDashSpeed = 30f;
-
-        [Tooltip("와이어 이동 중 A/D키로 방향을 트는 속도입니다.")]
-        public float wireTurnSpeed = 180f; // 초당 180도
 
         [Tooltip("와이어 탈출 시 추가되는 수직 점프 높이입니다.")]
         public float wireDetachVerticalBonus = 2f;
