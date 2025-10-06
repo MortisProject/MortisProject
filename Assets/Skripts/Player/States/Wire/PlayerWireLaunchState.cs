@@ -13,7 +13,7 @@ namespace Player.States
         private readonly PlayerSO _data;
         private readonly PlayerAnimationController _animController;
 
-        private float _launchStartTime; // 상태에 진입한 시간
+        private GameObject _hookObject;
 
         public PlayerWireLaunchState(Player player, PlayerStateMachine stateMachine, PlayerMotor motor, PlayerSO data, PlayerAnimationController animController)
         {
@@ -26,20 +26,19 @@ namespace Player.States
 
         public void Enter()
         {
-            // WireHook 프리팹을 생성합니다.
-            GameObject hookObject = Object.Instantiate(_data.wireHookPrefab, _player.WireOrigin.position, Quaternion.identity);
+            // WireHook 프리팹을 생성하고 목표를 설정합니다.
+            _hookObject = Object.Instantiate(_data.wireHookPrefab, _player.WireOrigin.position, Quaternion.identity);
+            _hookObject.GetComponent<WireHook>().target = _stateMachine.WireTarget;
 
-            // 생성된 훅의 목표 지점을 설정합니다.
-            hookObject.GetComponent<WireHook>().target = _stateMachine.WireTarget;
+            // WireRenderer를 '출렁임' 모드로 활성화하고, 날아가는 훅을 따라가도록 합니다.
+            _player.WireRenderer.Activate(_player.WireOrigin, _stateMachine.WireTarget, _hookObject.transform);
 
-            // WireRenderer를 활성화하고, 시작점/끝점/그리고 '날아가는 훅'의 transform을 전달합니다.
-            _player.WireRenderer.Activate(_player.WireOrigin, _stateMachine.WireTarget, hookObject.transform);
 
             // 애니메이션 컨트롤러에 발사 신호를 전달합니다.
 
 
             // 땅에 있다면 와이어 던지는 애니 실행
-            if(_stateMachine.IsGrounded)
+            if (_stateMachine.IsGrounded)
             {
                 _animController.PlayWireLaunch();
             }
@@ -59,15 +58,20 @@ namespace Player.States
 
         public void Update()
         {
-            // [와이어 대기시간]이 지나면 MoveState로 전환
-            if (Time.time >= _launchStartTime + _data.wireLaunchDelay)
+            // 훅이 목표 지점에 거의 도달했는지 매 프레임 확인합니다.
+            if (_hookObject != null && Vector3.Distance(_hookObject.transform.position, _stateMachine.WireTarget.position) < 1f)
             {
+                // 도달했다면 MoveState로 전환합니다.
                 _stateMachine.ChangeState(_player.WireMoveState);
             }
         }
 
         public void Exit()
         {
+            if (_hookObject != null)
+            {
+                Object.Destroy(_hookObject);
+            }
         }
     }
 }

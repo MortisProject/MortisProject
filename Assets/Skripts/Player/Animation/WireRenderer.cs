@@ -91,7 +91,7 @@ public class WireRenderer : MonoBehaviour
         _hookTransform = null;
     }
 
-    private void SetTaut()
+    public void SetTaut()
     {
         _currentState = State.Taut;
     }

@@ -10,8 +10,10 @@ namespace Player.Data
         [Header("Movement Stats")]
         [Tooltip("걷기 속도입니다.")]
         public float walkSpeed = 5f;
+
         [Tooltip("달리기 속도입니다.")]
         public float runSpeed = 9f;
+
 
 
         [Header("Grounded Settings")]
@@ -39,6 +41,16 @@ namespace Player.Data
 
         [Tooltip("카메라의 상하 회전 각도를 제한합니다. X = 최소, Y = 최대")]
         public Vector2 pitchMinMax = new Vector2(-40, 85);
+
+
+
+        [Header("Wire Aim Camera Settings")]
+        [Tooltip("조준 시 카메라의 시야각(FOV)입니다.")]
+        public float aimFov = 40f;
+
+        [Tooltip("조준 시 카메라의 어깨 너머 위치 오프셋입니다.")]
+        public Vector3 aimShoulderOffset = new Vector3(0.5f, 0.2f, -0.5f);
+
 
 
         [Header("Wire Action Stats")]

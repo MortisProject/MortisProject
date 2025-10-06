@@ -1,5 +1,7 @@
 // Assets/Scripts/Player/States/Wire/PlayerWireAimState.cs
 using Player.Data;
+using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,22 +14,32 @@ namespace Player.States
         private readonly PlayerInput _input;
         private readonly PlayerSO _data;
         private readonly Image _wireReticule;
+        private readonly CharacterStats _stats;
 
-        private Transform _bestTarget; // 현재 가장 적합한 타겟
+        // UI 관련
+        private readonly Image _bestReticule;
+        private readonly List<Image> _normalReticulePool = new List<Image>();
 
-        public PlayerWireAimState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerSO data, Image wireReticule)
+        private Transform _bestTarget;
+        private readonly List<Transform> _visibleTargets = new List<Transform>();
+
+
+        public PlayerWireAimState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerSO data, CharacterStats stats)
         {
             _player = player;
             _stateMachine = stateMachine;
             _input = input;
             _data = data;
-            _wireReticule = wireReticule;
+            _stats = stats;
+            _bestReticule = _player.BestWireReticuleUI;
         }
 
         public void Enter()
         {
             _bestTarget = null;
-            _wireReticule.gameObject.SetActive(true); // 조준 시작 시 UI 활성화
+            // 카메라 연출: AimCamera의 우선순위를 높여 줌인 효과 시작
+            _player.AimCamera.Priority = 20;
+            //_wireReticule.gameObject.SetActive(true); // 조준 시작 시 UI 활성화
         }
 
         public void Update()
@@ -40,28 +52,37 @@ namespace Player.States
                 return;
             }
 
-            FindBestWireTarget();
-            UpdateReticulePosition();
+            FindVisibleTargets();
+            UpdateAllReticules();
 
             if (_bestTarget != null && _input.IsWireFirePressed)
             {
-                _stateMachine.WireTarget = _bestTarget;
-                _stateMachine.ChangeState(_player.WireLaunchState);
+                // 아스트가 충분한지 확인
+                if (_stats.ConsumeAst(_stats.wireFireAstCost))
+                {
+                    // 발사 연출 UI 생성
+                    Object.Instantiate(_player.WireFireEffectPrefab, _bestReticule.transform.position, Quaternion.identity, _bestReticule.transform.parent);
+
+                    _stateMachine.WireTarget = _bestTarget;
+                    _stateMachine.ChangeState(_player.WireLaunchState);
+                }
             }
         }
 
         public void Exit()
         {
-            _wireReticule.gameObject.SetActive(false); // 조준 종료 시 UI 비활성화
-            // TODO: 조준 UI를 비활성화하고 카메라 줌을 원래대로 되돌립니다.
-            // TODO: 강조 표시된 타겟의 하이라이트를 해제합니다.
+            // 카메라 연출: AimCamera의 우선순위를 낮춰 원래 카메라로 복귀
+            _player.AimCamera.Priority = 9;
+            // 모든 조준 UI 숨기기
+            HideAllReticules();
         }
 
         /// <summary>
         /// 화면 중앙에서 가장 가깝고 유효한 와이어 포인트를 찾습니다.
         /// </summary>
-        private void FindBestWireTarget()
+        private void FindVisibleTargets()
         {
+            _visibleTargets.Clear();
             _bestTarget = null;
             float closestAngle = float.MaxValue;
 
@@ -72,16 +93,14 @@ namespace Player.States
                 if (collider.TryGetComponent<WirePoint>(out WirePoint wirePoint))
                 {
                     Vector3 directionToTarget = (wirePoint.transform.position - Camera.main.transform.position);
-
-                    // 화면 밖에 있는 타겟은 제외
                     if (Vector3.Dot(Camera.main.transform.forward, directionToTarget.normalized) < 0) continue;
 
-                    // 화면 좌표로 변환 (0~1 범위)
                     Vector2 screenPoint = Camera.main.WorldToViewportPoint(wirePoint.transform.position);
-                    // 화면 중앙(0.5, 0.5)으로부터의 거리 계산
-                    float distanceFromCenter = Vector2.Distance(screenPoint, new Vector2(0.5f, 0.5f));
+                    if (screenPoint.x < 0 || screenPoint.x > 1 || screenPoint.y < 0 || screenPoint.y > 1) continue;
 
-                    // 설정한 탐색 반경 안에 있고, 이전 타겟보다 더 중앙에 가깝다면
+                    _visibleTargets.Add(wirePoint.transform); // 화면에 보이는 모든 타겟 추가
+
+                    float distanceFromCenter = Vector2.Distance(screenPoint, new Vector2(0.5f, 0.5f));
                     if (distanceFromCenter < _data.wireAimSearchRadius && distanceFromCenter < closestAngle)
                     {
                         closestAngle = distanceFromCenter;
@@ -94,17 +113,41 @@ namespace Player.States
         /// <summary>
         /// 조준점 UI의 위치를 업데이트합니다.
         /// </summary>
-        private void UpdateReticulePosition()
+        private void UpdateAllReticules()
         {
-            if (_bestTarget == null)
+            // 모든 UI 숨기기 (버그 수정)
+            HideAllReticules();
+
+            int reticuleIndex = 0;
+            foreach (var target in _visibleTargets)
             {
-                _wireReticule.enabled = false; // 타겟이 없으면 숨김
+                if (target == _bestTarget)
+                {
+                    _bestReticule.gameObject.SetActive(true);
+                    _bestReticule.transform.position = Camera.main.WorldToScreenPoint(target.position);
+                }
+                else
+                {
+                    // 일반 조준점 UI 풀링 (간단한 버전)
+                    if (reticuleIndex >= _normalReticulePool.Count)
+                    {
+                        Image newReticule = Object.Instantiate(_player.NormalWireReticuleUI, _player.NormalWireReticuleUI.transform.parent);
+                        _normalReticulePool.Add(newReticule);
+                    }
+                    Image normalReticule = _normalReticulePool[reticuleIndex];
+                    normalReticule.gameObject.SetActive(true);
+                    normalReticule.transform.position = Camera.main.WorldToScreenPoint(target.position);
+                    reticuleIndex++;
+                }
             }
-            else
+        }
+
+        private void HideAllReticules()
+        {
+            _bestReticule.gameObject.SetActive(false);
+            foreach (var reticule in _normalReticulePool)
             {
-                _wireReticule.enabled = true; // 타겟이 있으면 표시
-                // 타겟의 월드 좌표를 스크린 좌표로 변환하여 UI 위치 설정
-                _wireReticule.transform.position = Camera.main.WorldToScreenPoint(_bestTarget.position);
+                reticule.gameObject.SetActive(false);
             }
         }
     }

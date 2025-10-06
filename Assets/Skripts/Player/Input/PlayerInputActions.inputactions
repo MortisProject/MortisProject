@@ -154,7 +154,7 @@
                     "name": "",
                     "id": "3d91ec2f-cdfc-4b16-9831-d9ddffba0515",
                     "path": "<Mouse>/rightButton",
-                    "interactions": "Hold",
+                    "interactions": "Hold(duration=0.1,pressPoint=0.1)",
                     "processors": "",
                     "groups": "",
                     "action": "WireAim",

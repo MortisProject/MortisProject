@@ -31,7 +31,7 @@ namespace Player
         {
             // 최대 속도를 초과하지 않도록 속도를 제한합니다.
 
-            //LimitHorizontalVelocity();
+           // LimitHorizontalVelocity();
         }
 
         /// <summary>

@@ -2,6 +2,8 @@
 using Player.Animation;
 using Player.Data;
 using Player.States;
+using Unity.Cinemachine;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,11 +17,13 @@ namespace Player
     {
         [Header("Data")]
         [Tooltip("플레이어의 모든 데이터를 담고 있는 ScriptableObject 입니다.")]
-        public PlayerSO Data; // CharacterStats 대신 PlayerSO 참조
+        public PlayerSO Data; //대신 PlayerSO 참조
 
         [Header("Component References")]
         [Tooltip("플레이어의 입력 처리기")]
         public PlayerInput Input;
+        [Tooltip("플레이어의 스텟")]
+        public CharacterStats Stats;
         [Tooltip("플레이어의 상태 머신")]
         public PlayerStateMachine StateMachine;
         [Tooltip("플레이어의 이동 모터")]
@@ -39,7 +43,12 @@ namespace Player
 
         [Header("UI References")]
         [Tooltip("와이어 조준점(Reticle)으로 사용할 UI Image 입니다.")]
-        public Image WireReticuleUI;
+        public Image BestWireReticuleUI; // Best Target UI
+        public Image NormalWireReticuleUI; // Normal Target UI
+        public GameObject WireFireEffectPrefab; // 발사 효과 프리팹
+
+        [Header("Camera References")]
+        public CinemachineCamera AimCamera; // 조준용 가상 카메라
 
         // --- 상태 클래스 인스턴스 ---
         public PlayerIdleState IdleState { get; private set; }
@@ -62,7 +71,7 @@ namespace Player
             MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Data, AnimController);
             JumpState = new PlayerJumpState(this, StateMachine, Input, Motor, Data, AnimController);
             FallState = new PlayerFallState(this, StateMachine, Input, Motor, Data, AnimController);
-            WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data, WireReticuleUI);
+            WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data, Stats);
             WireLaunchState = new PlayerWireLaunchState(this, StateMachine, Motor, Data, AnimController);
             WireMoveState = new PlayerWireMoveState(this, StateMachine, Input, Motor, Data, AnimController);
         }

@@ -32,6 +32,7 @@ namespace Player.States
         {
             _player.CapsuleCollider.material = _player.FrictionlessMaterial; // 마찰력 없는 재질로 교체
 
+            _player.WireRenderer.SetTaut();
             // 1. 플레이어 오브젝트에 SpringJoint 컴포넌트를 동적으로 추가합니다.
             _springJoint = _player.gameObject.AddComponent<SpringJoint>();
 
