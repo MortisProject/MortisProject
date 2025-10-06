@@ -14,4 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 5
   runSpeed: 9
-  jumpHeight: 5
+  maxSlopeAngle: 45
+  jumpForce: 10
+  airControlForce: 1
+  maxHorizontalSpeed: 35
+  mouseSensitivity: 4
+  pitchMinMax: {x: -60, y: 85}
+  wireHookPrefab: {fileID: 4005168796454646291, guid: 3f52e78106a5c574898e945f994d0324, type: 3}
+  wireGrappleRange: 60
+  wireSwingLength: 30
+  wireAimSearchRadius: 0.5
+  wireLaunchSpeed: 30
+  wireAirDashSpeed: 30
+  wireDetachVerticalBonus: 10
+  wireLaunchBackwardImpulse: 10
+  wireSpringForce: 300
+  wireDamper: 80

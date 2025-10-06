@@ -19,7 +19,7 @@ namespace Player.States
         {
             base.Enter(); // 부모의 Enter 호출 (현재는 비어있음)
 
-            _motor.Jump(_data.jumpHeight);
+            _motor.Jump(_data.jumpForce);
             _animController.PlayJump();
             _jumpStartTime = Time.time;
         }
@@ -36,7 +36,7 @@ namespace Player.States
             }
 
             // 유예 시간이 지난 후, 수직 속도가 음수가 되면(하강 시작) FallState로 전환합니다.
-            if (_motor.VerticalVelocity < 0f)
+            if (_motor.Velocity.y < 0f)
             {
                 _stateMachine.ChangeState(_player.FallState);
             }

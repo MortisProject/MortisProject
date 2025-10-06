@@ -1,4 +1,6 @@
 // Assets/Scripts/Player/Controller/CameraController.cs
+using Player.Data;
+using TMPro;
 using UnityEngine;
 
 namespace Player
@@ -10,23 +12,21 @@ namespace Player
     public class CameraController : MonoBehaviour
     {
         [Header("References")]
-        [Tooltip("입력 값을 받아올 PlayerInput 스크립트입니다.")]
         [SerializeField] private PlayerInput _input;
-
-        [Tooltip("좌우 회전을 적용할 플레이어의 Transform 입니다.")]
         [SerializeField] private Transform _playerBody;
-
-        [Header("Camera Control Settings")]
-        [Tooltip("마우스 감도입니다.")]
-        [SerializeField] private float _mouseSensitivity = 1.5f;
-
-        [Tooltip("카메라의 상하 회전 각도를 제한합니다. X = 최소, Y = 최대")]
-        [SerializeField] private Vector2 _pitchMinMax = new Vector2(-40, 85);
+        [SerializeField] private PlayerSO _data;
 
         // TODO: 게임패드 사용 시 감도를 별도로 설정할 수 있도록 변수를 추가하면 좋습니다.
-
+        float _mouseSensitivity;
+        Vector2 _pitchMinMax;
         private float _yaw;   // 좌우 회전 누적 값
         private float _pitch; // 상하 회전 누적 값
+
+        private void Awake()
+        {
+            _mouseSensitivity = _data.mouseSensitivity;
+            _pitchMinMax = _data.pitchMinMax;
+        }
 
         /// <summary>
         /// Update 이후에 호출되어 카메라 움직임이 캐릭터 움직임을 따라가도록 합니다.

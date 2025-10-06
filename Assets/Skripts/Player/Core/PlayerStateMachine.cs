@@ -1,5 +1,6 @@
 // Assets/Scripts/Player/Core/PlayerStateMachine.cs
 using Player.Animation;
+using Player.Data;
 using Player.States;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,8 @@ namespace Player
         [SerializeField] private float _groundCheckRadius = 0.2f;
 
         [Header("Component References")]
-        [SerializeField] private PlayerAnimationController _animController;
+        [SerializeField] private PlayerAnimationController _animController; 
+        [SerializeField] private PlayerSO _data;
 
         // Push Pop State를 사용하기위한 스택
         private readonly List<IState> _stateStack = new List<IState>();
@@ -38,6 +40,11 @@ namespace Player
         /// 캐릭터가 공중에 떠 있던 시간을 기록합니다.
         /// </summary>
         public float Flytime { get; private set; }
+
+        /// <summary>
+        /// 현재 조준하고 있거나 부착된 와이어 타겟입니다.
+        /// </summary>
+        public Transform WireTarget { get; set; }
 
         /// <summary>
         /// 매 프레임마다 호출됩니다.
@@ -124,16 +131,33 @@ namespace Player
         /// <summary>
         /// 발밑으로 SphereCast를 쏘아 지면 착지 여부를 확인하고 IsGrounded 값을 업데이트합니다.
         /// </summary>
+        /// <summary>
+        /// 발밑으로 SphereCast를 쏘고 경사각을 계산하여 최종 지면 착지 여부를 결정합니다.
+        /// </summary>
         private void CheckGrounded()
         {
-            // Physics.SphereCast가 true를 반환하면(지면과 충돌하면) IsGrounded는 true가 됩니다.
-            IsGrounded = Physics.SphereCast(
-                _footTransform.position,
-                _groundCheckRadius,
-                Vector3.down,
-                out RaycastHit hit,
-                _groundCheckDistance,
-                _groundLayerMask);
+            // SphereCast를 발사하여 무언가에 닿았는지 확인
+            if (Physics.SphereCast(
+                    _footTransform.position,
+                    _groundCheckRadius,
+                    Vector3.down,
+                    out RaycastHit hit,
+                    _groundCheckDistance,
+                    _groundLayerMask))
+            {
+                // 충돌한 표면의 경사각을 계산
+                float slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
+
+                // 경사각이 걸을 수 있는 최대 각도보다 작거나 같다면, 땅으로 인정
+                if (slopeAngle <= _data.maxSlopeAngle)
+                {
+                    IsGrounded = true;
+                    return;
+                }
+            }
+
+            // SphereCast에 아무것도 닿지 않았거나, 경사각이 너무 가파르면 땅이 아님
+            IsGrounded = false;
         }
 
 #if UNITY_EDITOR

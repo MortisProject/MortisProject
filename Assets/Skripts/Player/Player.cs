@@ -2,8 +2,10 @@
 using Player.Animation;
 using Player.Data;
 using Player.States;
-using Unity.IO.LowLevel.Unsafe;
+using Unity.Cinemachine;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Player
 {
@@ -15,23 +17,44 @@ namespace Player
     {
         [Header("Data")]
         [Tooltip("플레이어의 모든 데이터를 담고 있는 ScriptableObject 입니다.")]
-        public PlayerSO Data; // CharacterStats 대신 PlayerSO 참조
+        public PlayerSO Data; //대신 PlayerSO 참조
 
         [Header("Component References")]
         [Tooltip("플레이어의 입력 처리기")]
         public PlayerInput Input;
+        [Tooltip("플레이어의 스텟")]
+        public CharacterStats Stats;
         [Tooltip("플레이어의 상태 머신")]
         public PlayerStateMachine StateMachine;
         [Tooltip("플레이어의 이동 모터")]
         public PlayerMotor Motor;
         [Tooltip("애니메이션 중앙 컨트롤러")]
         public PlayerAnimationController AnimController;
+        [Tooltip("플레이어의 콜라이더")]
+        public CapsuleCollider CapsuleCollider;
+        [Tooltip("와이어가 시작될 위치의 Transform 입니다.")]
+        public Transform WireOrigin;
+        [Tooltip("와이어의 시각적 표현을 담당하는 스크립트입니다.")]
+        public WireRenderer WireRenderer;
+
+        [Header("Physics Materials")]
+        public PhysicsMaterial HighFrictionMaterial;
+        public PhysicsMaterial FrictionlessMaterial;
+
+        [Header("UI References")]
+        [Tooltip("와이어 조준점(Reticle)으로 사용할 UI Image 입니다.")]
+        public Image BestWireReticuleUI; // Best Target UI
+        public Image NormalWireReticuleUI; // Normal Target UI
+        public GameObject WireFireEffectPrefab; // 발사 효과 프리팹
 
         // --- 상태 클래스 인스턴스 ---
         public PlayerIdleState IdleState { get; private set; }
         public PlayerMoveState MoveState { get; private set; }
         public PlayerJumpState JumpState { get; private set; }
         public PlayerFallState FallState { get; private set; }
+        public PlayerWireAimState WireAimState { get; private set; }
+        public PlayerWireLaunchState WireLaunchState { get; private set; }
+        public PlayerWireMoveState WireMoveState { get; private set; }
         // TODO: 추후 Attack, Dodge 등의 상태를 여기에 추가합니다.
 
         /// <summary>
@@ -45,6 +68,9 @@ namespace Player
             MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Data, AnimController);
             JumpState = new PlayerJumpState(this, StateMachine, Input, Motor, Data, AnimController);
             FallState = new PlayerFallState(this, StateMachine, Input, Motor, Data, AnimController);
+            WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data, Stats);
+            WireLaunchState = new PlayerWireLaunchState(this, StateMachine, Motor, Data, AnimController);
+            WireMoveState = new PlayerWireMoveState(this, StateMachine, Input, Motor, Data, AnimController);
         }
 
         /// <summary>
