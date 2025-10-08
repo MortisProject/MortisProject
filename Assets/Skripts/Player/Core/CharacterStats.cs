@@ -30,6 +30,9 @@ namespace Player
 
 
         // TODO: 방어력 공격력등 플레이어와 몬스터가 공유하는 스텟 추가
+        [Header("Abilities")]
+        [Tooltip("현재 더블 점프가 가능한지 여부를 나타냅니다.")]
+        public bool CanDoubleJump { get; private set; }
 
         /// <summary>
         /// 스크립트 인스턴스가 로드될 때 호출됩니다.
@@ -39,6 +42,22 @@ namespace Player
             // 게임 시작 시 현재 체력을 최대 체력으로 초기화합니다.
             currentHp = maxHp;
             CurrentAst = maxAst;
+        }
+
+        /// <summary>
+        /// 더블 점프 기회를 사용했음을 처리합니다.
+        /// </summary>
+        public void UseDoubleJump()
+        {
+            CanDoubleJump = false;
+        }
+
+        /// <summary>
+        /// 더블 점프 기회를 초기화(재충전)합니다.
+        /// </summary>
+        public void ResetDoubleJump()
+        {
+            CanDoubleJump = true;
         }
 
         /// <summary>

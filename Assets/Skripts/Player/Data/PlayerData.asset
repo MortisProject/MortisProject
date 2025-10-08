@@ -16,7 +16,9 @@ MonoBehaviour:
   runSpeed: 9
   maxSlopeAngle: 45
   jumpForce: 10
-  airControlForce: 1
+  doubleJumpForce: 12
+  doubleJumpDashForce: 8
+  airControlForce: 2
   maxHorizontalSpeed: 35
   mouseSensitivity: 4
   pitchMinMax: {x: -60, y: 85}

@@ -2303,6 +2303,7 @@ MonoBehaviour:
   _footTransform: {fileID: 792136963}
   _groundCheckDistance: 0.4
   _groundCheckRadius: 0
+  _stats: {fileID: 2109905459}
   _animController: {fileID: 928553244}
   _data: {fileID: 11400000, guid: 0a8f69ffabcffc846955a887170d3e67, type: 2}
 --- !u!114 &2109905457

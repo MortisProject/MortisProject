@@ -27,6 +27,12 @@ namespace Player.Data
         [Tooltip("Rigidbody.AddForce로 가해지는 점프의 힘입니다.")]
         public float jumpForce = 15f;
 
+        [Tooltip("더블 점프시 위로 점프할 때의 힘입니다. 관성을 끊고 제어된 점프를 할 때 사용됩니다.")]
+        public float doubleJumpForce = 12f;
+
+        [Tooltip("더블 점프시 앞으로 튕겨나갈 힘입니다. ")]
+        public float doubleJumpDashForce = 5f;
+
         [Tooltip("공중에서 좌우로 움직일 때 가해지는 힘입니다.")]
         public float airControlForce = 1f;
 

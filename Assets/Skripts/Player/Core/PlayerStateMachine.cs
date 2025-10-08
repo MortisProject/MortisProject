@@ -24,6 +24,7 @@ namespace Player
         [SerializeField] private float _groundCheckRadius = 0.2f;
 
         [Header("Component References")]
+        [SerializeField] private CharacterStats _stats;
         [SerializeField] private PlayerAnimationController _animController; 
         [SerializeField] private PlayerSO _data;
 
@@ -61,6 +62,8 @@ namespace Player
             {
                 // 땅에 있으면 Flytime을 0으로 초기화
                 Flytime = 0f;
+                _stats.ResetDoubleJump();
+
             }
             else
             {
