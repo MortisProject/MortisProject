@@ -15,15 +15,25 @@ namespace Player
         [Header("Core Stats")]
         [Tooltip("최대 체력입니다.")]
         public float maxHp = 120f;
-
         [Tooltip("현재 체력을 나타냅니다.")]
         public float currentHp;
 
         [Tooltip("최대 아스트(Ast) 양입니다.")]
         public float maxAst = 10f;
-
         [Tooltip("현재 아스트(Ast) 양입니다.")]
         public float CurrentAst;
+
+        [Tooltip("최대 버스트(Bust) 양입니다.")]
+        public float maxBust = 10f;
+        [Tooltip("현재 아스트(Bust) 양입니다.")]
+        public float CurrentBust;
+
+        [Tooltip("현재 공격력")]
+        public float attackValue = 10;
+        [Tooltip("현재 방어력")]
+        public float defenceValue = 10;
+        [Tooltip("현재 공격 속도")]
+        public float attackSpeed = 1;
 
 
         // TODO: 방어력 공격력등 플레이어와 몬스터가 공유하는 스텟 추가

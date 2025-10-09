@@ -41,17 +41,6 @@ namespace Player
         public PhysicsMaterial HighFrictionMaterial;
         public PhysicsMaterial FrictionlessMaterial;
 
-        [Header("Combat References")]
-        [Tooltip("채찍 약공격 콤보 순서대로 SkillData 에셋을 할당합니다.")]
-        public SkillData[] whipWeakAttackCombo;
-        [Tooltip("채찍 강공격 콤보 순서대로 SkillData 에셋을 할당합니다.")]
-        public SkillData[] whipStrongAttackCombo;
-
-        [Tooltip("채찍 약공격 콤보 순서대로 Hitbox 오브젝트를 할당합니다.")]
-        public Combat.Hitbox[] whipWeakAttackHitboxes;
-        [Tooltip("채찍 강공격 콤보 순서대로 Hitbox 오브젝트를 할당합니다.")]
-        public Combat.Hitbox[] whipStrongAttackHitboxes;
-
         [Header("UI References")]
         [Tooltip("와이어 조준점(Reticle)으로 사용할 UI Image 입니다.")]
         public Image BestWireReticuleUI; // Best Target UI

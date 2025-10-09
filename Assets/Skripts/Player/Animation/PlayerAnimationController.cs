@@ -14,13 +14,24 @@ namespace Player.Animation
         [Tooltip("애니메이션 파라미터가 목표 값으로 변하는 데 걸리는 시간입니다.")]
         [SerializeField] private float _smoothTime = 0.1f;
 
-        // Animator 파라미터 이름을 미리 해시값으로 변환하여 성능 향상
+        // Animator 파라미터 이름을 미리 해시값으로 변환
+        // move
         private readonly int _moveXHash = Animator.StringToHash("MoveX");
         private readonly int _moveYHash = Animator.StringToHash("MoveY");
+        // jump
         private readonly int _jumpHash = Animator.StringToHash("Jump");
+        // wire
         private readonly int _isGroundedHash = Animator.StringToHash("IsGrounded");
         private readonly int _wireStartJumpHash = Animator.StringToHash("WireStartJump");
         private readonly int _isWrieMoveHash = Animator.StringToHash("isWireMove");
+        // attack
+        private readonly int _comboStackHash = Animator.StringToHash("ComboStack");
+        private readonly int _whipAttackStartHash = Animator.StringToHash("Wipe_Attack_Start");
+        private readonly int _raygunAttackStartHash = Animator.StringToHash("Raygun_Attack_Start");
+        private readonly int _weakAttackHash = Animator.StringToHash("Weak_Attack");
+        private readonly int _strongAttackHash = Animator.StringToHash("Strong_Attack");
+        private readonly int _whipSwapHash = Animator.StringToHash("Wipe_Swap");
+        private readonly int _raygunSwapHash = Animator.StringToHash("Raygun_Swap");
 
         // TODO: 추후 공격, 닷지 등의 애니메이션 해시값을 여기에 추가합니다.
         // private readonly int _attackTriggerHash = Animator.StringToHash("Attack");
@@ -62,44 +73,18 @@ namespace Player.Animation
             _animator.SetFloat(_moveYHash, smoothedY);
         }
 
-        /// <summary>
-        /// 이동 애니메이션의 블렌드 트리 값을 설정합니다.
-        /// </summary>
-        /// <param name="x">좌우 이동 값</param>
-        /// <param name="y">앞뒤 이동 값</param>
-        public void SetMove(float x, float y)
-        {
-            _targetMove.x = x;
-            _targetMove.y = y;
-        }
+        public void SetMove(float x, float y){ _targetMove.x = x; _targetMove.y = y; }
+        public void PlayJump() => _animator.SetTrigger(_jumpHash);
+        public void SetGrounded(bool isGrounded) => _animator.SetBool(_isGroundedHash, isGrounded);
+        public void SetWireMove(bool isWireMove) => _animator.SetBool(_isWrieMoveHash, isWireMove);
+        public void PlayWireStartJump() => _animator.SetTrigger(_wireStartJumpHash);
+        public void SetComboStack(int stack) => _animator.SetInteger(_comboStackHash, stack);
+        public void StartWhipAttack() => _animator.SetTrigger(_whipAttackStartHash);
+        public void StartRaygunAttack() => _animator.SetTrigger(_raygunAttackStartHash);
+        public void PlayWeakAttack() => _animator.SetTrigger(_weakAttackHash);
+        public void PlayStrongAttack() => _animator.SetTrigger(_strongAttackHash);
+        public void PlayWhipSwapAttack() => _animator.SetTrigger(_whipSwapHash);
+        public void PlayRaygunSwapAttack() => _animator.SetTrigger(_raygunSwapHash);
 
-        /// <summary>
-        /// 점프 애니메이션을 재생합니다.
-        /// </summary>
-        public void PlayJump()
-        {
-            _animator.SetTrigger(_jumpHash);
-        }
-        public void SetGrounded(bool isGrounded)
-        {
-            _animator.SetBool(_isGroundedHash, isGrounded);
-        }
-        public void SetWireMove(bool isWireMove)
-        {
-            _animator.SetBool(_isWrieMoveHash, isWireMove);
-        }
-
-        /// <summary>
-        /// 와이어 발사 애니메이션을 재생합니다.
-        /// </summary>
-        public void PlayWireLaunch()
-        {
-            // TODO: 와이어 발사 애니메이션을 재생하는 트리거를 여기에 설정합니다.
-            _animator.SetTrigger("WireLaunch");
-        }
-        public void PlayWireStartJump()
-        {
-            _animator.SetTrigger(_wireStartJumpHash);
-        }
     }
 }

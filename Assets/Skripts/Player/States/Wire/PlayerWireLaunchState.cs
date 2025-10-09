@@ -37,11 +37,6 @@ namespace Player.States
             // 애니메이션 컨트롤러에 발사 신호를 전달합니다.
 
 
-            // 땅에 있다면 와이어 던지는 애니 실행
-            if (_stateMachine.IsGrounded)
-            {
-                _animController.PlayWireLaunch();
-            }
             // 와이어 애니 프레임에 이벤트로 와이어 발사.
             // 와이어가 이어졌는 신호를 받으면 뒤로 점프 애니
             _animController.PlayWireStartJump();
