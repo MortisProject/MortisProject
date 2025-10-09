@@ -9,24 +9,25 @@ namespace Player.Animation
     /// </summary>
     public class PlayerAnimationEvents : MonoBehaviour
     {
-        // TODO: 발소리를 재생할 오디오 시스템이나 공격 판정을 처리할 전투 시스템의 참조가 필요합니다.
+        private Player _player;
 
-        /// <summary>
-        /// 걷거나 뛸 때 발이 땅에 닿는 프레임에서 호출될 함수입니다.
-        /// </summary>
-        public void OnFootstep()
+        private void Awake()
         {
-            // Debug.Log("Footstep!");
-            // TODO: 발소리 사운드 재생 로직을 여기에 추가합니다.
+            // 부모 오브젝트에서 Player 컴포넌트를 찾아 할당
+            _player = GetComponentInParent<Player>();
         }
 
         /// <summary>
-        /// 특정 애니메이션이 끝났음을 FSM에 알려줄 필요가 있을 때 사용될 수 있습니다.
+        /// (애니메이션 이벤트) 공격 판정이 시작되는 프레임에서 호출되어 히트박스를 활성화합니다.
         /// </summary>
-        public void OnAnimationEnd()
+        public void OnActivateHitbox()
         {
-            // TODO: 현재 상태(State)에 애니메이션이 끝났다고 알려주는 로직을 추가합니다.
-            //       (예: 공격 상태에서 Idle 상태로 자동 전환)
+            // 현재 플레이어의 상태가 '지상 공격 상태'인지 확인
+            if (_player.StateMachine.CurrentState is States.PlayerGroundedAttackState attackState)
+            {
+                // 맞다면, 공격 상태의 히트박스 활성화 메서드를 호출
+                attackState.ActivateHitbox();
+            }
         }
     }
 }

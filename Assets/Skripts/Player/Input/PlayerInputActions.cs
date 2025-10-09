@@ -145,6 +145,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""WeakAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""12ecf3ca-d49c-4b16-82fa-fe566f08a0f9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""StrongAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""b63f04ed-ff45-4ea4-85b8-fba2f2e9cf7c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -257,6 +275,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""WireFire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""38e6b84d-186b-4b36-814f-dd442597f26f"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""WeakAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""863c0339-886b-43a9-a713-c5b367774b80"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""StrongAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -271,6 +311,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
         m_Player_WireAim = m_Player.FindAction("WireAim", throwIfNotFound: true);
         m_Player_WireFire = m_Player.FindAction("WireFire", throwIfNotFound: true);
+        m_Player_WeakAttack = m_Player.FindAction("WeakAttack", throwIfNotFound: true);
+        m_Player_StrongAttack = m_Player.FindAction("StrongAttack", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -357,6 +399,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Run;
     private readonly InputAction m_Player_WireAim;
     private readonly InputAction m_Player_WireFire;
+    private readonly InputAction m_Player_WeakAttack;
+    private readonly InputAction m_Player_StrongAttack;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -392,6 +436,14 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/WireFire".
         /// </summary>
         public InputAction @WireFire => m_Wrapper.m_Player_WireFire;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/WeakAttack".
+        /// </summary>
+        public InputAction @WeakAttack => m_Wrapper.m_Player_WeakAttack;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/StrongAttack".
+        /// </summary>
+        public InputAction @StrongAttack => m_Wrapper.m_Player_StrongAttack;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -436,6 +488,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @WireFire.started += instance.OnWireFire;
             @WireFire.performed += instance.OnWireFire;
             @WireFire.canceled += instance.OnWireFire;
+            @WeakAttack.started += instance.OnWeakAttack;
+            @WeakAttack.performed += instance.OnWeakAttack;
+            @WeakAttack.canceled += instance.OnWeakAttack;
+            @StrongAttack.started += instance.OnStrongAttack;
+            @StrongAttack.performed += instance.OnStrongAttack;
+            @StrongAttack.canceled += instance.OnStrongAttack;
         }
 
         /// <summary>
@@ -465,6 +523,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @WireFire.started -= instance.OnWireFire;
             @WireFire.performed -= instance.OnWireFire;
             @WireFire.canceled -= instance.OnWireFire;
+            @WeakAttack.started -= instance.OnWeakAttack;
+            @WeakAttack.performed -= instance.OnWeakAttack;
+            @WeakAttack.canceled -= instance.OnWeakAttack;
+            @StrongAttack.started -= instance.OnStrongAttack;
+            @StrongAttack.performed -= instance.OnStrongAttack;
+            @StrongAttack.canceled -= instance.OnStrongAttack;
         }
 
         /// <summary>
@@ -547,5 +611,19 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnWireFire(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "WeakAttack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnWeakAttack(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "StrongAttack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnStrongAttack(InputAction.CallbackContext context);
     }
 }

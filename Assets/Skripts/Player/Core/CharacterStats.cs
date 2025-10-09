@@ -25,14 +25,15 @@ namespace Player
         [Tooltip("현재 아스트(Ast) 양입니다.")]
         public float CurrentAst;
 
-        [Tooltip("와이어 발사에 소모되는 아스트 양입니다.")]
-        public float wireFireAstCost = 1f;
-
 
         // TODO: 방어력 공격력등 플레이어와 몬스터가 공유하는 스텟 추가
         [Header("Abilities")]
         [Tooltip("현재 더블 점프가 가능한지 여부를 나타냅니다.")]
         public bool CanDoubleJump { get; private set; }
+
+        [Header("Combat")]
+        [Tooltip("현재 장착하고 있는 무기의 종류입니다.")]
+        public WeaponType CurrentWeapon { get; private set; }
 
         /// <summary>
         /// 스크립트 인스턴스가 로드될 때 호출됩니다.
@@ -42,6 +43,16 @@ namespace Player
             // 게임 시작 시 현재 체력을 최대 체력으로 초기화합니다.
             currentHp = maxHp;
             CurrentAst = maxAst;
+        }
+
+        /// <summary>
+        /// 현재 무기를 지정된 타입으로 변경합니다.
+        /// </summary>
+        /// <param name="newWeapon">새롭게 장착할 무기 타입</param>
+        public void ChangeWeapon(WeaponType newWeapon)
+        {
+            CurrentWeapon = newWeapon;
+            // TODO: 무기 교체 시 시각 효과(VFX)나 음향 효과(SFX)를 여기서 재생할 수 있습니다.
         }
 
         /// <summary>

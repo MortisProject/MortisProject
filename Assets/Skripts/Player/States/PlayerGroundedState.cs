@@ -33,6 +33,13 @@ namespace Player.States
 
         public virtual void Update()
         {
+            if (_input.IsWeakAttackPressed || _input.IsStrongAttackPressed)
+            {
+                // 공격 입력이 들어오면, 지상 공격 상태로 즉시 전환합니다.
+                _stateMachine.ChangeState(_player.GroundedAttackState);
+                return; // 상태가 전환되었으므로 아래 로직은 실행하지 않음
+            }
+
             // 조준 입력을 점프보다 먼저 확인합니다. (조준 중 점프 방지) 
             if (_input.IsWireAiming)
             {
