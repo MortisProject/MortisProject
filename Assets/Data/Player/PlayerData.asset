@@ -22,7 +22,7 @@ MonoBehaviour:
   maxHorizontalSpeed: 35
   mouseSensitivity: 4
   pitchMinMax: {x: -60, y: 85}
-  wireHookPrefab: {fileID: 4005168796454646291, guid: 3f52e78106a5c574898e945f994d0324, type: 3}
+  wireHookPrefab: {fileID: 7671246574104627253, guid: 8e34fb559abb2c547b1d26edbf08fc18, type: 3}
   wireGrappleRange: 60
   wireSwingLength: 30
   wireAimSearchRadius: 0.5
