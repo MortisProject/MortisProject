@@ -59,9 +59,20 @@ namespace Player
         /// 현재 무기를 지정된 타입으로 변경합니다.
         /// </summary>
         /// <param name="newWeapon">새롭게 장착할 무기 타입</param>
-        public void ChangeWeapon(WeaponType newWeapon)
+        public void ChangeNextWeapon()
         {
-            CurrentWeapon = newWeapon;
+            if(CurrentWeapon == WeaponType.Whip)
+            {
+                CurrentWeapon = WeaponType.RayGun;
+                Debug.Log("광선총으로 변경");
+                return;
+            }    
+            if(CurrentWeapon == WeaponType.RayGun)
+            {
+                CurrentWeapon = WeaponType.Whip;
+                Debug.Log("채찍으로 변경");
+                return;
+            }    
             // TODO: 무기 교체 시 시각 효과(VFX)나 음향 효과(SFX)를 여기서 재생할 수 있습니다.
         }
 

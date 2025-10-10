@@ -15,32 +15,35 @@ namespace Player.States
         protected readonly Player _player;
         protected readonly PlayerStateMachine _stateMachine;
         protected readonly PlayerInput _input;
+        protected readonly PlayerMotor _motor;
         protected readonly CharacterStats _stats;
         protected readonly PlayerAnimationController _animController;
 
         // --- 콤보 관리 ---
         protected int _comboIndex = 0; // 현재 몇 번째 콤보인지
         protected AttackType _currentAttackType = AttackType.None; // 현재 공격 타입이 무엇인지
-        private float _comboTimer = 0f; // 콤보 유예 시간을 재는 타이머
 
         // --- 입력 버퍼 ---
         private AttackType _bufferedAttack = AttackType.None; // '우선순위 입력 버퍼'
         private bool _isInputWindowOpen = false; // 다음 콤보 입력을 받을 수 있는 '입력 유예 창'
         private bool _isAttackDelay = false; // 후딜레이 상태인지 확인
 
-        public PlayerAttackState(Player player, PlayerStateMachine stateMachine, PlayerInput input, CharacterStats stats, PlayerAnimationController animController)
+        public PlayerAttackState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, CharacterStats stats, PlayerAnimationController animController)
         {
             _player = player;
             _stateMachine = stateMachine;
             _input = input;
+            _motor = motor;
             _stats = stats;
             _animController = animController;
         }
 
         public virtual void Enter()
         {
+            // 이동값 초기화
+            _motor.Stop();
+
             _comboIndex = 0; // 공격 상태에 처음 진입하면 콤보를 1타부터 시작
-            _comboTimer = 0f;
             _isInputWindowOpen = false;
             _bufferedAttack = AttackType.None;
 
@@ -50,19 +53,41 @@ namespace Player.States
 
         public virtual void Update()
         {
-            // 후딜레이 상태이고, 입력 창이 열려있을 때만 입력을 받음
-            if (_isAttackDelay && _isInputWindowOpen)
+            // 1~3콤보만 입력 받음
+            if (_comboIndex < 4)
             {
-                HandleAttackInput();
+                // 1. '입력 유예 창' (InputStart)이 열려있을 때 입력을 버퍼에 저장합니다.
+                if (_isInputWindowOpen)
+                {
+                    HandleAttackInput();
+                    return;
+                }
+                // 2. '후딜레이' (AttackDelay) 구간에 있을 때 새로운 입력을 감지합니다.
+                else if (_isAttackDelay)
+                {
+                    // 이 구간에서 새로운 입력이 들어왔는지 확인합니다.
+                    HandleAttackInput();
+
+                    // 버퍼에 새로운 공격이 예약되었다면 (즉, 방금 입력이 들어왔다면)
+                    if (_bufferedAttack != AttackType.None)
+                    {
+                        // 즉시 다음 공격으로 전환합니다.
+                        TriggerAttack(_bufferedAttack);
+                        _bufferedAttack = AttackType.None; // 버퍼를 비워 중복 실행을 방지합니다.
+                    }
+                }
             }
         }
 
         public virtual void Exit()
         {
+            // 애니메이터 파라미터 잔여값 초기화
+            _animController.ResetMoveParameters();
             _animController.SetComboStack(0);
             // 상태를 나갈 때 모든 변수 초기화
             _comboIndex = 0;
             _isInputWindowOpen = false;
+            _isAttackDelay = false;
             _bufferedAttack = AttackType.None;
         }
 
@@ -112,10 +137,12 @@ namespace Player.States
                 if (attackType == AttackType.WeakAttack)
                 {
                     _animController.PlayWeakAttack();
+                    Debug.Log("PlayWeakAttack");
                 }
                 else if (attackType == AttackType.StrongAttack)
                 {
                     _animController.PlayStrongAttack();
+                    Debug.Log("PlayStrongAttack");
                 }
             }
         }
@@ -154,6 +181,7 @@ namespace Player.States
             // 만약 StartAttackDelay가 호출되었지만 다음 공격으로 이어지지 않은 경우에만 Idle로 전환
             if (_isAttackDelay)
             {
+                _animController.NoInput();
                 _stateMachine.ChangeState(_player.IdleState);
             }
         }

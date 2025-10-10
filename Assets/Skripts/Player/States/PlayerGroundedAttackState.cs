@@ -7,8 +7,8 @@ namespace Player.States
     public class PlayerGroundedAttackState : PlayerAttackState
     {
         // PlayerGroundedAttackState는 PlayerAttackState의 모든 기능을 상속받습니다.
-        public PlayerGroundedAttackState(Player player, PlayerStateMachine stateMachine, PlayerInput input, CharacterStats stats, PlayerAnimationController animController)
-            : base(player, stateMachine, input, stats, animController)
+        public PlayerGroundedAttackState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, CharacterStats stats, PlayerAnimationController animController)
+            : base(player, stateMachine, input, motor, stats, animController)
         {
         }
 

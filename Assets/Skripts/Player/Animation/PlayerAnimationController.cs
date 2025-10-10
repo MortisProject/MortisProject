@@ -26,12 +26,13 @@ namespace Player.Animation
         private readonly int _isWrieMoveHash = Animator.StringToHash("isWireMove");
         // attack
         private readonly int _comboStackHash = Animator.StringToHash("ComboStack");
-        private readonly int _whipAttackStartHash = Animator.StringToHash("Wipe_Attack_Start");
+        private readonly int _whipAttackStartHash = Animator.StringToHash("Whip_Attack_Start");
         private readonly int _raygunAttackStartHash = Animator.StringToHash("Raygun_Attack_Start");
         private readonly int _weakAttackHash = Animator.StringToHash("Weak_Attack");
         private readonly int _strongAttackHash = Animator.StringToHash("Strong_Attack");
-        private readonly int _whipSwapHash = Animator.StringToHash("Wipe_Swap");
+        private readonly int _whipSwapHash = Animator.StringToHash("Whip_Swap");
         private readonly int _raygunSwapHash = Animator.StringToHash("Raygun_Swap");
+        private readonly int _noInputHash = Animator.StringToHash("No_Input");
 
         // TODO: 추후 공격, 닷지 등의 애니메이션 해시값을 여기에 추가합니다.
         // private readonly int _attackTriggerHash = Animator.StringToHash("Attack");
@@ -85,6 +86,23 @@ namespace Player.Animation
         public void PlayStrongAttack() => _animator.SetTrigger(_strongAttackHash);
         public void PlayWhipSwapAttack() => _animator.SetTrigger(_whipSwapHash);
         public void PlayRaygunSwapAttack() => _animator.SetTrigger(_raygunSwapHash);
+        public void NoInput() => _animator.SetTrigger(_noInputHash);
 
+        /// <summary>
+        /// 이동 관련 애니메이터 파라미터와 내부 변수들을 즉시 0으로 초기화합니다.
+        /// SmoothDamp를 무시하고 값을 강제로 리셋합니다.
+        /// </summary>
+        public void ResetMoveParameters()
+        {
+            // 1. 목표 이동 값을 0으로 설정합니다.
+            _targetMove = Vector2.zero;
+
+            // 2. SmoothDamp가 사용하는 현재 속도 값도 0으로 초기화합니다.
+            _currentMoveVelocity = Vector2.zero;
+
+            // 3. 애니메이터의 파라미터 값을 즉시 0으로 강제 설정합니다.
+            _animator.SetFloat(_moveXHash, 0f);
+            _animator.SetFloat(_moveYHash, 0f);
+        }
     }
 }

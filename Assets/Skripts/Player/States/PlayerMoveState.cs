@@ -9,8 +9,8 @@ namespace Player.States
     {
         private readonly PlayerSO _data;
 
-        public PlayerMoveState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, PlayerSO data, PlayerAnimationController animController)
-            : base(player, stateMachine, input, motor, animController)
+        public PlayerMoveState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, PlayerSO data, CharacterStats stats, PlayerAnimationController animController)
+            : base(player, stateMachine, input, motor, stats, animController)
         {
             _data = data; // 참조 할당
         }

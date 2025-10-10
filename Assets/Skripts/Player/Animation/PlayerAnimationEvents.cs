@@ -63,6 +63,8 @@ namespace Player.Animation
         public void OnEndAttackDelay()
         {
             GetCurrentAttackState()?.EndAttackDelay();
+            Debug.Log("EndAttackDelay");
+
         }
 
         /// <summary>
