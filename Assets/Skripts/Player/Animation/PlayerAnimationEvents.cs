@@ -2,6 +2,7 @@
 using Player.Combat;
 using Player.Data;
 using Player.States;
+using System;
 using UnityEngine;
 using World;
 
@@ -15,14 +16,18 @@ namespace Player.Animation
     {
         private Player _player;
 
-        [Header("Combat References")]
-        [Header("Whip Hitboxes")]
-        public Hitbox[] whipWeakAttackHitboxes;
-        public Hitbox[] whipStrongAttackHitboxes;
+        [Serializable]
+        public class HitboxGroup
+        {
+            [Tooltip("히트박스 그룹을 식별하기 위한 태그입니다. (예: Weak, Strong)")]
+            public string tag;
+            [Tooltip("이 그룹에 속한 히트박스들입니다.")]
+            public Hitbox[] hitboxes;
+        }
 
-        [Header("Whip Skill Data")]
-        public SkillData[] whipWeakAttackSkills;
-        public SkillData[] whipStrongAttackSkills;
+        [Header("Combat References")]
+        [Tooltip("무기 타입별로 히트박스 그룹을 관리합니다.")]
+        public HitboxGroup[] whipHitboxGroups;
 
         private void Awake()
         {
@@ -35,11 +40,7 @@ namespace Player.Animation
         /// </summary>
         private PlayerAttackState GetCurrentAttackState()
         {
-            if (_player.StateMachine.CurrentState is PlayerAttackState attackState)
-            {
-                return attackState;
-            }
-            return null;
+            return _player.StateMachine.CurrentState as PlayerAttackState;
         }
 
         /// <summary>
@@ -69,109 +70,12 @@ namespace Player.Animation
         }
 
         /// <summary>
-        /// (애니메이션 이벤트에서 호출) 지정된 인덱스의 채찍 약공격 히트박스를 활성화합니다.
+        /// (애니메이션 이벤트) 현재 콤보에 해당하는 스킬 효과(들)를 실행하도록 요청합니다.
         /// </summary>
-        /// <param name="index">활성화할 히트박스의 번호 (0부터 시작)</param>
-        //public void ActivateWhipWeakHitbox(int index)
-        //{
-        //    // 현재 상태가 공격 상태가 아니면 아무것도 하지 않음 (오류 방지)
-        //    if (!(_player.StateMachine.CurrentState is PlayerAttackState attackState)) return;
-
-        //    // 유효한 인덱스인지 확인
-        //    if (index < 0 || index >= whipWeakAttackHitboxes.Length || index >= whipWeakAttackSkills.Length) return;
-
-        //    // 데미지 계산 및 히트박스 활성화
-        //    float baseDamage = _player.Stats.attackValue;
-        //    float damageMultiplier = whipWeakAttackSkills[index].damageMultiplier;
-        //    float finalDamage = baseDamage * damageMultiplier;
-        //    float duration = 0.2f; // 히트박스 지속 시간 (임시)
-
-        //    whipWeakAttackHitboxes[index].Activate(finalDamage, duration);
-        //}
-
-        /// <summary>
-        /// (애니메이션 이벤트) 현재 무기의 약공격 히트박스를 활성화합니다.
-        /// </summary>
-        /// <param name="index">활성화할 히트박스의 번호 (콤보 순서, 0부터 시작)</param>
-        public void ActivateWeakHitbox(int index)
+        public void OnExecuteAttackEffect()
         {
-            WeaponData currentWeapon = _player.Stats.CurrentWeaponData;
-            if (currentWeapon == null) return;
-
-            // 현재 무기 데이터에서 스킬 정보를 가져옵니다.
-            if (index < 0 || index >= currentWeapon.weakAttackSkills.Length)
-            {
-                Debug.LogWarning($"Current Weapon ({currentWeapon.weaponType}) does not have a weak attack skill definition for index {index}.");
-                return;
-            }
-            SkillData skill = currentWeapon.weakAttackSkills[index];
-
-            // 데미지 계산
-            float baseDamage = _player.Stats.attackValue;
-            float damageMultiplier = skill.damageMultiplier / 100f; // 120 -> 1.2로 변환
-            float finalDamage = baseDamage * damageMultiplier;
-            float duration = 0.2f; // TODO: 이 값도 SkillData에서 가져오도록 확장 가능
-
-            // 활성화할 히트박스 배열을 선택합니다.
-            Hitbox[] targetHitboxArray = null;
-            switch (currentWeapon.weaponType)
-            {
-                case WeaponType.Whip:
-                    targetHitboxArray = whipWeakAttackHitboxes;
-                    break;
-                    // TODO: 다른 근접 무기 타입이 추가되면 여기에 case를 추가합니다.
-                    // case WeaponType.Dagger:
-                    //     targetHitboxArray = daggerWeakAttackHitboxes;
-                    //     break;
-            }
-
-            // 선택된 배열에서 올바른 히트박스를 찾아 활성화합니다.
-            if (targetHitboxArray != null && index < targetHitboxArray.Length)
-            {
-                targetHitboxArray[index].Activate(finalDamage, duration);
-                Debug.Log($"{currentWeapon.weaponType}의 {index + 1}번째 약공격 발동! 데미지: {finalDamage}");
-            }
-            else
-            {
-                Debug.LogWarning($"Hitbox for {currentWeapon.weaponType} weak attack index {index} is not assigned or out of range.");
-            }
-        }
-
-        /// <summary>
-        /// (애니메이션 이벤트) 현재 무기의 발사체를 발사합니다.
-        /// </summary>
-        /// <param name="muzzleIndex">발사될 총구의 인덱스 (여러개일 경우 대비)</param>
-        public void FireProjectile(int muzzleIndex)
-        {
-            PlayerAttackState attackState = GetCurrentAttackState();
-            if (attackState == null) return;
-
-            // 현재 무기의 발사체 데이터를 가져옵니다.
-            ProjectileData projectileData = _player.Stats.CurrentWeaponData?.projectileData;
-            if (projectileData == null)
-            {
-                Debug.LogWarning($"현재 무기({_player.Stats.CurrentWeaponData.weaponType})에 ProjectileData가 설정되지 않았습니다.");
-                return;
-            }
-
-            // 1. 발사체 풀에서 발사체를 가져옵니다.
-            string poolTag = "RaygunProjectile"; // TODO: 이 태그도 WeaponData에서 가져오도록 확장 가능
-            GameObject projectileObject = ProjectilePoolManager.Instance.GetFromPool(poolTag);
-            if (projectileObject == null) return;
-
-            // 2. 발사 위치와 방향 설정
-            Transform muzzle = _player.WireOrigin; // TODO: 실제 총구 Transform을 참조하도록 변경 필요
-            Vector3 fireDirection = attackState.AimDirection; // 공격 상태에 저장된 조준 방향 사용
-
-            projectileObject.transform.position = muzzle.position;
-            projectileObject.transform.rotation = Quaternion.LookRotation(fireDirection);
-
-            // 3. 발사체 초기화 및 발사
-            if (projectileObject.TryGetComponent<Projectile>(out Projectile projectile))
-            {
-                projectile.Initialize(poolTag, fireDirection, _player.Stats.attackValue, projectileData);
-                projectileObject.SetActive(true);
-            }
+            // 이 코드는 PlayerAttackState.cs 를 수정한 후에 오류가 없어집니다.
+            GetCurrentAttackState()?.ExecuteAttackEffects();
         }
     }
 }

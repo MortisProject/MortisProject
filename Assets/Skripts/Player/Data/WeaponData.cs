@@ -17,8 +17,7 @@ namespace Player.Data
         [Tooltip("근접 공격(채찍 등)의 콤보별 스킬 데이터 배열입니다.")]
         public SkillData[] weakAttackSkills;
 
-        [Tooltip("원거리 무기(광선총 등)가 사용할 발사체의 데이터입니다.")]
-        public ProjectileData projectileData;
+        // [삭제할 곳] public ProjectileData projectileData;
 
         // TODO: 강공격 스킬, 무기 모델 프리팹, 전용 애니메이션 오버라이드 등의 데이터를 여기에 추가할 수 있습니다.
     }

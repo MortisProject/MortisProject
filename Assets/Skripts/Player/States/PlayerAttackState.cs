@@ -58,28 +58,30 @@ namespace Player.States
 
         public virtual void Update()
         {
-            // 1~3콤보만 입력 받음
-            if (_comboIndex < 4)
+            int maxCombo = _stats.CurrentWeaponData.weakAttackSkills.Length;
+            if (_comboIndex >= maxCombo)
             {
-                // 1. '입력 유예 창' (InputStart)이 열려있을 때 입력을 버퍼에 저장합니다.
-                if (_isInputWindowOpen)
-                {
-                    HandleAttackInput();
-                    return;
-                }
-                // 2. '후딜레이' (AttackDelay) 구간에 있을 때 새로운 입력을 감지합니다.
-                else if (_isAttackDelay)
-                {
-                    // 이 구간에서 새로운 입력이 들어왔는지 확인합니다.
-                    HandleAttackInput();
+                // 최대 콤보에 도달하면 더 이상 입력을 받지 않음
+                return;
+            }
 
-                    // 버퍼에 새로운 공격이 예약되었다면 (즉, 방금 입력이 들어왔다면)
-                    if (_bufferedAttack != AttackType.None)
-                    {
-                        // 즉시 다음 공격으로 전환합니다.
-                        TriggerAttack(_bufferedAttack);
-                        _bufferedAttack = AttackType.None; // 버퍼를 비워 중복 실행을 방지합니다.
-                    }
+            // 1. '입력 유예 창' (InputStart)이 열려있을 때 입력을 버퍼에 저장합니다.
+            if (_isInputWindowOpen)
+            {
+                HandleAttackInput();
+            }
+            // 2. '후딜레이' (AttackDelay) 구간에 있을 때 새로운 입력을 감지합니다.
+            else if (_isAttackDelay)
+            {
+                // 이 구간에서 새로운 입력이 들어왔는지 확인합니다.
+                HandleAttackInput();
+
+                // 버퍼에 새로운 공격이 예약되었다면 (즉, 방금 입력이 들어왔다면)
+                if (_bufferedAttack != AttackType.None)
+                {
+                    // 즉시 다음 공격으로 전환합니다.
+                    TriggerAttack(_bufferedAttack);
+                    _bufferedAttack = AttackType.None; // 버퍼를 비워 중복 실행을 방지합니다.
                 }
             }
         }
@@ -97,7 +99,7 @@ namespace Player.States
         }
 
         /// <summary>
-        /// '우선순위 입력 버퍼' 로직을 처리합니다. 강공격이 약공격을 덮어씁니다.
+        /// 새로운 입력이 들어오면 입력 버퍼에 덮어씌웁니다. 
         /// </summary>
         private void HandleAttackInput()
         {
@@ -194,6 +196,47 @@ namespace Player.States
             {
                 _animController.NoInput();
                 _stateMachine.ChangeState(_player.IdleState);
+            }
+        }
+
+        /// <summary>
+        /// (PlayerAnimationEvents에서 호출) 현재 콤보에 맞는 모든 공격 효과를 실행합니다.
+        /// </summary>
+        public void ExecuteAttackEffects()
+        {
+            // 현재 콤보 인덱스는 1부터 시작하므로, 배열 인덱스를 위해 -1 해줍니다.
+            int skillIndex = _comboIndex - 1;
+
+            // 현재 무기의 스킬 데이터 배열을 가져옵니다.
+            SkillData[] skills = _stats.CurrentWeaponData.weakAttackSkills;
+
+            // 유효한 스킬 데이터인지 확인
+            if (skillIndex < 0 || skillIndex >= skills.Length)
+            {
+                Debug.LogWarning($"스킬 인덱스({skillIndex})가 유효하지 않습니다.");
+                return;
+            }
+
+            // 현재 콤보에 해당하는 SkillData를 가져옵니다.
+            SkillData currentSkill = skills[skillIndex];
+            if (currentSkill == null || currentSkill.effects == null) return;
+
+            // PlayerAnimationEvents 컴포넌트를 찾습니다. (자식 오브젝트에 있다고 가정)
+            var hitboxProvider = _player.GetComponentInChildren<PlayerAnimationEvents>();
+            if (hitboxProvider == null)
+            {
+                Debug.LogError("Player 자식 오브젝트에서 PlayerAnimationEvents를 찾을 수 없습니다.");
+                return;
+            }
+
+            // SkillData에 포함된 모든 AttackEffect를 순차적으로 실행합니다.
+            foreach (var effect in currentSkill.effects)
+            {
+                if (effect != null)
+                {
+                    // 각 효과에 필요한 모든 정보를(Player, Provider, State) 전달하며 실행
+                    effect.Execute(_player, hitboxProvider, this);
+                }
             }
         }
     }
