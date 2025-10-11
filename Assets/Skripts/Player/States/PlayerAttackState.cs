@@ -28,6 +28,8 @@ namespace Player.States
         private bool _isInputWindowOpen = false; // 다음 콤보 입력을 받을 수 있는 '입력 유예 창'
         private bool _isAttackDelay = false; // 후딜레이 상태인지 확인
 
+        // 공격 상태에 진입한 순간의 조준 방향을 저장합니다.
+        public Vector3 AimDirection { get; private set; }
         public PlayerAttackState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, CharacterStats stats, PlayerAnimationController animController)
         {
             _player = player;
@@ -40,6 +42,9 @@ namespace Player.States
 
         public virtual void Enter()
         {
+            // 공격 상태 진입 시점의 카메라 정면 방향을 저장합니다.
+            AimDirection = Camera.main.transform.forward;
+
             // 이동값 초기화
             _motor.Stop();
 
@@ -121,14 +126,20 @@ namespace Player.States
             // 콤보의 첫 공격인지, 이어지는 공격인지에 따라 다른 트리거를 사용합니다.
             if (_comboIndex == 1)
             {
-                // 1타: 무기별 시작 트리거를 활성화합니다.
-                if (_stats.CurrentWeapon == WeaponType.Whip)
+                // 1타: 현재 장착된 무기의 WeaponType에 따라 다른 시작 트리거를 활성화합니다.
+                // _stats.CurrentWeaponData.weaponType으로 확인합니다.
+                switch (_stats.CurrentWeaponData.weaponType)
                 {
-                    _animController.StartWhipAttack();
-                }
-                else if (_stats.CurrentWeapon == WeaponType.RayGun)
-                {
-                    _animController.StartRaygunAttack();
+                    case WeaponType.Whip:
+                        _animController.StartWhipAttack();
+                        break;
+                    case WeaponType.RayGun:
+                        _animController.StartRaygunAttack();
+                        break;
+                        // TODO: 나중에 다른 무기가 추가되면 여기에 case를 추가합니다.
+                        // case WeaponType.Dagger:
+                        //     _animController.StartDaggerAttack();
+                        //     break;
                 }
             }
             else
