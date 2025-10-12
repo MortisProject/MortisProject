@@ -29,6 +29,10 @@ namespace Player.Animation
         [Tooltip("무기 타입별로 히트박스 그룹을 관리합니다.")]
         public HitboxGroup[] whipHitboxGroups;
 
+        [Header("Muzzle References")]
+        [Tooltip("투사체가 발사될 위치(들)입니다. 오른손, 왼손 등 필요한 만큼 설정합니다.")]
+        public Transform[] muzzles;
+
         private void Awake()
         {
             // 부모 오브젝트에서 Player 컴포넌트를 찾아 할당
@@ -65,7 +69,6 @@ namespace Player.Animation
         public void OnEndAttackDelay()
         {
             GetCurrentAttackState()?.EndAttackDelay();
-            Debug.Log("EndAttackDelay");
 
         }
 
@@ -74,7 +77,6 @@ namespace Player.Animation
         /// </summary>
         public void OnExecuteAttackEffect()
         {
-            // 이 코드는 PlayerAttackState.cs 를 수정한 후에 오류가 없어집니다.
             GetCurrentAttackState()?.ExecuteAttackEffects();
         }
     }

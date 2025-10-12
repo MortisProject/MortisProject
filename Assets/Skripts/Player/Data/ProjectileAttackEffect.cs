@@ -20,6 +20,10 @@ namespace Player.Data
         [Tooltip("ProjectilePoolManager에서 사용할 투사체의 태그입니다.")]
         public string projectilePoolTag = "RaygunProjectile";
 
+        [Header("발사 위치 설정")]
+        [Tooltip("사용할 발사 위치의 인덱스입니다. 0: 오른손, 1: 왼손")]
+        public int muzzleIndex = 0;
+
         // TODO: 여러 총구에서 발사할 경우를 대비해 muzzleIndex를 추가할 수 있습니다.
 
         public override void Execute(Player performer, PlayerAnimationEvents hitboxProvider, PlayerAttackState attackState)
@@ -35,7 +39,13 @@ namespace Player.Data
             if (projectileObject == null) return;
 
             // 2. 발사 위치와 방향을 설정합니다.
-            Transform muzzle = performer.WireOrigin; // TODO: 실제 총구 Transform 참조로 변경 필요
+            // muzzleIndex가 유효한 범위 내에 있는지 확인하고, 발사 위치를 선택합니다.
+            if (muzzleIndex < 0 || muzzleIndex >= hitboxProvider.muzzles.Length)
+            {
+                Debug.LogWarning($"Muzzle Index ({muzzleIndex})가 유효하지 않습니다. Muzzles 배열을 확인해주세요.");
+                return;
+            }
+            Transform muzzle = hitboxProvider.muzzles[muzzleIndex];
             Vector3 fireDirection = attackState.AimDirection;
 
             projectileObject.transform.position = muzzle.position;
@@ -44,8 +54,11 @@ namespace Player.Data
             // 3. 발사체를 초기화하고 발사합니다.
             if (projectileObject.TryGetComponent<Projectile>(out Projectile projectile))
             {
-                // Projectile의 Initialize 메서드는 기본 공격력만 받도록 수정될 예정입니다.
-                projectile.Initialize(projectilePoolTag, fireDirection, performer.Stats.attackValue, projectileData);
+                // 최종 데미지를 여기서 계산합니다.
+                float finalDamage = performer.Stats.attackValue * (damageMultiplier / 100f);
+
+                // 계산된 최종 데미지를 Projectile에 직접 전달합니다.
+                projectile.Initialize(projectilePoolTag, fireDirection, finalDamage, projectileData);
                 projectileObject.SetActive(true);
             }
         }

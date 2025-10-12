@@ -14,8 +14,11 @@ namespace Player.Data
         public WeaponType weaponType;
 
         [Header("Combat Settings")]
-        [Tooltip("근접 공격(채찍 등)의 콤보별 스킬 데이터 배열입니다.")]
+        [Tooltip("약공격 콤보에 사용할 스킬 데이터 배열입니다.")]
         public SkillData[] weakAttackSkills;
+
+        [Tooltip("강공격 콤보에 사용할 스킬 데이터 배열입니다.")]
+        public SkillData[] strongAttackSkills;
 
         // [삭제할 곳] public ProjectileData projectileData;
 

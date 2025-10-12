@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33405c3175b697140a40a73f0589ca09, type: 3}
-  m_Name: TestSkillData
+  m_Script: {fileID: 11500000, guid: 9c38231e68bb6384b8130284976b9daf, type: 3}
+  m_Name: Raygun_Strong_4_ProjectileAttackEffect
   m_EditorClassIdentifier: 
-  effects:
-  - {fileID: 11400000, guid: 96066b5466037bc42bd4e026f08d7fa6, type: 2}
-  burstGeneration: 5
+  damageMultiplier: 100
+  projectileData: {fileID: 11400000, guid: 15fbce2f9696d1f4d9d15d60b61284ec, type: 2}
+  projectilePoolTag: Raygun_Strong
+  muzzleIndex: 0

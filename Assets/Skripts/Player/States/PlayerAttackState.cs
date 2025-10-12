@@ -58,8 +58,7 @@ namespace Player.States
 
         public virtual void Update()
         {
-            int maxCombo = _stats.CurrentWeaponData.weakAttackSkills.Length;
-            if (_comboIndex >= maxCombo)
+            if (_comboIndex >= 4)
             {
                 // 최대 콤보에 도달하면 더 이상 입력을 받지 않음
                 return;
@@ -68,6 +67,7 @@ namespace Player.States
             // 1. '입력 유예 창' (InputStart)이 열려있을 때 입력을 버퍼에 저장합니다.
             if (_isInputWindowOpen)
             {
+                AimDirection = Camera.main.transform.forward;
                 HandleAttackInput();
             }
             // 2. '후딜레이' (AttackDelay) 구간에 있을 때 새로운 입력을 감지합니다.
@@ -80,6 +80,7 @@ namespace Player.States
                 if (_bufferedAttack != AttackType.None)
                 {
                     // 즉시 다음 공격으로 전환합니다.
+                    AimDirection = Camera.main.transform.forward;
                     TriggerAttack(_bufferedAttack);
                     _bufferedAttack = AttackType.None; // 버퍼를 비워 중복 실행을 방지합니다.
                 }
@@ -122,6 +123,7 @@ namespace Player.States
             _isInputWindowOpen = false;
             _isAttackDelay = false;
             _comboIndex++;
+            _currentAttackType = attackType;
 
             _animController.SetComboStack(_comboIndex);
 
@@ -204,38 +206,36 @@ namespace Player.States
         /// </summary>
         public void ExecuteAttackEffects()
         {
-            // 현재 콤보 인덱스는 1부터 시작하므로, 배열 인덱스를 위해 -1 해줍니다.
-            int skillIndex = _comboIndex - 1;
+            int currentSkillIndex = _comboIndex - 1;
+            if (currentSkillIndex < 0) return;
 
-            // 현재 무기의 스킬 데이터 배열을 가져옵니다.
-            SkillData[] skills = _stats.CurrentWeaponData.weakAttackSkills;
-
-            // 유효한 스킬 데이터인지 확인
-            if (skillIndex < 0 || skillIndex >= skills.Length)
+            // 현재 공격 타입에 따라 사용할 스킬 배열을 선택
+            SkillData[] skillArray = null;
+            if (_currentAttackType == AttackType.WeakAttack)
             {
-                Debug.LogWarning($"스킬 인덱스({skillIndex})가 유효하지 않습니다.");
-                return;
+                skillArray = _stats.CurrentWeaponData.weakAttackSkills;
+            }
+            else if (_currentAttackType == AttackType.StrongAttack)
+            {
+                skillArray = _stats.CurrentWeaponData.strongAttackSkills;
             }
 
-            // 현재 콤보에 해당하는 SkillData를 가져옵니다.
-            SkillData currentSkill = skills[skillIndex];
-            if (currentSkill == null || currentSkill.effects == null) return;
-
-            // PlayerAnimationEvents 컴포넌트를 찾습니다. (자식 오브젝트에 있다고 가정)
-            var hitboxProvider = _player.GetComponentInChildren<PlayerAnimationEvents>();
-            if (hitboxProvider == null)
+            // 선택된 배열에서 현재 인덱스의 스킬을 가져옴
+            if (skillArray != null && currentSkillIndex < skillArray.Length)
             {
-                Debug.LogError("Player 자식 오브젝트에서 PlayerAnimationEvents를 찾을 수 없습니다.");
-                return;
-            }
+                SkillData currentSkill = skillArray[currentSkillIndex];
+                if (currentSkill == null || currentSkill.effects == null) return;
 
-            // SkillData에 포함된 모든 AttackEffect를 순차적으로 실행합니다.
-            foreach (var effect in currentSkill.effects)
-            {
-                if (effect != null)
+                var hitboxProvider = _player.GetComponentInChildren<PlayerAnimationEvents>();
+                if (hitboxProvider == null) return;
+
+                // 해당 스킬의 모든 효과를 실행
+                foreach (var effect in currentSkill.effects)
                 {
-                    // 각 효과에 필요한 모든 정보를(Player, Provider, State) 전달하며 실행
-                    effect.Execute(_player, hitboxProvider, this);
+                    if (effect != null)
+                    {
+                        effect.Execute(_player, hitboxProvider, this);
+                    }
                 }
             }
         }

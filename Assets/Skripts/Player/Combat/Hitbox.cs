@@ -15,36 +15,43 @@ namespace Player.Combat
     {
         private Collider _collider;
         private float _damage;
-
-        // 한 번의 활성화 동안 이미 공격한 대상을 저장하여 중복 피격을 방지합니다.
+        private float _lifeTimer; // 남은 활성화 시간을 체크할 타이머
         private List<Collider> _hitTargets = new List<Collider>();
 
         private void Awake()
         {
             _collider = GetComponent<Collider>();
-            _collider.isTrigger = true; // 코드로 IsTrigger를 확실하게 보장
-            gameObject.SetActive(false); // 게임 시작 시에는 항상 비활성화 상태로
         }
 
         /// <summary>
+        /// 매 프레임 호출되어 활성화 시간을 체크합니다.
+        /// </summary>
+        private void Update()
+        {
+            // 타이머가 0 이하면 로직을 실행하지 않음 (비활성화 상태)
+            if (_lifeTimer <= 0f)
+            {
+                return;
+            }
+
+            // 매 프레임 타이머 감소
+            _lifeTimer -= Time.deltaTime;
+
+            // 타이머가 다 되면 스스로 비활성화
+            if (_lifeTimer <= 0f)
+            {
+                gameObject.SetActive(false);
+            }
+        }
+        /// <summary>
         /// 지정된 데미지와 지속 시간으로 히트박스를 활성화합니다.
         /// </summary>
-        /// <param name="damage">적용할 데미지</param>
-        /// <param name="duration">활성화될 시간 (초)</param>
         public void Activate(float damage, float duration)
         {
             _damage = damage;
-            _hitTargets.Clear(); // 새로운 공격이므로 이전에 맞춘 타겟 목록 초기화
-            gameObject.SetActive(true);
-
-            // 지정된 시간이 지나면 자동으로 비활성화하는 코루틴 시작
-            StartCoroutine(DeactivateAfter(duration));
-        }
-
-        private IEnumerator DeactivateAfter(float duration)
-        {
-            yield return new WaitForSeconds(duration);
-            gameObject.SetActive(false);
+            _lifeTimer = duration; // 타이머 설정
+            _hitTargets.Clear();
+            gameObject.SetActive(true); // 스스로 활성화
         }
 
         /// <summary>

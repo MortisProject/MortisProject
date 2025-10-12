@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c38231e68bb6384b8130284976b9daf, type: 3}
-  m_Name: NewProjectileAttackEffect
+  m_Name: Raygun_Strong_3_ProjectileAttackEffect
   m_EditorClassIdentifier: 
   damageMultiplier: 100
-  projectileData: {fileID: 11400000, guid: 8d74209cd1ebb49449167ca5f48dad40, type: 2}
-  projectilePoolTag: Test
+  projectileData: {fileID: 11400000, guid: 6d29f064105f2a242be3e8a8cede4807, type: 2}
+  projectilePoolTag: Raygun_Strong
+  muzzleIndex: 0

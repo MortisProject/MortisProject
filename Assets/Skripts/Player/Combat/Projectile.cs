@@ -19,7 +19,7 @@ namespace Player.Combat
         [SerializeField] private ProjectileData _data;
 
         private Rigidbody _rigidbody;
-        private float _baseDamage;
+        private float _finalDamage;
         private float _lifeTimeTimer;
         private string _poolTag;
 
@@ -49,11 +49,11 @@ namespace Player.Combat
         /// <param name="initialDirection">발사될 방향</param>
         /// <param name="baseDamage">플레이어의 기본 공격력</param>
         /// <param name="data">발사체의 모든 속성을 담은 ScriptableObject</param>
-        public void Initialize(string poolTag, Vector3 initialDirection, float baseDamage, ProjectileData data)
+        public void Initialize(string poolTag, Vector3 initialDirection, float finalDamage, ProjectileData data)
         {
             _poolTag = poolTag;
             _data = data;
-            _baseDamage = baseDamage;
+            _finalDamage = finalDamage;
             _lifeTimeTimer = _data.projectileLifeTime;
             _hitTargets.Clear(); // 재사용을 위해 이전 타겟 목록 초기화
 
@@ -72,8 +72,7 @@ namespace Player.Combat
                 if (other.TryGetComponent<Monster>(out Monster monster))
                 {
                     // 최종 데미지 계산 (기본 데미지 * 발사체 데미지 배율)
-                    float finalDamage = _baseDamage * _data.damageMultiplier;
-                    monster.TakeDamage(finalDamage);
+                    monster.TakeDamage(_finalDamage);
                     _hitTargets.Add(other); // 공격한 대상으로 추가하여 중복 피격 방지
 
                     HandleImpact(other.ClosestPoint(transform.position));

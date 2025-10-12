@@ -45,8 +45,8 @@ namespace Player.Data
 
             if (targetGroup != null && hitboxIndex < targetGroup.hitboxes.Length)
             {
-                // 찾은 그룹에서 올바른 인덱스의 히트박스를 활성화합니다.
-                targetGroup.hitboxes[hitboxIndex].Activate(finalDamage, duration);
+                Hitbox targetHitbox = targetGroup.hitboxes[hitboxIndex];
+                targetHitbox.Activate(finalDamage, duration);
             }
             else
             {

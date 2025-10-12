@@ -19,10 +19,6 @@ namespace Player.Data
         [Tooltip("발사체의 최대 수명(활성화 시간)입니다.")]
         public float projectileLifeTime = 3f;
 
-        [Header("Combat Data")]
-        [Tooltip("발사체의 데미지 배율입니다. CharacterStats의 attackValue에 곱해집니다.")]
-        public float damageMultiplier = 1.0f;
-
         [Header("Effects")]
         [Tooltip("몬스터나 지형에 부딪혔을 때 생성될 시각 효과(VFX) 프리팹입니다.")]
         public GameObject impactVFXPrefab;

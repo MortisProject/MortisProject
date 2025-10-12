@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c80a8f96eb359904ba4028038c1e01cc, type: 3}
-  m_Name: WhipWeaponData
+  m_Script: {fileID: 11500000, guid: 9c38231e68bb6384b8130284976b9daf, type: 3}
+  m_Name: Raygun_Weak_2_ProjectileAttackEffect
   m_EditorClassIdentifier: 
-  weaponType: 0
-  weakAttackSkills:
-  - {fileID: 11400000, guid: 33d3c634a33b7ea459861396a8700ad9, type: 2}
+  damageMultiplier: 100
+  projectileData: {fileID: 11400000, guid: 9841ce2e4e1c439439e5278d8931df51, type: 2}
+  projectilePoolTag: Raygun_Weak
+  muzzleIndex: 0
