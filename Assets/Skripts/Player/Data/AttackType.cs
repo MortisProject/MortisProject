@@ -8,6 +8,7 @@ namespace Player.Data
     {
         None,         // 공격 없음
         WeakAttack,   // 약한 공격
-        StrongAttack  // 강한 공격
+        StrongAttack,  // 강한 공격
+        SwapAttack    // 변환 공격
     }
 }

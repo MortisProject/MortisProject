@@ -1146,7 +1146,7 @@ GameObject:
   - component: {fileID: 757410351}
   - component: {fileID: 757410354}
   m_Layer: 6
-  m_Name: Attack_2
+  m_Name: Weak_Attack_2_Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1527,7 +1527,7 @@ GameObject:
   - component: {fileID: 844338880}
   - component: {fileID: 844338883}
   m_Layer: 6
-  m_Name: Attack_2
+  m_Name: Strong_Attack_3_Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1648,7 +1648,7 @@ GameObject:
   - component: {fileID: 915730659}
   - component: {fileID: 915730662}
   m_Layer: 6
-  m_Name: Attack_3
+  m_Name: Strong_Attack_3_Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2452,7 +2452,7 @@ GameObject:
   - component: {fileID: 1200824032}
   - component: {fileID: 1200824031}
   m_Layer: 6
-  m_Name: Attack_1
+  m_Name: Weak_Attack_1_Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2648,7 +2648,7 @@ GameObject:
   - component: {fileID: 1319796340}
   - component: {fileID: 1319796343}
   m_Layer: 6
-  m_Name: Attack_4
+  m_Name: Strong_Attack_4_Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2769,7 +2769,7 @@ GameObject:
   - component: {fileID: 1418646966}
   - component: {fileID: 1418646965}
   m_Layer: 6
-  m_Name: Attack_4
+  m_Name: Weak_Attack_4_Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2890,7 +2890,7 @@ GameObject:
   - component: {fileID: 1444212558}
   - component: {fileID: 1444212561}
   m_Layer: 6
-  m_Name: Attack_3
+  m_Name: Weak_Attack_3_Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

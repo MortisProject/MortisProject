@@ -113,6 +113,10 @@ namespace Player.States
                 _bufferedAttack = AttackType.WeakAttack; // 약공격 입력을 버퍼에 저장
 
             }
+            else if (_comboIndex >= 1 && _input.IsSwapNextWeaponPressed)
+            {
+                _bufferedAttack = AttackType.SwapAttack;
+            }
         }
 
         /// <summary>
@@ -149,15 +153,30 @@ namespace Player.States
             else
             {
                 // 2타 이상: 약/강 공격 타입에 맞는 트리거를 활성화합니다.
-                if (attackType == AttackType.WeakAttack)
+                if (attackType == AttackType.WeakAttack) // 약공격
                 {
                     _animController.PlayWeakAttack();
                     Debug.Log("PlayWeakAttack");
                 }
-                else if (attackType == AttackType.StrongAttack)
+                else if (attackType == AttackType.StrongAttack) // 강공격
                 {
                     _animController.PlayStrongAttack();
                     Debug.Log("PlayStrongAttack");
+                }
+                else if (attackType == AttackType.SwapAttack)
+                {
+                    switch (_stats.CurrentWeaponData.weaponType)
+                    {
+                        case WeaponType.Whip:
+                            _animController.PlayWhipSwapAttack();
+                            break;
+                        case WeaponType.RayGun:
+                            _animController.PlayRaygunSwapAttack();
+                            break;
+                    }
+
+                    // 2. 실제 무기 데이터를 교체
+                    _stats.ChangeNextWeapon();
                 }
             }
         }
@@ -211,13 +230,21 @@ namespace Player.States
 
             // 현재 공격 타입에 따라 사용할 스킬 배열을 선택
             SkillData[] skillArray = null;
-            if (_currentAttackType == AttackType.WeakAttack)
+            switch (_currentAttackType)
             {
-                skillArray = _stats.CurrentWeaponData.weakAttackSkills;
-            }
-            else if (_currentAttackType == AttackType.StrongAttack)
-            {
-                skillArray = _stats.CurrentWeaponData.strongAttackSkills;
+                case AttackType.WeakAttack:
+                    skillArray = _stats.CurrentWeaponData.weakAttackSkills;
+                    break;
+                case AttackType.StrongAttack:
+                    skillArray = _stats.CurrentWeaponData.strongAttackSkills;
+                    break;
+                case AttackType.SwapAttack:
+                    // 중요: 변환 공격의 스킬 데이터는 '이전' 무기의 것을 따라갑니다.
+                    // 하지만 _stats.ChangeNextWeapon()이 먼저 호출되어 무기가 바뀌었으므로,
+                    // 이 부분은 기획적으로 어떻게 할지 정해야 합니다.
+                    // 여기서는 일단 '새로운' 무기의 스킬을 따라가도록 구현하겠습니다.
+                    skillArray = _stats.CurrentWeaponData.swapAttackSkills;
+                    break;
             }
 
             // 선택된 배열에서 현재 인덱스의 스킬을 가져옴

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Whip_Strong_3_MeleeAttackEffect
   m_EditorClassIdentifier: 
   damageMultiplier: 100
-  groupTag: Stong
+  groupTag: Strong
   hitboxIndex: 1
   duration: 0.2

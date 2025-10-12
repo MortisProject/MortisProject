@@ -20,6 +20,9 @@ namespace Player.Data
         [Tooltip("강공격 콤보에 사용할 스킬 데이터 배열입니다.")]
         public SkillData[] strongAttackSkills;
 
+        [Tooltip("변환 공격 콤보에 사용할 스킬 데이터 배열입니다.")]
+        public SkillData[] swapAttackSkills;
+
         // [삭제할 곳] public ProjectileData projectileData;
 
         // TODO: 강공격 스킬, 무기 모델 프리팹, 전용 애니메이션 오버라이드 등의 데이터를 여기에 추가할 수 있습니다.
