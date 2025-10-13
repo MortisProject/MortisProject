@@ -19,7 +19,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 25ee236c71c290549b01116b9ee7d57b, type: 2}
   - {fileID: 11400000, guid: 32fb9085cde20e0439a7ad570a500088, type: 2}
   strongAttackSkills:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 8f6c2d2897017184bbdf76b38df0f773, type: 2}
   - {fileID: 11400000, guid: 8f6c2d2897017184bbdf76b38df0f773, type: 2}
   - {fileID: 11400000, guid: c95296097706e2e468f2f659e0fa7682, type: 2}
   - {fileID: 11400000, guid: b46f81728672aee489df332dea46e94c, type: 2}

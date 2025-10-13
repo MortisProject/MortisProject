@@ -79,5 +79,29 @@ namespace Player.Animation
         {
             GetCurrentAttackState()?.ExecuteAttackEffects();
         }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 변환 공격의 'Pre-Swap' 효과 실행을 요청합니다.
+        /// </summary>
+        public void OnExecutePreSwapEffect()
+        {
+            GetCurrentAttackState()?.ExecutePreSwapEffects();
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 실제 무기 교체 실행을 요청합니다.
+        /// </summary>
+        public void OnPerformSwap()
+        {
+            GetCurrentAttackState()?.PerformSwap();
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 변환 공격의 'Post-Swap' 효과 실행을 요청합니다.
+        /// </summary>
+        public void OnExecutePostSwapEffect()
+        {
+            GetCurrentAttackState()?.ExecutePostSwapEffects();
+        }
     }
 }

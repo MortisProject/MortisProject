@@ -24,6 +24,9 @@ namespace Player.Data
         [Tooltip("사용할 발사 위치의 인덱스입니다. 0: 오른손, 1: 왼손")]
         public int muzzleIndex = 0;
 
+        [Header("Chaining Options")]
+        [Tooltip("이 투사체가 적에게 명중했을 때 발동할 추격 데이터입니다. (선택 사항)")]
+        public PursuitData pursuitDataOnHit;
         // TODO: 여러 총구에서 발사할 경우를 대비해 muzzleIndex를 추가할 수 있습니다.
 
         public override void Execute(Player performer, PlayerAnimationEvents hitboxProvider, PlayerAttackState attackState)
@@ -58,7 +61,7 @@ namespace Player.Data
                 float finalDamage = performer.Stats.attackValue * (damageMultiplier / 100f);
 
                 // 계산된 최종 데미지를 Projectile에 직접 전달합니다.
-                projectile.Initialize(projectilePoolTag, fireDirection, finalDamage, projectileData);
+                projectile.Initialize(performer.StateMachine, projectilePoolTag, fireDirection, finalDamage, projectileData, pursuitDataOnHit);
                 projectileObject.SetActive(true);
             }
         }

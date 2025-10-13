@@ -16,3 +16,4 @@ MonoBehaviour:
   projectileData: {fileID: 11400000, guid: 1aa11cb3336edc047892c699d46e03fe, type: 2}
   projectilePoolTag: Raygun_Bust
   muzzleIndex: 0
+  pursuitDataOnHit: {fileID: 11400000, guid: 52f95453f6d30b9498197b4770af9255, type: 2}

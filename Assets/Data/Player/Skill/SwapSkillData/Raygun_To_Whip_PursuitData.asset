@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6012480cda6227343b1eabf987d0128c, type: 3}
-  m_Name: Whip_To_Raygun_MeleeAttackEffect
+  m_Script: {fileID: 11500000, guid: 2e4396356df257848b0d64441484ed7c, type: 3}
+  m_Name: Raygun_To_Whip_PursuitData
   m_EditorClassIdentifier: 
-  damageMultiplier: 100
-  groupTag: WhipToRaygun
-  hitboxIndex: 0
-  duration: 0.2
+  pursuitSpeed: 40
+  stoppingDistance: 2.5
+  finisherEffect: {fileID: 11400000, guid: 445137e5c2552764d9ce28c9acec0ceb, type: 2}

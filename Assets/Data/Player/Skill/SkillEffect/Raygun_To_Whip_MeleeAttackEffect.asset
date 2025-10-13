@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Raygun_To_Whip_MeleeAttackEffect
   m_EditorClassIdentifier: 
   damageMultiplier: 100
-  groupTag: Bust
+  groupTag: RaygunToWhip
   hitboxIndex: 0
   duration: 0.2

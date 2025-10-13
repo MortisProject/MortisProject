@@ -18,6 +18,8 @@ namespace Player.Combat
         [Tooltip("디버깅용: 현재 발사체에 적용된 데이터입니다.")]
         [SerializeField] private ProjectileData _data;
 
+        private PlayerStateMachine _stateMachine;
+        private PursuitData _pursuitData;
         private Rigidbody _rigidbody;
         private float _finalDamage;
         private float _lifeTimeTimer;
@@ -49,15 +51,16 @@ namespace Player.Combat
         /// <param name="initialDirection">발사될 방향</param>
         /// <param name="baseDamage">플레이어의 기본 공격력</param>
         /// <param name="data">발사체의 모든 속성을 담은 ScriptableObject</param>
-        public void Initialize(string poolTag, Vector3 initialDirection, float finalDamage, ProjectileData data)
+        public void Initialize(PlayerStateMachine stateMachine, string poolTag, Vector3 initialDirection, float finalDamage, ProjectileData data, PursuitData pursuitData)
         {
+            _stateMachine = stateMachine; // StateMachine 참조 저장
             _poolTag = poolTag;
-            _data = data;
             _finalDamage = finalDamage;
+            _data = data;
+            _pursuitData = pursuitData; // PursuitData 저장
             _lifeTimeTimer = _data.projectileLifeTime;
-            _hitTargets.Clear(); // 재사용을 위해 이전 타겟 목록 초기화
+            _hitTargets.Clear();
 
-            // 지정된 방향과 속도로 발사체를 날려 보냅니다.
             _rigidbody.linearVelocity = initialDirection.normalized * _data.projectileSpeed;
         }
 
@@ -74,6 +77,11 @@ namespace Player.Combat
                     // 최종 데미지 계산 (기본 데미지 * 발사체 데미지 배율)
                     monster.TakeDamage(_finalDamage);
                     _hitTargets.Add(other); // 공격한 대상으로 추가하여 중복 피격 방지
+                    
+                    if (_pursuitData != null && _stateMachine != null)
+                    {
+                        _stateMachine.StartPursuit(other.transform, _pursuitData);
+                    }
 
                     HandleImpact(other.ClosestPoint(transform.position));
                 }

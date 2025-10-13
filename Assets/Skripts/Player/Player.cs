@@ -56,6 +56,7 @@ namespace Player
         public PlayerWireLaunchState WireLaunchState { get; private set; }
         public PlayerWireMoveState WireMoveState { get; private set; }
         public PlayerGroundedAttackState GroundedAttackState { get; private set; }
+        public PlayerPursuitState PursuitState { get; private set; }
         //public PlayerPullState PullState { get; private set; }
         // TODO: 추후 Attack, Dodge 등의 상태를 여기에 추가합니다.
 
@@ -74,6 +75,7 @@ namespace Player
             WireLaunchState = new PlayerWireLaunchState(this, StateMachine, Motor, Data, AnimController);
             WireMoveState = new PlayerWireMoveState(this, StateMachine, Input, Motor, Data, AnimController);
             GroundedAttackState = new PlayerGroundedAttackState(this, StateMachine, Input, Motor, Stats, AnimController);
+            PursuitState = new PlayerPursuitState(this, StateMachine, Motor, AnimController);
             // PullState = new PlayerPullState(this, StateMachine, Input, Motor, Data, Stats, AnimController);
         }
 

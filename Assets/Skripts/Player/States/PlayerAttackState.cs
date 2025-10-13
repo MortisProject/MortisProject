@@ -120,10 +120,9 @@ namespace Player.States
             }
             else if (_comboIndex >= 1 && _input.IsSwapNextWeaponPressed)
             {
-                // 변환 공격이 가능한지 데이터 확인
-                int swapIndex = _comboIndex;
-                if (swapIndex < _stats.CurrentWeaponData.swapAttacks.Length && _stats.CurrentWeaponData.swapAttacks[swapIndex] != null)
+                if (_stats.CurrentAst>=1)
                 {
+                    _stats.ConsumeAst(1);
                     _bufferedAttack = AttackType.SwapAttack;
                     return; // 변환 공격이 입력되면 다른 입력은 무시
                 }
@@ -178,18 +177,14 @@ namespace Player.States
                 else if (attackType == AttackType.SwapAttack)
                 {
                     // 1. 실행할 변환 공격 데이터를 WeaponData에서 찾아 저장
-                    int swapIndex = _comboIndex - 1;
-                    _currentSwapAttackData = _stats.CurrentWeaponData.swapAttacks[swapIndex];
+                    _currentSwapAttackData = _stats.CurrentWeaponData.swapAttacks[0];
 
                     // 2. 변환 애니메이션 재생
                     switch (_stats.CurrentWeaponData.weaponType)
                     {
-                        case WeaponType.Whip: _animController.PlayWhipSwapAttack(); break;
-                        case WeaponType.RayGun: _animController.PlayRaygunSwapAttack(); break;
+                        case WeaponType.Whip: _animController.PlayRaygunSwapAttack(); break;
+                        case WeaponType.RayGun: _animController.PlayWhipSwapAttack(); break;
                     }
-
-                    // 2. 실제 무기 데이터를 교체
-                    _stats.ChangeNextWeapon();
                 }
             }
         }
