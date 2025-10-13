@@ -80,6 +80,27 @@ namespace Player
             int nextIndex = (_currentWeaponIndex + 1) % availableWeapons.Count;
             EquipWeapon(nextIndex);
         }
+        
+        /// <summary>
+        /// 지정된 타입의 무기로 교체합니다.
+        /// </summary>
+        /// <param name="targetType">교체할 무기의 타입</param>
+        public void ChangeWeapon(WeaponType targetType)
+        {
+            if (availableWeapons == null || availableWeapons.Count == 0) return;
+
+            // 사용 가능한 무기 목록에서 해당 타입을 가진 첫 번째 무기를 찾습니다.
+            for (int i = 0; i < availableWeapons.Count; i++)
+            {
+                if (availableWeapons[i].weaponType == targetType)
+                {
+                    EquipWeapon(i);
+                    return; // 무기를 찾았으면 종료
+                }
+            }
+
+            Debug.LogWarning($"{targetType} 타입의 무기를 찾을 수 없습니다.");
+        }
 
         /// <summary>
         /// 지정된 인덱스의 무기를 장착합니다.
@@ -91,7 +112,6 @@ namespace Player
             Debug.Log($"{CurrentWeaponData.weaponType}으로 무기 교체!");
 
             // TODO: 무기 모델을 바꾸거나, HUD UI를 업데이트하는 로직을 여기서 호출합니다.
-            // 예: player.WeaponModelChanger.Change(CurrentWeaponData.weaponPrefab);
         }
 
         /// <summary>

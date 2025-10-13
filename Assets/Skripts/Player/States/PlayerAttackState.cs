@@ -30,6 +30,10 @@ namespace Player.States
 
         // 공격 상태에 진입한 순간의 조준 방향을 저장합니다.
         public Vector3 AimDirection { get; private set; }
+
+        // 현재 실행 중인 변환 공격 데이터
+        private SwapAttackData _currentSwapAttackData;
+        
         public PlayerAttackState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, CharacterStats stats, PlayerAnimationController animController)
         {
             _player = player;
@@ -51,6 +55,7 @@ namespace Player.States
             _comboIndex = 0; // 공격 상태에 처음 진입하면 콤보를 1타부터 시작
             _isInputWindowOpen = false;
             _bufferedAttack = AttackType.None;
+            _currentSwapAttackData = null;
 
             // 첫 공격 실행
             TriggerAttack(AttackType.WeakAttack);
@@ -115,7 +120,13 @@ namespace Player.States
             }
             else if (_comboIndex >= 1 && _input.IsSwapNextWeaponPressed)
             {
-                _bufferedAttack = AttackType.SwapAttack;
+                // 변환 공격이 가능한지 데이터 확인
+                int swapIndex = _comboIndex;
+                if (swapIndex < _stats.CurrentWeaponData.swapAttacks.Length && _stats.CurrentWeaponData.swapAttacks[swapIndex] != null)
+                {
+                    _bufferedAttack = AttackType.SwapAttack;
+                    return; // 변환 공격이 입력되면 다른 입력은 무시
+                }
             }
         }
 
@@ -128,6 +139,7 @@ namespace Player.States
             _isAttackDelay = false;
             _comboIndex++;
             _currentAttackType = attackType;
+            _currentSwapAttackData = null;
 
             _animController.SetComboStack(_comboIndex);
 
@@ -165,14 +177,15 @@ namespace Player.States
                 }
                 else if (attackType == AttackType.SwapAttack)
                 {
+                    // 1. 실행할 변환 공격 데이터를 WeaponData에서 찾아 저장
+                    int swapIndex = _comboIndex - 1;
+                    _currentSwapAttackData = _stats.CurrentWeaponData.swapAttacks[swapIndex];
+
+                    // 2. 변환 애니메이션 재생
                     switch (_stats.CurrentWeaponData.weaponType)
                     {
-                        case WeaponType.Whip:
-                            _animController.PlayWhipSwapAttack();
-                            break;
-                        case WeaponType.RayGun:
-                            _animController.PlayRaygunSwapAttack();
-                            break;
+                        case WeaponType.Whip: _animController.PlayWhipSwapAttack(); break;
+                        case WeaponType.RayGun: _animController.PlayRaygunSwapAttack(); break;
                     }
 
                     // 2. 실제 무기 데이터를 교체
@@ -238,13 +251,6 @@ namespace Player.States
                 case AttackType.StrongAttack:
                     skillArray = _stats.CurrentWeaponData.strongAttackSkills;
                     break;
-                case AttackType.SwapAttack:
-                    // 중요: 변환 공격의 스킬 데이터는 '이전' 무기의 것을 따라갑니다.
-                    // 하지만 _stats.ChangeNextWeapon()이 먼저 호출되어 무기가 바뀌었으므로,
-                    // 이 부분은 기획적으로 어떻게 할지 정해야 합니다.
-                    // 여기서는 일단 '새로운' 무기의 스킬을 따라가도록 구현하겠습니다.
-                    skillArray = _stats.CurrentWeaponData.swapAttackSkills;
-                    break;
             }
 
             // 선택된 배열에서 현재 인덱스의 스킬을 가져옴
@@ -263,6 +269,52 @@ namespace Player.States
                     {
                         effect.Execute(_player, hitboxProvider, this);
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// (AnimationEvent) 변환 공격의 Pre-Swap 효과들을 실행합니다.
+        /// </summary>
+        public void ExecutePreSwapEffects()
+        {
+            if (_currentSwapAttackData == null) return;
+            ExecuteEffects(_currentSwapAttackData.preSwapEffects);
+        }
+
+        /// <summary>
+        /// (AnimationEvent) 실제 무기를 교체합니다.
+        /// </summary>
+        public void PerformSwap()
+        {
+            if (_currentSwapAttackData == null) return;
+            _stats.ChangeWeapon(_currentSwapAttackData.targetWeaponType);
+        }
+
+        /// <summary>
+        /// (AnimationEvent) 변환 공격의 Post-Swap 효과들을 실행합니다.
+        /// </summary>
+        public void ExecutePostSwapEffects()
+        {
+            if (_currentSwapAttackData == null) return;
+            ExecuteEffects(_currentSwapAttackData.postSwapEffects);
+        }
+
+        /// <summary>
+        /// AttackEffect 배열을 받아 실행하는 공통 헬퍼 메서드
+        /// </summary>
+        private void ExecuteEffects(AttackEffect[] effects)
+        {
+            if (effects == null) return;
+
+            var hitboxProvider = _player.GetComponentInChildren<PlayerAnimationEvents>();
+            if (hitboxProvider == null) return;
+
+            foreach (var effect in effects)
+            {
+                if (effect != null)
+                {
+                    effect.Execute(_player, hitboxProvider, this);
                 }
             }
         }

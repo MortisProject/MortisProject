@@ -20,8 +20,8 @@ namespace Player.Data
         [Tooltip("강공격 콤보에 사용할 스킬 데이터 배열입니다.")]
         public SkillData[] strongAttackSkills;
 
-        [Tooltip("변환 공격 콤보에 사용할 스킬 데이터 배열입니다.")]
-        public SkillData[] swapAttackSkills;
+        [Tooltip("변환 공격에 사용할 데이터 배열입니다. (콤보 순서에 맞게 등록)")]
+        public SwapAttackData[] swapAttacks;
 
         // [삭제할 곳] public ProjectileData projectileData;
 

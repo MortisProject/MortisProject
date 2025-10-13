@@ -23,4 +23,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6501ec66fc4270544b6fafb9f83217be, type: 2}
   - {fileID: 11400000, guid: d5394a30c121f1d46bc17a5f99588fb8, type: 2}
   - {fileID: 11400000, guid: 9d7fd705505b06540b97f1434b495b74, type: 2}
-  swapAttackSkills: []
+  swapAttacks:
+  - {fileID: 11400000, guid: da43206143f22064ea1c64b1ee3cd47f, type: 2}
