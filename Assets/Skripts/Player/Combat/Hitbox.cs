@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using World; // Monster 스크립트를 사용하기 위해 추가
 
 namespace Player.Combat
 {
@@ -63,10 +62,10 @@ namespace Player.Combat
             if (other.CompareTag("Monster") && !_hitTargets.Contains(other))
             {
                 // Monster 스크립트를 가져와서 데미지를 입힘
-                if (other.TryGetComponent<Monster>(out Monster monster))
+                if (other.TryGetComponent<Monster.Monster>(out var monster))
                 {
                     monster.TakeDamage(_damage);
-                    _hitTargets.Add(other); // 공격한 대상으로 추가하여 중복 피격 방지
+                    _hitTargets.Add(other);
                 }
             }
         }

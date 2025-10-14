@@ -44,6 +44,9 @@ namespace World
                 return;
             }
 
+            // 풀링된 오브젝트들을 담을 부모 오브젝트를 생성합니다.
+            GameObject projectilePoolParent = new GameObject("-----[ Pool Projectile ]");
+
             _poolDictionary = new Dictionary<string, Queue<GameObject>>();
 
             // 각 풀에 대해 미리 오브젝트를 생성합니다.
@@ -52,7 +55,7 @@ namespace World
                 Queue<GameObject> objectQueue = new Queue<GameObject>();
                 for (int i = 0; i < pool.size; i++)
                 {
-                    GameObject obj = Instantiate(pool.prefab);
+                    GameObject obj = Instantiate(pool.prefab, projectilePoolParent.transform);
                     obj.SetActive(false); // 비활성화 상태로 생성
                     objectQueue.Enqueue(obj);
                 }

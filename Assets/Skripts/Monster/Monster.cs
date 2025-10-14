@@ -1,16 +1,84 @@
-// Assets/Scripts/World/Monster.cs
+// Assets/Scripts/Monster/Monster.cs
+using Monster.Animation;
+using Monster.States;
 using UnityEngine;
+using UnityEngine.AI; 
 
-namespace World
+#if UNITY_EDITOR
+using UnityEditor; // Handles 클래스를 사용하기 위해 에디터 네임스페이스를 추가합니다.
+#endif
+
+namespace Monster
 {
     /// <summary>
-    /// 테스트용 몬스터 스크립트입니다. 체력을 가지고 있으며, 피해를 받을 수 있습니다.
+    /// 몬스터의 모든 컴포넌트와 상태를 총괄하는 메인 컨트롤러입니다.
     /// </summary>
+    [RequireComponent(typeof(NavMeshAgent))] // 몬스터는 반드시 NavMeshAgent를 가지도록 강제
     public class Monster : MonoBehaviour
     {
-        [Header("Stats")]
-        [Tooltip("몬스터의 현재 체력입니다.")]
-        [SerializeField] private float health = 100f;
+        [Header("Data")]
+        [Tooltip("몬스터의 모든 데이터를 담고 있는 ScriptableObject 입니다.")]
+        public MonsterSO Data;
+
+        [Header("Component References")]
+        public MonsterStateMachine StateMachine { get; private set; }
+        public NavMeshAgent Agent { get; private set; }
+        public MonsterAnimatorController AnimController { get; private set; }
+
+        [Header("Runtime Variables")]
+        [Tooltip("몬스터의 현재 체력입니다. (런타임에 자동 초기화)")]
+        public float currentHp;
+
+        [Tooltip("몬스터가 추적하거나 공격할 대상입니다.")]
+        public Transform target;
+
+        // --- 상태 클래스 인스턴스 ---
+        public MonsterSpawnState SpawnState { get; private set; }
+        public MonsterIdleState IdleState { get; private set; }
+        public MonsterPatrolState PatrolState { get; private set; }
+        public MonsterChaseState ChaseState { get; private set; }
+        public MonsterBattleState BattleState { get; private set; }
+        public MonsterHitState HitState { get; private set; }
+        public MonsterDieState DieState { get; private set; }
+
+        public string PoolTag { get; private set; }
+
+        /// <summary>
+        /// 게임이 시작되기 전, 모든 컴포넌트와 상태를 초기화합니다.
+        /// </summary>
+        private void Awake()
+        {
+            StateMachine = GetComponent<MonsterStateMachine>();
+            Agent = GetComponentInChildren<NavMeshAgent>();
+            AnimController = GetComponentInChildren<MonsterAnimatorController>();
+
+            // 모든 상태 클래스의 인스턴스를 생성하고, Monster 참조를 넘겨줍니다.
+            SpawnState = new MonsterSpawnState(this);
+            IdleState = new MonsterIdleState(this);
+            PatrolState = new MonsterPatrolState(this);
+            ChaseState = new MonsterChaseState(this);
+            BattleState = new MonsterBattleState(this);
+            HitState = new MonsterHitState(this);
+            DieState = new MonsterDieState(this);
+            // TODO: 다른 상태들도 여기서 new 키워드로 생성해주어야 합니다.
+        }
+
+        /// <summary>
+        /// 첫 프레임이 업데이트되기 전, 상태 머신을 시작 상태로 초기화합니다.
+        /// </summary>
+        private void Start()
+        {
+            currentHp = Data.maxHp;
+            StateMachine.Initialize(SpawnState);
+        }
+
+        /// <summary>
+        /// 매 프레임 현재 상태의 Update를 호출합니다.
+        /// </summary>
+        private void Update()
+        {
+            StateMachine.CurrentState?.Update();
+        }
 
         /// <summary>
         /// 지정된 양의 데미지를 받아 체력을 감소시킵니다.
@@ -18,23 +86,73 @@ namespace World
         /// <param name="damage">입을 데미지의 양</param>
         public void TakeDamage(float damage)
         {
-            health -= damage;
-            Debug.Log($"{gameObject.name}이(가) {damage}의 피해를 입었습니다! 현재 체력: {health}");
-
-            if (health <= 0)
+            if (StateMachine.CurrentState is MonsterDieState || StateMachine.CurrentState is MonsterSpawnState)
             {
-                Die();
+                return;
             }
+
+            currentHp -= damage;
+            Debug.Log($"{gameObject.name}이(가) {damage}의 피해를 입었습니다! 현재 체력: {currentHp}");
+
+            if (currentHp <= 0)
+            {
+                // 체력이 0 이하면 Die 상태로 즉시 전환합니다.
+                StateMachine.ChangeState(DieState);
+            }
+            else
+            {
+                // 체력이 남아있다면 Hit 상태로 즉시 전환합니다.
+                StateMachine.ChangeState(HitState);
+            }
+        }
+        public void OnAttackFinished()
+        {
+            // 현재 상태가 BattleState일 때만 해당 상태의 OnAttackFinished를 호출합니다.
+            (StateMachine.CurrentState as MonsterBattleState)?.OnAttackFinished();
         }
 
         /// <summary>
-        /// 몬스터가 죽었을 때의 처리를 담당합니다.
+        /// 스포너가 몬스터를 활성화할 때 호출하여 기본 정보를 설정합니다.
         /// </summary>
-        private void Die()
+        public void Setup(string poolTag)
         {
-            Debug.Log($"{gameObject.name}이(가) 처치되었습니다.");
-            // TODO: 몬스터 사망 시 파괴, 아이템 드랍, 점수 증가 등의 로직을 여기에 추가합니다.
-            Destroy(gameObject);
+            PoolTag = poolTag;
         }
+
+        /// <summary>
+        /// 몬스터를 풀에서 재사용하기 위해 모든 상태를 초기화합니다.
+        /// </summary>
+        public void ResetMonster()
+        {
+            // 체력을 최대로 설정
+            currentHp = Data.maxHp;
+
+            // FSM을 Spawn 상태부터 다시 시작
+            StateMachine.Initialize(SpawnState);
+
+            // 비활성화되었을 수 있는 컴포넌트들을 다시 활성화
+            GetComponent<Collider>().enabled = true;
+            Agent.enabled = true;
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// 유니티 에디터의 Scene 뷰에서만 작동하며, 디버깅 목적으로 도형을 그려줍니다.
+        /// 이 오브젝트가 선택되었을 때만 호출됩니다.
+        /// </summary>
+        private void OnDrawGizmosSelected()
+        {
+            // MonsterSO 데이터가 할당되지 않았다면 오류 방지를 위해 실행하지 않습니다.
+            if (Data == null) return;
+
+            // 기즈모의 색상과 투명도를 설정합니다.
+            Handles.color = new Color(1f, 1f, 0f, 0.2f); // 노란색 (감지 범위)
+            // 몬스터의 위치를 중심으로 채워진 원반을 그립니다.
+            Handles.DrawSolidDisc(transform.position, Vector3.up, Data.detectionRange);
+
+            Handles.color = new Color(1f, 0f, 0f, 0.2f); // 빨간색 (공격 범위)
+            Handles.DrawSolidDisc(transform.position, Vector3.up, Data.attackRange);
+        }
+#endif
     }
 }

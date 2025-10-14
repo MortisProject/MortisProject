@@ -2,6 +2,7 @@
 using Player.Data;
 using System.Collections.Generic;
 using UnityEngine;
+using Monster.Data;
 
 namespace Player
 {
@@ -151,6 +152,26 @@ namespace Player
         {
             CurrentAst = Mathf.Min(CurrentAst + amount, maxAst);
             // TODO: UI 업데이트 이벤트 호출
+        }
+
+        /// <summary>
+        /// 지정된 양의 데미지를 받고, 공격 타입에 따라 추가 처리를 합니다.
+        /// </summary>
+        public void TakeDamage(float damage, MonsterSkillData.AttackType attackType, MonsterSkillData.KnockbackType knockbackType)
+        {
+            // TODO: 현재 플레이어 상태(가드, 회피 등)를 확인하고,
+            // attackType에 따라 데미지를 무시하거나 경감하는 로직이 필요합니다.
+            // 예: if (isGuarding && attackType == MonsterSkillData.AttackType.Yellow) { /* 가드 성공 */ }
+
+            currentHp -= damage;
+            Debug.Log($"플레이어가 {damage}의 피해를 입었습니다! ({attackType} 공격)");
+
+            if (currentHp <= 0)
+            {
+                // TODO: 플레이어 사망 처리 로직
+            }
+
+            // TODO: knockbackType에 따라 다른 피격 애니메이션이나 물리 효과를 적용하는 로직
         }
     }
 }

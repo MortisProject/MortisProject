@@ -1,6 +1,5 @@
 // Assets/Skripts/Player/Combat/Projectile.cs
 using Player.Data;
-using System.Collections;
 using UnityEngine;
 using World;
 
@@ -72,12 +71,12 @@ namespace Player.Combat
             // 'Monster' 태그를 가진 대상과 충돌했는지 확인합니다.
             if (other.CompareTag("Monster"))
             {
-                if (other.TryGetComponent<Monster>(out Monster monster))
+                if (other.TryGetComponent<Monster.Monster>(out var monster))
                 {
                     // 최종 데미지 계산 (기본 데미지 * 발사체 데미지 배율)
                     monster.TakeDamage(_finalDamage);
                     _hitTargets.Add(other); // 공격한 대상으로 추가하여 중복 피격 방지
-                    
+
                     if (_pursuitData != null && _stateMachine != null)
                     {
                         _stateMachine.StartPursuit(other.transform, _pursuitData);
