@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c80a8f96eb359904ba4028038c1e01cc, type: 3}
+  m_Name: RaygunWeaponData
+  m_EditorClassIdentifier: 
+  weaponType: 1
+  weakAttackSkills:
+  - {fileID: 11400000, guid: b04c2ff7ee6204d418842ff27f312ef1, type: 2}
+  - {fileID: 11400000, guid: ea5fa96e61bcdd646be62865d28b993a, type: 2}
+  - {fileID: 11400000, guid: f0929ac59705fd849ab418de26b9c9f6, type: 2}
+  - {fileID: 11400000, guid: 18bad77ac7cde38468dc53bb7d634850, type: 2}
+  strongAttackSkills:
+  - {fileID: 11400000, guid: 6501ec66fc4270544b6fafb9f83217be, type: 2}
+  - {fileID: 11400000, guid: 6501ec66fc4270544b6fafb9f83217be, type: 2}
+  - {fileID: 11400000, guid: d5394a30c121f1d46bc17a5f99588fb8, type: 2}
+  - {fileID: 11400000, guid: 9d7fd705505b06540b97f1434b495b74, type: 2}
+  swapAttacks:
+  - {fileID: 11400000, guid: da43206143f22064ea1c64b1ee3cd47f, type: 2}

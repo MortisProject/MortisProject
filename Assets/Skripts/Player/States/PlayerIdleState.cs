@@ -6,8 +6,8 @@ namespace Player.States
 {
     public class PlayerIdleState : PlayerGroundedState
     {
-        public PlayerIdleState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, PlayerAnimationController animController)
-            : base(player, stateMachine, input, motor, animController)
+        public PlayerIdleState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, CharacterStats stats, PlayerAnimationController animController)
+           : base(player, stateMachine, input, motor, stats, animController)
         {
         }
 

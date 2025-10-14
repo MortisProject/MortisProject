@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c80a8f96eb359904ba4028038c1e01cc, type: 3}
+  m_Name: WhipWeaponData
+  m_EditorClassIdentifier: 
+  weaponType: 0
+  weakAttackSkills:
+  - {fileID: 11400000, guid: 33d3c634a33b7ea459861396a8700ad9, type: 2}
+  - {fileID: 11400000, guid: f46b8d55746f8be4fa70fb63e54690b5, type: 2}
+  - {fileID: 11400000, guid: 25ee236c71c290549b01116b9ee7d57b, type: 2}
+  - {fileID: 11400000, guid: 32fb9085cde20e0439a7ad570a500088, type: 2}
+  strongAttackSkills:
+  - {fileID: 11400000, guid: 8f6c2d2897017184bbdf76b38df0f773, type: 2}
+  - {fileID: 11400000, guid: 8f6c2d2897017184bbdf76b38df0f773, type: 2}
+  - {fileID: 11400000, guid: c95296097706e2e468f2f659e0fa7682, type: 2}
+  - {fileID: 11400000, guid: b46f81728672aee489df332dea46e94c, type: 2}
+  swapAttacks:
+  - {fileID: 11400000, guid: 04e697aaba85ad349a3aa0c01d079b10, type: 2}

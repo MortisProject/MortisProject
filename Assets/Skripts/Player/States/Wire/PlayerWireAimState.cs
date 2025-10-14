@@ -55,15 +55,11 @@ namespace Player.States
 
             if (_bestTarget != null && _input.IsWireFirePressed)
             {
-                // 아스트가 충분한지 확인
-                if (_stats.ConsumeAst(_stats.wireFireAstCost))
-                {
-                    // 발사 연출 UI 생성
-                    Object.Instantiate(_player.WireFireEffectPrefab, _bestReticule.transform.position, Quaternion.identity, _bestReticule.transform.parent);
+                // 발사 연출 UI 생성
+                Object.Instantiate(_player.WireFireEffectPrefab, _bestReticule.transform.position, Quaternion.identity, _bestReticule.transform.parent);
 
-                    _stateMachine.WireTarget = _bestTarget;
-                    _stateMachine.ChangeState(_player.WireLaunchState);
-                }
+                _stateMachine.WireTarget = _bestTarget;
+                _stateMachine.ChangeState(_player.WireLaunchState);
             }
         }
 

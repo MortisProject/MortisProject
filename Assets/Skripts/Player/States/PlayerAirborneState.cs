@@ -35,6 +35,7 @@ namespace Player.States
             {
                 // 1. 더블 점프 기회를 사용 처리합니다.
                 _player.Stats.UseDoubleJump();
+                _animController.PlayJump();
 
                 // 2. (핵심) 현재의 수평 속도를 0으로 만들어 관성을 탈출합니다.
                 _motor.Stop();

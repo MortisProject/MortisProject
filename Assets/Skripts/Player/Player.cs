@@ -55,6 +55,9 @@ namespace Player
         public PlayerWireAimState WireAimState { get; private set; }
         public PlayerWireLaunchState WireLaunchState { get; private set; }
         public PlayerWireMoveState WireMoveState { get; private set; }
+        public PlayerGroundedAttackState GroundedAttackState { get; private set; }
+        public PlayerPursuitState PursuitState { get; private set; }
+        //public PlayerPullState PullState { get; private set; }
         // TODO: 추후 Attack, Dodge 등의 상태를 여기에 추가합니다.
 
         /// <summary>
@@ -64,13 +67,16 @@ namespace Player
         {
             // 모든 상태 클래스의 인스턴스를 생성합니다.
             // 이 때, 각 상태가 필요로 하는 모든 컴포넌트와 참조를 '생성자'를 통해 전달해줍니다. (의존성 주입)
-            IdleState = new PlayerIdleState(this, StateMachine, Input, Motor, AnimController);
-            MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Data, AnimController);
+            IdleState = new PlayerIdleState(this, StateMachine, Input, Motor, Stats, AnimController);
+            MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Data, Stats, AnimController);
             JumpState = new PlayerJumpState(this, StateMachine, Input, Motor, Data, AnimController);
             FallState = new PlayerFallState(this, StateMachine, Input, Motor, Data, AnimController);
             WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data, Stats);
             WireLaunchState = new PlayerWireLaunchState(this, StateMachine, Motor, Data, AnimController);
             WireMoveState = new PlayerWireMoveState(this, StateMachine, Input, Motor, Data, AnimController);
+            GroundedAttackState = new PlayerGroundedAttackState(this, StateMachine, Input, Motor, Stats, AnimController);
+            PursuitState = new PlayerPursuitState(this, StateMachine, Motor, AnimController);
+            // PullState = new PlayerPullState(this, StateMachine, Input, Motor, Data, Stats, AnimController);
         }
 
         /// <summary>

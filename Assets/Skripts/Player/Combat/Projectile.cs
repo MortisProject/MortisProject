@@ -1,0 +1,115 @@
+// Assets/Skripts/Player/Combat/Projectile.cs
+using Player.Data;
+using System.Collections;
+using UnityEngine;
+using World;
+
+namespace Player.Combat
+{
+    /// <summary>
+    /// 발사체의 이동, 충돌 처리, 소멸 로직을 담당합니다.
+    /// 이 스크립트는 발사체 프리팹에 부착되어야 합니다.
+    /// </summary>
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(SphereCollider))]
+    public class Projectile : MonoBehaviour
+    {
+        [Header("References")]
+        [Tooltip("디버깅용: 현재 발사체에 적용된 데이터입니다.")]
+        [SerializeField] private ProjectileData _data;
+
+        private PlayerStateMachine _stateMachine;
+        private PursuitData _pursuitData;
+        private Rigidbody _rigidbody;
+        private float _finalDamage;
+        private float _lifeTimeTimer;
+        private string _poolTag;
+
+        // 한 번의 활성화 동안 이미 공격한 대상을 저장하여 중복 피격을 방지합니다. (관통탄을 위함)
+        private System.Collections.Generic.List<Collider> _hitTargets = new System.Collections.Generic.List<Collider>();
+
+        private void Awake()
+        {
+            _rigidbody = GetComponent<Rigidbody>();
+            GetComponent<SphereCollider>().isTrigger = true; // 충돌 감지를 위해 Trigger로 설정
+            _rigidbody.useGravity = false; // 중력의 영향을 받지 않도록 설정
+        }
+
+        private void Update()
+        {
+            _lifeTimeTimer -= Time.deltaTime;
+            if (_lifeTimeTimer <= 0f)
+            {
+                // 수명이 다하면 풀에 반납
+                ProjectilePoolManager.Instance.ReturnToPool(_poolTag, gameObject);
+            }
+        }
+
+        /// <summary>
+        /// 발사체가 활성화될 때 외부에서 호출하여 초기 설정을 수행합니다.
+        /// </summary>
+        /// <param name="initialDirection">발사될 방향</param>
+        /// <param name="baseDamage">플레이어의 기본 공격력</param>
+        /// <param name="data">발사체의 모든 속성을 담은 ScriptableObject</param>
+        public void Initialize(PlayerStateMachine stateMachine, string poolTag, Vector3 initialDirection, float finalDamage, ProjectileData data, PursuitData pursuitData)
+        {
+            _stateMachine = stateMachine; // StateMachine 참조 저장
+            _poolTag = poolTag;
+            _finalDamage = finalDamage;
+            _data = data;
+            _pursuitData = pursuitData; // PursuitData 저장
+            _lifeTimeTimer = _data.projectileLifeTime;
+            _hitTargets.Clear();
+
+            _rigidbody.linearVelocity = initialDirection.normalized * _data.projectileSpeed;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            // 이미 공격한 대상은 무시합니다.
+            if (_hitTargets.Contains(other)) return;
+
+            // 'Monster' 태그를 가진 대상과 충돌했는지 확인합니다.
+            if (other.CompareTag("Monster"))
+            {
+                if (other.TryGetComponent<Monster>(out Monster monster))
+                {
+                    // 최종 데미지 계산 (기본 데미지 * 발사체 데미지 배율)
+                    monster.TakeDamage(_finalDamage);
+                    _hitTargets.Add(other); // 공격한 대상으로 추가하여 중복 피격 방지
+                    
+                    if (_pursuitData != null && _stateMachine != null)
+                    {
+                        _stateMachine.StartPursuit(other.transform, _pursuitData);
+                    }
+
+                    HandleImpact(other.ClosestPoint(transform.position));
+                }
+            }
+            // TODO: 'Wall', 'Ground' 등 다른 태그를 가진 오브젝트와의 충돌 처리도 여기에 추가할 수 있습니다.
+            else
+            {
+                HandleImpact(other.ClosestPoint(transform.position));
+            }
+        }
+
+        /// <summary>
+        /// 충돌 시 공통 로직을 처리합니다. (이펙트 생성, 오브젝트 비활성화 등)
+        /// </summary>
+        private void HandleImpact(Vector3 impactPoint)
+        {
+            if (_data.impactVFXPrefab != null)
+            {
+                // TODO: 이펙트도 풀링 시스템을 사용하면 더욱 좋습니다.
+                var effect = Instantiate(_data.impactVFXPrefab, impactPoint, Quaternion.identity);
+                // AutoDestroyEffect 스크립트가 붙어있다고 가정
+            }
+
+            if (!_data.isPenetration)
+            {
+                // 관통탄이 아니면 풀에 반납
+                ProjectilePoolManager.Instance.ReturnToPool(_poolTag, gameObject);
+            }
+        }
+    }
+}

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1d8cfebf5565a34f86f3193eba4cd31, type: 3}
+  m_Name: PlayerData
+  m_EditorClassIdentifier: 
+  walkSpeed: 5
+  runSpeed: 9
+  maxSlopeAngle: 45
+  jumpForce: 10
+  doubleJumpForce: 12
+  doubleJumpDashForce: 8
+  airControlForce: 2
+  maxHorizontalSpeed: 35
+  mouseSensitivity: 4
+  pitchMinMax: {x: -60, y: 85}
+  wireHookPrefab: {fileID: 7671246574104627253, guid: 8e34fb559abb2c547b1d26edbf08fc18, type: 3}
+  wireGrappleRange: 60
+  wireSwingLength: 30
+  wireAimSearchRadius: 0.5
+  wireLaunchSpeed: 30
+  wireAirDashSpeed: 30
+  wireDetachVerticalBonus: 10
+  wireLaunchBackwardImpulse: 10
+  wireSpringForce: 300
+  wireDamper: 80

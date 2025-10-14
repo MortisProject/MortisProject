@@ -1,5 +1,10 @@
 // Assets/Scripts/Player/Animation/PlayerAnimationEvents.cs
+using Player.Combat;
+using Player.Data;
+using Player.States;
+using System;
 using UnityEngine;
+using World;
 
 namespace Player.Animation
 {
@@ -9,24 +14,94 @@ namespace Player.Animation
     /// </summary>
     public class PlayerAnimationEvents : MonoBehaviour
     {
-        // TODO: 발소리를 재생할 오디오 시스템이나 공격 판정을 처리할 전투 시스템의 참조가 필요합니다.
+        private Player _player;
 
-        /// <summary>
-        /// 걷거나 뛸 때 발이 땅에 닿는 프레임에서 호출될 함수입니다.
-        /// </summary>
-        public void OnFootstep()
+        [Serializable]
+        public class HitboxGroup
         {
-            // Debug.Log("Footstep!");
-            // TODO: 발소리 사운드 재생 로직을 여기에 추가합니다.
+            [Tooltip("히트박스 그룹을 식별하기 위한 태그입니다. (예: Weak, Strong)")]
+            public string tag;
+            [Tooltip("이 그룹에 속한 히트박스들입니다.")]
+            public Hitbox[] hitboxes;
+        }
+
+        [Header("Combat References")]
+        [Tooltip("무기 타입별로 히트박스 그룹을 관리합니다.")]
+        public HitboxGroup[] whipHitboxGroups;
+
+        [Header("Muzzle References")]
+        [Tooltip("투사체가 발사될 위치(들)입니다. 오른손, 왼손 등 필요한 만큼 설정합니다.")]
+        public Transform[] muzzles;
+
+        private void Awake()
+        {
+            // 부모 오브젝트에서 Player 컴포넌트를 찾아 할당
+            _player = GetComponentInParent<Player>();
         }
 
         /// <summary>
-        /// 특정 애니메이션이 끝났음을 FSM에 알려줄 필요가 있을 때 사용될 수 있습니다.
+        /// (애니메이션 이벤트) 현재 공격 상태를 가져오는 도우미 메서드
         /// </summary>
-        public void OnAnimationEnd()
+        private PlayerAttackState GetCurrentAttackState()
         {
-            // TODO: 현재 상태(State)에 애니메이션이 끝났다고 알려주는 로직을 추가합니다.
-            //       (예: 공격 상태에서 Idle 상태로 자동 전환)
+            return _player.StateMachine.CurrentState as PlayerAttackState;
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 다음 콤보 입력을 저장하기 시작하는 시점을 알립니다.
+        /// </summary>
+        public void OnStartInputSave()
+        {
+            GetCurrentAttackState()?.OpenInputWindow();
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 후딜레이 시작을 알립니다. 예약된 다음 공격이 있다면 즉시 전환됩니다.
+        /// </summary>
+        public void OnStartAttackDelay()
+        {
+            GetCurrentAttackState()?.StartAttackDelay();
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 후딜레이 모션이 완전히 끝났음을 알립니다. 콤보가 종료됩니다.
+        /// </summary>
+        public void OnEndAttackDelay()
+        {
+            GetCurrentAttackState()?.EndAttackDelay();
+
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 현재 콤보에 해당하는 스킬 효과(들)를 실행하도록 요청합니다.
+        /// </summary>
+        public void OnExecuteAttackEffect()
+        {
+            GetCurrentAttackState()?.ExecuteAttackEffects();
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 변환 공격의 'Pre-Swap' 효과 실행을 요청합니다.
+        /// </summary>
+        public void OnExecutePreSwapEffect()
+        {
+            GetCurrentAttackState()?.ExecutePreSwapEffects();
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 실제 무기 교체 실행을 요청합니다.
+        /// </summary>
+        public void OnPerformSwap()
+        {
+            GetCurrentAttackState()?.PerformSwap();
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 변환 공격의 'Post-Swap' 효과 실행을 요청합니다.
+        /// </summary>
+        public void OnExecutePostSwapEffect()
+        {
+            GetCurrentAttackState()?.ExecutePostSwapEffects();
         }
     }
 }
