@@ -13,8 +13,16 @@ namespace Player.Data
         [Tooltip("목표를 향해 돌진하는 속도입니다.")]
         public float pursuitSpeed = 40f;
 
-        [Tooltip("목표 얼마만큼의 거리까지 접근했을 때 멈출지 결정합니다.")]
-        public float stoppingDistance = 2.5f;
+        [Tooltip("목표로부터 수평으로 얼마나 떨어진 지점 상공으로 도약할지 결정합니다.")]
+        public float horizontalOffset = 3f;
+
+        [Tooltip("지상으로부터 수직으로 얼마나 높은 지점까지 도약할지 결정합니다.")]
+        public float verticalOffset = 5f;
+
+        [Header("Descending Phase")]
+        [Tooltip("최고점에서 낙하할 때 적용할 중력 배율입니다. 높을수록 빠르게 떨어집니다. (기본 중력 = 1)")]
+        [Range(1f, 10f)]
+        public float gravityMultiplier = 2.5f;
 
         [Header("Finisher Attack")]
         [Tooltip("추격 후 목표에 도달했을 때 실행할 마무리 일격 효과입니다.")]

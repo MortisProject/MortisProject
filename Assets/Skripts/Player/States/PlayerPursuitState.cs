@@ -7,6 +7,10 @@ namespace Player.States
 {
     public class PlayerPursuitState : IState
     {
+        // 추격 상태의 내부 단계를 구분하기 위한 열거형
+        private enum PursuitPhase { Ascending, Descending }
+        private PursuitPhase _currentPhase;
+        
         private readonly Player _player;
         private readonly PlayerStateMachine _stateMachine;
         private readonly PlayerMotor _motor;
@@ -14,6 +18,8 @@ namespace Player.States
 
         private Transform _target;
         private PursuitData _pursuitData;
+
+        private Vector3 _apexDestination; // 도달해야 할 최고점 위치
 
         public PlayerPursuitState(Player player, PlayerStateMachine stateMachine, PlayerMotor motor, PlayerAnimationController animController)
         {
@@ -34,11 +40,24 @@ namespace Player.States
 
         public void Enter()
         {
-            Debug.Log("[State] -> PlayerPursuitState");
+            if (_target == null || _pursuitData == null)
+            {
+                _stateMachine.ChangeState(_player.FallState);
+                return;
+            }
 
-            // 추격 중에는 플레이어의 물리적 충돌과 중력을 끕니다.
+            // --- 코드 블럭 단위로 제공 (수정된 부분) ---
+            // 1. 목표 최고점(Apex) 위치 계산
+            Vector3 directionFromTarget = (_player.transform.position - _target.position).normalized;
+            directionFromTarget.y = 0; // 수평 방향만 사용
+            Vector3 horizontalTargetPos = _target.position + directionFromTarget * _pursuitData.horizontalOffset;
+            _apexDestination = new Vector3(horizontalTargetPos.x, _target.position.y + _pursuitData.verticalOffset, horizontalTargetPos.z);
+
+            // 2. 물리 효과 끄고, '도약' 단계로 시작
             _player.CapsuleCollider.enabled = false;
             _motor.GetComponent<Rigidbody>().useGravity = false;
+            _motor.Stop(); // 이전 속도 제거
+            _currentPhase = PursuitPhase.Ascending;
 
             // TODO: 추격 시작 애니메이션 트리거를 여기에 추가합니다.
             // _animController.PlayPursuitStart();
@@ -46,6 +65,8 @@ namespace Player.States
 
         public void Update()
         {
+            _motor.ApplyGravityForce(_pursuitData.gravityMultiplier);
+
             if (_target == null || _pursuitData == null)
             {
                 // 타겟이나 데이터가 없으면 즉시 상태 종료
@@ -53,19 +74,14 @@ namespace Player.States
                 return;
             }
 
-            // 1. 타겟 방향으로 플레이어 이동
-            Vector3 directionToTarget = (_target.position - _player.transform.position).normalized;
-            _motor.Move(directionToTarget * _pursuitData.pursuitSpeed);
-
-            // 2. 플레이어가 타겟을 바라보도록 회전
-            _player.transform.rotation = Quaternion.LookRotation(directionToTarget);
-
-            // 3. 목표에 도달했는지 확인
-            float distanceToTarget = Vector3.Distance(_player.transform.position, _target.position);
-            if (distanceToTarget <= _pursuitData.stoppingDistance)
+            switch (_currentPhase)
             {
-                // 목표에 도달하면 마무리 일격 실행
-                ExecuteFinisher();
+                case PursuitPhase.Ascending:
+                    UpdateAscending();
+                    break;
+                case PursuitPhase.Descending:
+                    UpdateDescending();
+                    break;
             }
         }
 
@@ -77,6 +93,49 @@ namespace Player.States
 
             // 추격이 끝나면 속도를 0으로 초기화하여 관성을 없앱니다.
             _motor.Stop();
+        }
+
+        /// <summary>
+        /// 최고점을 향해 도약하는 단계의 로직
+        /// </summary>
+        private void UpdateAscending()
+        {
+            // 목표 최고점을 향해 플레이어 이동
+            _player.transform.position = Vector3.MoveTowards(_player.transform.position, _apexDestination, _pursuitData.pursuitSpeed * Time.deltaTime);
+
+            // 플레이어가 타겟을 계속 바라보도록 회전
+            Vector3 lookDirection = (_target.position - _player.transform.position).normalized;
+            lookDirection.y = 0;
+            _player.transform.rotation = Quaternion.LookRotation(lookDirection);
+
+            // 최고점에 도달했는지 확인
+            if (Vector3.Distance(_player.transform.position, _apexDestination) < 0.1f)
+            {
+                // 도달했다면 '낙하' 단계로 전환
+                _currentPhase = PursuitPhase.Descending;
+
+                // 중력을 다시 켜서 자연스럽게 낙하 시작
+                _motor.GetComponent<Rigidbody>().useGravity = true;
+
+                // 낙하를 시작하는 이 시점에 마무리 일격 효과를 '미리' 발동
+                ExecuteFinisher();
+
+                // TODO: 낙하 강타 애니메이션 재생
+                // _animController.PlayPursuitSlam();
+            }
+        }
+
+        /// <summary>
+        /// 강타하며 낙하하는 단계의 로직
+        /// </summary>
+        private void UpdateDescending()
+        {
+            // 땅에 착지했는지 확인
+            if (_stateMachine.IsGrounded)
+            {
+                // 착지했다면 모든 시퀀스를 종료하고 Idle 상태로 전환
+                _stateMachine.ChangeState(_player.IdleState);
+            }
         }
 
         /// <summary>

@@ -103,34 +103,16 @@ namespace Player
                 _rigidbody.linearVelocity = new Vector3(limitedVelocity.x, _rigidbody.linearVelocity.y, limitedVelocity.z);
             }
         }
+
         /// <summary>
-        /// 지정된 시간 동안 캐릭터의 중력을 무시하고 공중에 떠 있도록 합니다.
+        /// Rigidbody에 추가적인 하강 힘을 가하여 중력을 강화하는 효과를 냅니다.
         /// </summary>
-        /// <param name="duration">체공할 시간(초)</param>
-        public void Hover(float duration)
+        /// <param name="multiplier">적용할 중력 배율</param>
+        public void ApplyGravityForce(float multiplier)
         {
-            // 이전에 실행 중이던 Hover 코루틴이 있다면 중지
-            if (_hoverCoroutine != null)
-            {
-                StopCoroutine(_hoverCoroutine);
-            }
-            // 새로운 Hover 코루틴 시작
-            _hoverCoroutine = StartCoroutine(HoverCoroutine(duration));
-        }
-
-        private IEnumerator HoverCoroutine(float duration)
-        {
-            // 1. 중력을 끕니다.
-            _rigidbody.useGravity = false;
-            // 2. 현재의 모든 수직 속도를 0으로 만들어 그 자리에 멈추게 합니다.
-            _rigidbody.linearVelocity = new Vector3(_rigidbody.linearVelocity.x, 0, _rigidbody.linearVelocity.z);
-
-            // 3. 지정된 시간만큼 기다립니다.
-            yield return new WaitForSeconds(duration);
-
-            // 4. 시간이 지나면 다시 중력을 켭니다.
-            _rigidbody.useGravity = true;
-            _hoverCoroutine = null;
+            // 기본 중력(Physics.gravity)에 배율을 곱하여 추가 힘을 계산합니다.
+            // ForceMode.Acceleration은 질량에 관계없이 일정한 가속도를 적용합니다.
+            _rigidbody.AddForce(Physics.gravity * (multiplier - 1f), ForceMode.Acceleration);
         }
 
         /// <summary>
