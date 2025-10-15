@@ -14,10 +14,16 @@ namespace Player
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private PlayerSO _data; // 각종 데이터를 가져오기 위한 참조
 
-        // Rigidbody의 현재 속도를 외부에서 읽을 수 있도록 프로퍼티로 제공
+        [Header("Dodge State (For Animation Events)")]
+        [Tooltip("현재 회피로 인한 이동 속도입니다.")]
+        [SerializeField] private float _currentDodgeSpeed;
+        [Tooltip("회피 이동 방향입니다.")]
+        [SerializeField] private Vector3 _dodgeDirection;
+        private bool _isDodging = false;
+        private bool _isDodgeDecelerating = false;
+
         public Vector3 Velocity => _rigidbody.linearVelocity;
         public event Action<Collision> OnCollision;
-        private Coroutine _hoverCoroutine;
 
         private void Awake()
         {
@@ -31,7 +37,20 @@ namespace Player
         {
             // 최대 속도를 초과하지 않도록 속도를 제한합니다.
 
-           LimitHorizontalVelocity();
+            if (_isDodging)
+            {
+                // 감속 중일 경우 속도를 부드럽게 0으로 줄여나갑니다.
+                if (_isDodgeDecelerating)
+                {
+                    _currentDodgeSpeed = Mathf.Lerp(_currentDodgeSpeed, 0f, Time.fixedDeltaTime * _data.dodgeDeceleration);
+                }
+                _rigidbody.linearVelocity = _dodgeDirection * _currentDodgeSpeed;
+            }
+            // --- 여기까지 추가 ---
+            else // 회피 중이 아닐 때만 기존 속도 제한 로직을 적용합니다.
+            {
+                LimitHorizontalVelocity();
+            }
         }
 
         /// <summary>
@@ -123,5 +142,67 @@ namespace Player
             // 충돌 이벤트를 외부에 알립니다.
             OnCollision?.Invoke(collision);
         }
+
+        /// <summary>
+        /// 공격자의 위치를 기반으로 플레이어를 반대 방향으로 밀어냅니다.
+        /// </summary>
+        /// <param name="attackerPosition">공격자의 위치</param>
+        /// <param name="force">밀려나는 힘의 크기</param>
+        public void ApplyKnockback(Vector3 attackerPosition, float force)
+        {
+            _rigidbody.linearVelocity = Vector3.zero;
+            
+            // 공격자로부터 플레이어를 향하는 방향을 계산합니다.
+            Vector3 knockbackDirection = (transform.position - attackerPosition).normalized;
+            knockbackDirection.y = 0; // 수평으로만 밀려나도록 y값을 0으로 설정
+            
+            _rigidbody.AddForce(knockbackDirection * force, ForceMode.Impulse);
+        }
+
+        #region Animation Event Methods
+
+        /// <summary>
+        /// (AnimEvent) 회피 이동을 시작합니다.
+        /// </summary>
+        public void StartDodgeMovement()
+        {
+            _isDodging = true;
+            _isDodgeDecelerating = false;
+
+            Vector3 cameraForward = Camera.main.transform.forward;
+            cameraForward.y = 0; // y축 값을 0으로 만들어 수평 방향만 사용합니다.
+            _dodgeDirection = -cameraForward.normalized; // 정규화하여 방향 벡터로 만듭니다.
+
+            _currentDodgeSpeed = _data.dodgeInitialSpeed; // 초기 속도로 시작
+        }
+
+        /// <summary>
+        /// (AnimEvent) 회피 속도를 최대치로 설정합니다.
+        /// </summary>
+        public void SetDodgeMaxSpeed()
+        {
+            _currentDodgeSpeed = _data.dodgeMaxSpeed;
+        }
+
+        /// <summary>
+        /// (AnimEvent) 회피 감속을 시작합니다.
+        /// </summary>
+        public void StartDodgeDeceleration()
+        {
+            _isDodgeDecelerating = true;
+        }
+
+        /// <summary>
+        /// (AnimEvent) 회피 이동을 완전히 종료합니다.
+        /// </summary>
+        public void EndDodgeMovement()
+        {
+            _isDodging = false;
+            _isDodgeDecelerating = false;
+            _currentDodgeSpeed = 0f;
+            _rigidbody.linearVelocity = Vector3.zero; // 혹시 모를 잔여 속도 제거
+        }
+
+        #endregion
     }
 }

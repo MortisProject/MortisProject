@@ -33,6 +33,10 @@ namespace Player.Animation
         private readonly int _whipSwapHash = Animator.StringToHash("Whip_Swap");
         private readonly int _raygunSwapHash = Animator.StringToHash("Raygun_Swap");
         private readonly int _noInputHash = Animator.StringToHash("No_Input");
+        // defensive
+        private readonly int _hitHash = Animator.StringToHash("Hit");
+        private readonly int _isGuardingHash = Animator.StringToHash("IsGuarding");
+        private readonly int _dodgeHash = Animator.StringToHash("Dodge");
 
         // TODO: 추후 공격, 닷지 등의 애니메이션 해시값을 여기에 추가합니다.
         // private readonly int _attackTriggerHash = Animator.StringToHash("Attack");
@@ -87,6 +91,9 @@ namespace Player.Animation
         public void PlayWhipSwapAttack() => _animator.SetTrigger(_whipSwapHash);
         public void PlayRaygunSwapAttack() => _animator.SetTrigger(_raygunSwapHash);
         public void NoInput() => _animator.SetTrigger(_noInputHash);
+        public void PlayHit() => _animator.SetTrigger(_hitHash);
+        public void SetGuarding(bool isGuarding) => _animator.SetBool(_isGuardingHash, isGuarding);
+        public void PlayDodge() => _animator.SetTrigger(_dodgeHash);
 
         /// <summary>
         /// 이동 관련 애니메이터 파라미터와 내부 변수들을 즉시 0으로 초기화합니다.

@@ -103,5 +103,48 @@ namespace Player.Animation
         {
             GetCurrentAttackState()?.ExecutePostSwapEffects();
         }
+
+
+        /// <summary>
+        /// (애니메이션 이벤트) PlayerDodgeState를 가져오는 도우미 메서드
+        /// </summary>
+        private PlayerDodgeState GetCurrentDodgeState()
+        {
+            return _player.StateMachine.CurrentState as PlayerDodgeState;
+        }
+
+        /// <summary>
+        /// (AnimEvent) 회피 이동 시작을 모터에 알립니다.
+        /// </summary>
+        public void OnDodgeMoveStart()
+        {
+            _player.Motor.StartDodgeMovement();
+        }
+
+        /// <summary>
+        /// (AnimEvent) 회피 최대 속도 도달을 모터에 알립니다.
+        /// </summary>
+        public void OnDodgeReachMaxSpeed()
+        {
+            _player.Motor.SetDodgeMaxSpeed();
+        }
+
+        /// <summary>
+        /// (AnimEvent) 회피 감속 시작을 모터에 알립니다.
+        /// </summary>
+        public void OnDodgeStartDeceleration()
+        {
+            _player.Motor.StartDodgeDeceleration();
+        }
+
+        /// <summary>
+        /// (AnimEvent) 회피 이동 종료를 모터에 알리고, 상태 전환을 요청합니다.
+        /// </summary>
+        public void OnDodgeMoveEnd()
+        {
+            _player.Motor.EndDodgeMovement();
+            // 현재 상태가 DodgeState일 때만 상태 종료를 요청합니다.
+            GetCurrentDodgeState()?.FinishDodge();
+        }
     }
 }

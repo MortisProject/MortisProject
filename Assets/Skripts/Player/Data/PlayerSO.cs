@@ -22,7 +22,6 @@ namespace Player.Data
         public float maxSlopeAngle = 45f;
 
 
-
         [Header("Acrobatic Stats")]
         [Tooltip("Rigidbody.AddForce로 가해지는 점프의 힘입니다.")]
         public float jumpForce = 15f;
@@ -39,6 +38,40 @@ namespace Player.Data
         [Tooltip("와이어, 점프 등 모든 움직임에서 도달할 수 있는 최대 '수평' 속도입니다.")]
         public float maxHorizontalSpeed = 35f;
 
+        [Header("Defensive Stats")]
+        [Tooltip("피격 시 경직 상태가 지속되는 시간(초)입니다.")]
+        public float hitStunDuration = 0.5f;
+
+        [Tooltip("피격 시 뒤로 밀려나는 힘의 크기입니다.")]
+        public float hitKnockbackForce = 5f;
+
+        [Tooltip("경직이 끝난 후, 다음 경직에 걸리지 않는 무적 시간(초)입니다.")]
+        public float stunImmunityDuration = 1.0f;
+
+
+        [Header("Guard Settings")]
+        [Tooltip("가드 시 받는 피해량 감소율입니다. (예: 50 -> 50% 감소)")]
+        [Range(0f, 100f)]
+        public float guardDamageReduction = 50f;
+
+        [Tooltip("가드 성공 시 뒤로 밀려나는 힘의 크기입니다.")]
+        public float guardSuccessKnockbackForce = 2f;
+
+        [Tooltip("가드 게이지가 초당 회복되는 양입니다.")]
+        public float guardGaugeRegenRate = 10f;
+
+        [Header("Dodge Settings")]
+        [Tooltip("회피 시 초기 속도입니다.")]
+        public float dodgeInitialSpeed = 1.0f;        
+        
+        [Tooltip("회피 시 최고 속도입니다.")]
+        public float dodgeMaxSpeed = 1.0f;
+
+        [Tooltip("회피 시 감속 속도입니다.")]
+        public float dodgeDeceleration = 1.0f;
+
+        [Tooltip("회피 상태가 지속되는 시간(초)입니다. 이 시간 동안 회피 판정이 유지됩니다.")]
+        public float dodgeDuration = 0.3f;
 
 
         [Header("Camera Control")]
@@ -47,7 +80,6 @@ namespace Player.Data
 
         [Tooltip("카메라의 상하 회전 각도를 제한합니다. X = 최소, Y = 최대")]
         public Vector2 pitchMinMax = new Vector2(-40, 85);
-
 
 
         [Header("Wire Action Stats")]

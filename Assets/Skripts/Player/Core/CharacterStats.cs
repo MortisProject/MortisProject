@@ -1,8 +1,10 @@
 // Assets/Scripts/Player/Core/CharacterStats.cs
+using Player.States;
 using Player.Data;
 using System.Collections.Generic;
 using UnityEngine;
 using Monster.Data;
+using System.Collections;
 
 namespace Player
 {
@@ -13,6 +15,8 @@ namespace Player
     {
         [Header("References")]
         [SerializeField] private PlayerSO _data; // SO 데이터 참조
+        [SerializeField] private PlayerStateMachine _stateMachine;
+        [SerializeField] private PlayerMotor _motor;
 
         [Header("Core Stats")]
         [Tooltip("최대 체력입니다.")]
@@ -37,6 +41,12 @@ namespace Player
         [Tooltip("현재 공격 속도")]
         public float attackSpeed = 1;
 
+        [Header("Guard Stats")]
+        [Tooltip("최대 가드 게이지입니다.")]
+        public float maxGuardGauge = 100f;
+        [Tooltip("현재 가드 게이지입니다.")]
+        public float CurrentGuardGauge { get; private set; }
+
         [Header("Abilities")]
         [Tooltip("현재 더블 점프가 가능한지 여부를 나타냅니다.")]
         public bool CanDoubleJump { get; private set; }
@@ -49,6 +59,7 @@ namespace Player
         public WeaponData CurrentWeaponData { get; private set; }
         private int _currentWeaponIndex = 0;
 
+        private bool _isStunImmune = false; // 현재 경직 면역 상태인지 여부
         //[Header("Combat")]
         //[Tooltip("현재 장착하고 있는 무기의 종류입니다.")]
         //public WeaponType CurrentWeapon { get; private set; }
@@ -67,8 +78,20 @@ namespace Player
             {
                 EquipWeapon(0);
             }
+
+            CurrentGuardGauge = maxGuardGauge;
+            if (_stateMachine == null) _stateMachine = GetComponent<PlayerStateMachine>();
+            if (_motor == null) _motor = GetComponent<PlayerMotor>();
         }
 
+        private void Update()
+        {
+            // 가드 상태가 아닐 때 가드 게이지를 회복합니다.
+            if (!(_stateMachine.CurrentState is PlayerGuardState))
+            {
+                RegenerateGuardGauge();
+            }
+        }
         /// <summary>
         /// 현재 무기를 지정된 타입으로 변경합니다.
         /// </summary>
@@ -159,21 +182,106 @@ namespace Player
         /// </summary>
         //넉백타입이 제거되지 않은 코드
         //public void TakeDamage(float damage, MonsterSkillData.AttackType attackType, MonsterSkillData.KnockbackType knockbackType)
-        public void TakeDamage(float damage, MonsterSkillData.AttackType attackType)
+        public void TakeDamage(float damage, Transform attacker, MonsterSkillData.AttackType attackType)
         {
-            // TODO: 현재 플레이어 상태(가드, 회피 등)를 확인하고,
-            // attackType에 따라 데미지를 무시하거나 경감하는 로직이 필요합니다.
-            // 예: if (isGuarding && attackType == MonsterSkillData.AttackType.Yellow) { /* 가드 성공 */ }
+            // --- 코드 블럭 단위로 제공 (수정된 부분) ---
+            // 현재 플레이어의 상태를 확인합니다.
+            var currentState = _stateMachine.CurrentState;
 
-            currentHp -= damage;
-            Debug.Log($"플레이어가 {damage}의 피해를 입었습니다! ({attackType} 공격)");
-
-            if (currentHp <= 0)
+            // 1. 회피 상태일 때
+            if (currentState is PlayerDodgeState)
             {
-                // TODO: 플레이어 사망 처리 로직
+                // Yellow 타입 공격이 아니면 데미지만 받고 경직은 무시합니다.
+                if (attackType != MonsterSkillData.AttackType.Yellow)
+                {
+                    currentHp -= damage;
+                    Debug.Log($"[회피 중 피격] 플레이어가 {damage}의 피해를 입었습니다!");
+                    // TODO: 데미지 UI 표시
+                    if (currentHp <= 0) { /* TODO: 사망 처리 */ }
+                    return; // 경직 로직을 실행하지 않고 종료
+                }
+                // Yellow 타입 공격이면 회피에 실패하므로 아래의 기본 피격 로직을 따릅니다.
             }
 
-            // TODO: knockbackType에 따라 다른 피격 애니메이션이나 물리 효과를 적용하는 로직
+            // 2. 가드 상태일 때
+            if (currentState is PlayerGuardState)
+            {
+                // Blue 타입 공격이 아니면 가드를 시도합니다.
+                if (attackType != MonsterSkillData.AttackType.Blue)
+                {
+                    float guardCost = damage * 0.5f;
+                    if (CurrentGuardGauge >= guardCost)
+                    {
+                        // 가드 성공
+                        CurrentGuardGauge -= guardCost;
+                        float reducedDamage = damage * (1 - (_data.guardDamageReduction / 100f));
+                        currentHp -= reducedDamage;
+
+                        // TODO: PlayerMotor에 가드 넉백 메서드 추가
+                        _motor.ApplyKnockback(attacker.position, _data.guardSuccessKnockbackForce);
+
+                        Debug.Log($"[가드 성공] {reducedDamage}의 감소된 피해를 입고, 가드 게이지 {guardCost} 소모. 현재 가드 게이지: {CurrentGuardGauge}");
+                        // TODO: 가드 성공 이펙트(VFX, SFX) 재생
+                        if (currentHp <= 0) { /* TODO: 사망 처리 */ }
+                        return; // 가드에 성공했으므로 경직 로직을 실행하지 않음
+                    }
+                }
+                // Blue 타입 공격이거나, 가드 게이지가 부족하면 가드에 실패하므로 아래의 기본 피격 로직을 따릅니다.
+                Debug.Log($"[가드 실패] {attackType} 공격 또는 가드 게이지 부족!");
+            }
+
+            // 3. 경직 면역 상태가 아닐 때 (기본 피격, 회피/가드 실패)
+            if (!_isStunImmune)
+            {
+                currentHp -= damage;
+                Debug.Log($"플레이어가 {damage}의 피해를 입었습니다! ({attackType} 공격)");
+
+                if (currentHp <= 0)
+                {
+                    // TODO: 플레이어 사망 처리 로직
+                }
+                else
+                {
+                    // HitState로 강제 전환
+                    _motor.ApplyKnockback(attacker.position, _data.hitKnockbackForce);
+                    _stateMachine.ForceChangeState(GetComponent<Player>().HitState);
+                }
+            }
+            else
+            {
+                // 경직 면역 상태에서는 데미지만 받습니다.
+                currentHp -= damage;
+                Debug.Log($"[경직 면역] 플레이어가 {damage}의 피해를 입었습니다!");
+                if (currentHp <= 0) { /* TODO: 사망 처리 */ }
+            }
+        }
+
+        /// <summary>
+        /// 경직 면역 상태를 일정 시간 동안 활성화합니다.
+        /// </summary>
+        public void StartStunImmunity()
+        {
+            StartCoroutine(StunImmunityCoroutine());
+        }
+
+        private IEnumerator StunImmunityCoroutine()
+        {
+            _isStunImmune = true;
+            yield return new WaitForSeconds(_data.stunImmunityDuration);
+            _isStunImmune = false;
+        }
+
+        /// <summary>
+        /// 가드 게이지를 초당 일정량 회복시킵니다.
+        /// </summary>
+        private void RegenerateGuardGauge()
+        {
+            // TODO: PlayerSO에 guardGaugeRegenRate 변수 추가 후 연결
+            if (CurrentGuardGauge < maxGuardGauge)
+            {
+                CurrentGuardGauge += _data.guardGaugeRegenRate * Time.deltaTime;
+                CurrentGuardGauge = Mathf.Min(CurrentGuardGauge, maxGuardGauge);
+            }
         }
     }
 }

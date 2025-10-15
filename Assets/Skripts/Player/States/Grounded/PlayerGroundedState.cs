@@ -35,6 +35,19 @@ namespace Player.States
 
         public virtual void Update()
         {
+            // 회피 방어 입력이 먼저
+            if (_input.IsGuarding)
+            {
+                _stateMachine.ChangeState(_player.GuardState);
+                return;
+            }
+
+            if (_input.IsDodgePressed)
+            {
+                _stateMachine.ChangeState(_player.DodgeState);
+                return;
+            }
+
             // 공격은 좌클릭(약공격)으로 진입
             if (_input.IsWeakAttackPressed)
             {
