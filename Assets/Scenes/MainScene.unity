@@ -4886,7 +4886,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 909264588823795405, guid: b51217f3356f7ae46b9e47d61dbeb3ab, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 4.55
       objectReference: {fileID: 0}
     - target: {fileID: 909264588823795405, guid: b51217f3356f7ae46b9e47d61dbeb3ab, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4923,6 +4923,10 @@ PrefabInstance:
     - target: {fileID: 8531084464442516608, guid: b51217f3356f7ae46b9e47d61dbeb3ab, type: 3}
       propertyPath: m_Name
       value: Mutant
+      objectReference: {fileID: 0}
+    - target: {fileID: 8531084464442516608, guid: b51217f3356f7ae46b9e47d61dbeb3ab, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

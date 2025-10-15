@@ -140,7 +140,7 @@ GameObject:
   - component: {fileID: 6186978153046097197}
   - component: {fileID: 2212891497386437678}
   - component: {fileID: 2134877980891503098}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Hitbox_Monster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -157,7 +157,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.246, z: 0.784}
-  m_LocalScale: {x: 0.49, y: 0.5, z: 1.65}
+  m_LocalScale: {x: 0.6, y: 0.5, z: 1.65}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5671716540486151138}
@@ -1109,7 +1109,7 @@ GameObject:
   - component: {fileID: 2956180180354208933}
   - component: {fileID: 5406245405372472287}
   - component: {fileID: 7024812044116205795}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mutant
   m_TagString: Monster
   m_Icon: {fileID: 0}
@@ -1125,7 +1125,7 @@ Transform:
   m_GameObject: {fileID: 8531084464442516608}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.52, y: 0.5, z: 4.8818727}
+  m_LocalPosition: {x: 4.52, y: 4.55, z: 4.8818727}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1172,15 +1172,15 @@ NavMeshAgent:
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 200
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 1.61
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 1
 --- !u!136 &7024812044116205795
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1200,10 +1200,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1.47
+  m_Radius: 0.6
+  m_Height: 1.14
   m_Direction: 2
-  m_Center: {x: 0, y: 0.5, z: 0.36}
+  m_Center: {x: 0, y: 0.64, z: 0.17}
 --- !u!1 &8603476625024372685
 GameObject:
   m_ObjectHideFlags: 0

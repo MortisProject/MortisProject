@@ -7,7 +7,7 @@ namespace Monster.States
     {
         private readonly Monster _monster;
         private float _hitTimer;
-        private const float HitDuration = 0.5f; // 기획서의 최소 상태 유지 시간
+        private const float HitDuration = 1.5f; // 기획서의 최소 상태 유지 시간
 
         public MonsterHitState(Monster monster)
         {
@@ -33,13 +33,16 @@ namespace Monster.States
             // 경직 시간이 끝나면,
             if (_hitTimer <= 0f)
             {
-                // 플레이어와의 거리를 다시 확인하여 다음 상태를 결정합니다.
-                float distanceToPlayer = Vector3.Distance(_monster.transform.position, _monster.target.position);
+                
                 if (!_monster.target)
                 {
                     _monster.StateMachine.ChangeState(_monster.IdleState); // 범위 밖 -> 대기
+                    return;
                 }
-                else if (distanceToPlayer <= _monster.Data.attackRange)
+
+                // 플레이어와의 거리를 다시 확인하여 다음 상태를 결정합니다.
+                float distanceToPlayer = Vector3.Distance(_monster.transform.position, _monster.target.position);
+                if (distanceToPlayer <= _monster.Data.attackRange)
                 {
                     _monster.StateMachine.ChangeState(_monster.BattleState); // 공격 범위 내 -> 전투
                 }

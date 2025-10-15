@@ -20,8 +20,6 @@ namespace Monster.Combat
         private void Awake()
         {
             _collider = GetComponent<Collider>();
-            _collider.isTrigger = true;
-            gameObject.SetActive(false); // 시작 시에는 비활성화
         }
 
         private void Update()

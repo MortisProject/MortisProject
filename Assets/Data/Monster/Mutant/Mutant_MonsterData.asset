@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 54b2623ab697b904c960c9671d55f395, type: 3}
-  m_Name: Test_MonsterData
+  m_Name: Mutant_MonsterData
   m_EditorClassIdentifier: 
   grade: 0
   maxHp: 100
   attackValue: 10
   patrolRange: 10
-  detectionRange: 10
+  detectionRange: 15
   attackType: 0
   attackRange: 3

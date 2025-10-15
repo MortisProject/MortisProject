@@ -18,7 +18,7 @@ namespace Monster.States
 
             // NavMeshAgent의 이동을 시작하고, 달리기 애니메이션을 켭니다.
             _monster.Agent.isStopped = false;
-            _monster.AnimController.SetWalking(false);
+            _monster.AnimController.SetWalking(true);
         }
 
         public void Update()

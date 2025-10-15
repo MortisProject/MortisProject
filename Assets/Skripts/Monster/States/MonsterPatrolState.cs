@@ -13,12 +13,12 @@ namespace Monster.States
         public MonsterPatrolState(Monster monster)
         {
             _monster = monster;
-            _spawnPoint = _monster.transform.position;
         }
 
         public void Enter()
         {
             Debug.Log("순찰 상태 시작.");
+            _spawnPoint = _monster.transform.position;
             _monster.Agent.isStopped = false;
             _monster.AnimController.SetWalking(true);
             _searchTimer = 0.5f; // 탐색 타이머 초기화
