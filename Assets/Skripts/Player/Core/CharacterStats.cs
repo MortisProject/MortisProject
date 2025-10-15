@@ -157,7 +157,9 @@ namespace Player
         /// <summary>
         /// 지정된 양의 데미지를 받고, 공격 타입에 따라 추가 처리를 합니다.
         /// </summary>
-        public void TakeDamage(float damage, MonsterSkillData.AttackType attackType, MonsterSkillData.KnockbackType knockbackType)
+        //넉백타입이 제거되지 않은 코드
+        //public void TakeDamage(float damage, MonsterSkillData.AttackType attackType, MonsterSkillData.KnockbackType knockbackType)
+        public void TakeDamage(float damage, MonsterSkillData.AttackType attackType)
         {
             // TODO: 현재 플레이어 상태(가드, 회피 등)를 확인하고,
             // attackType에 따라 데미지를 무시하거나 경감하는 로직이 필요합니다.
