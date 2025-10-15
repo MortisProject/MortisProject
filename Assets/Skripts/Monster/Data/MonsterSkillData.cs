@@ -16,8 +16,8 @@ namespace Monster.Data
         [Range(0, 500)]
         public float damageMultiplier = 100f;
 
-        [Tooltip("피격 시 플레이어에게 적용될 넉백의 종류입니다.")]
-        public KnockbackType knockbackType = KnockbackType.Hit;
+        //[Tooltip("피격 시 플레이어에게 적용될 넉백의 종류입니다.")]
+        //public KnockbackType knockbackType = KnockbackType.Hit;
 
         /// <summary>
         /// 이 스킬의 실제 로직을 실행합니다.
@@ -28,6 +28,9 @@ namespace Monster.Data
 
         // --- 열거형 정의 ---
         public enum AttackType { Normal, Blue, Yellow }
-        public enum KnockbackType { Hit, Knockback }
+        
+        //히트와 넉백은 기획서상 나누지 않았으나
+        //나중에 필요성이 있으면 사용할 수 있도록 주석 처리함
+        //public enum KnockbackType { Hit, Knockback }
     }
 }

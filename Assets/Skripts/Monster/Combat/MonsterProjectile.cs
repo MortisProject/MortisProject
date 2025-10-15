@@ -55,7 +55,9 @@ namespace Monster.Combat
                 if (other.TryGetComponent<CharacterStats>(out var playerStats))
                 {
                     float finalDamage = _performer.Data.attackValue * (_skillData.damageMultiplier / 100f);
-                    playerStats.TakeDamage(finalDamage, _skillData.attackType, _skillData.knockbackType);
+                    playerStats.TakeDamage(finalDamage, _skillData.attackType);
+                    //넉백타입이 제거되지 않은 코드
+                    //playerStats.TakeDamage(finalDamage, _skillData.attackType, _skillData.knockbackType);
                 }
 
                 // 충돌 시 즉시 풀에 반납
