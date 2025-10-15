@@ -35,7 +35,11 @@ namespace Monster.Animation
         /// </summary>
         public void ExecuteSkill(int skillIndex)
         {
-            if (skillIndex < 0 || skillIndex >= _skills.Length) return;
+            if (skillIndex < 0 || skillIndex >= _skills.Length)
+            {
+                Debug.Log($"{skillIndex} 번째 인덱스에 히트박스가 없습니다.");
+                return;
+            }
             _skills[skillIndex]?.Execute(_monster, this);
         }
 

@@ -35,18 +35,17 @@ namespace Monster.States
             {
                 // 플레이어와의 거리를 다시 확인하여 다음 상태를 결정합니다.
                 float distanceToPlayer = Vector3.Distance(_monster.transform.position, _monster.target.position);
-
-                if (distanceToPlayer <= _monster.Data.attackRange)
+                if (!_monster.target)
+                {
+                    _monster.StateMachine.ChangeState(_monster.IdleState); // 범위 밖 -> 대기
+                }
+                else if (distanceToPlayer <= _monster.Data.attackRange)
                 {
                     _monster.StateMachine.ChangeState(_monster.BattleState); // 공격 범위 내 -> 전투
                 }
                 else if (distanceToPlayer <= _monster.Data.detectionRange)
                 {
                     _monster.StateMachine.ChangeState(_monster.ChaseState); // 인식 범위 내 -> 추격
-                }
-                else
-                {
-                    _monster.StateMachine.ChangeState(_monster.IdleState); // 범위 밖 -> 대기
                 }
             }
         }

@@ -21,7 +21,8 @@ namespace Monster.States
             Debug.Log("전투 상태 시작.");
             _isAttackFinished = false; // 전투 상태에 진입하면 바로 공격 시작
             _attackCooldownTimer = AttackCooldown; // 쿨다운 초기화
-
+            // 이동을 즉시 멈춥니다.
+            _monster.Agent.ResetPath();
             // 플레이어를 바라보게 하고 공격 애니메이션을 실행합니다.
             FaceTarget();
             _monster.AnimController.PlayAttack();
@@ -30,12 +31,7 @@ namespace Monster.States
         public void Update()
         {
             // 공격 애니메이션이 아직 끝나지 않았다면 아무것도 하지 않고 대기합니다.
-            if (!_isAttackFinished)
-            {
-                // 공격 중에도 계속 플레이어를 바라보도록 합니다.
-                FaceTarget();
-                return;
-            }
+            if (!_isAttackFinished) return;
 
             // 공격이 끝났다면, 쿨다운 타이머를 감소시킵니다.
             _attackCooldownTimer -= Time.deltaTime;
@@ -66,7 +62,7 @@ namespace Monster.States
 
         public void Exit()
         {
-            // 전투 상태를 벗어날 때 특별히 처리할 내용은 현재 없습니다.
+            _attackCooldownTimer = 0f;
         }
 
         /// <summary>
@@ -74,6 +70,7 @@ namespace Monster.States
         /// </summary>
         public void OnAttackFinished()
         {
+            _attackCooldownTimer = 0f;
             _isAttackFinished = true;
             Debug.Log("몬스터 공격 애니메이션 종료.");
         }

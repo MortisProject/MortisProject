@@ -9,12 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f98debf5fef094ca7dc43d3f13ec37, type: 3}
-  m_Name: New Projectile Skill
+  m_Script: {fileID: 11500000, guid: b21d4917d2c48064a869e9a2170e2534, type: 3}
+  m_Name: Mutant_Melee_SkillData
   m_EditorClassIdentifier: 
   attackType: 0
   damageMultiplier: 100
   knockbackType: 0
-  projectileTag: 
-  projectileSpeed: 20
-  projectileLifetime: 5
+  hitboxIndex: 0
+  duration: 0.3
