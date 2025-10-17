@@ -49,6 +49,7 @@ namespace Player.States
             // 공격 상태 진입 시점의 카메라 정면 방향을 저장합니다.
             AimDirection = Camera.main.transform.forward;
 
+            _stats.ActivateCurrentWeaponModel();
             // 이동값 초기화
             _motor.Stop();
 
@@ -94,6 +95,7 @@ namespace Player.States
 
         public virtual void Exit()
         {
+            _stats.DeactivateAllWeaponModels();
             // 애니메이터 파라미터 잔여값 초기화
             _animController.ResetMoveParameters();
             _animController.SetComboStack(0);
@@ -283,6 +285,8 @@ namespace Player.States
         public void PerformSwap()
         {
             if (_currentSwapAttackData == null) return;
+            _stats.DeactivateAllWeaponModels();
+            _stats.ActivateCurrentWeaponModel();
             _stats.ChangeWeapon(_currentSwapAttackData.targetWeaponType);
         }
 

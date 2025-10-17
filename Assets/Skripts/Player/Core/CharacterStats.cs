@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Monster.Data;
 using System.Collections;
+using Player.Animation;
+using World.Manager;
 
 namespace Player
 {
@@ -17,6 +19,7 @@ namespace Player
         [SerializeField] private PlayerSO _data; // SO 데이터 참조
         [SerializeField] private PlayerStateMachine _stateMachine;
         [SerializeField] private PlayerMotor _motor;
+        [SerializeField] private PlayerAnimationController _animController;
 
         [Header("Core Stats")]
         [Tooltip("최대 체력입니다.")]
@@ -55,6 +58,9 @@ namespace Player
         [Tooltip("플레이어가 사용할 수 있는 모든 무기 데이터 목록입니다.")]
         public List<WeaponData> availableWeapons;
 
+        [Tooltip("실제 무기 모델 GameObject 리스트입니다. availableWeapons 리스트와 순서 및 개수가 반드시 일치해야 합니다.")]
+        public List<GameObject> weaponObjects;
+
         [Tooltip("현재 장착하고 있는 무기의 데이터입니다. (런타임에 자동 할당)")]
         public WeaponData CurrentWeaponData { get; private set; }
         private int _currentWeaponIndex = 0;
@@ -72,6 +78,7 @@ namespace Player
             // 게임 시작 시 현재 체력을 최대 체력으로 초기화합니다.
             currentHp = maxHp;
             CurrentAst = maxAst;
+            DeactivateAllWeaponModels();
 
             // 게임 시작 시 첫 번째 무기로 초기화
             if (availableWeapons != null && availableWeapons.Count > 0)
@@ -139,6 +146,44 @@ namespace Player
         }
 
         /// <summary>
+        /// 현재 장착된 무기 모델을 활성화하고, 나머지는 비활성화합니다.
+        /// </summary>
+        public void ActivateCurrentWeaponModel()
+        {
+            // 리스트 개수가 맞는지 안전하게 확인합니다.
+            if (weaponObjects == null || weaponObjects.Count != availableWeapons.Count)
+            {
+                Debug.LogError("WeaponObjects와 AvailableWeapons 리스트의 개수가 일치하지 않습니다!");
+                return;
+            }
+
+            for (int i = 0; i < weaponObjects.Count; i++)
+            {
+                // 현재 무기 인덱스와 일치하는 모델만 활성화합니다.
+                if (weaponObjects[i] != null)
+                {
+                    weaponObjects[i].SetActive(i == _currentWeaponIndex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 모든 무기 모델을 비활성화합니다.
+        /// </summary>
+        public void DeactivateAllWeaponModels()
+        {
+            if (weaponObjects == null) return;
+
+            foreach (var weaponObj in weaponObjects)
+            {
+                if (weaponObj != null)
+                {
+                    weaponObj.SetActive(false);
+                }
+            }
+        }
+
+        /// <summary>
         /// 더블 점프 기회를 사용했음을 처리합니다.
         /// </summary>
         public void UseDoubleJump()
@@ -184,35 +229,79 @@ namespace Player
         //public void TakeDamage(float damage, MonsterSkillData.AttackType attackType, MonsterSkillData.KnockbackType knockbackType)
         public void TakeDamage(float damage, Transform attacker, MonsterSkillData.AttackType attackType)
         {
-            // --- 코드 블럭 단위로 제공 (수정된 부분) ---
             // 현재 플레이어의 상태를 확인합니다.
             var currentState = _stateMachine.CurrentState;
 
             // 1. 회피 상태일 때
-            if (currentState is PlayerDodgeState)
+            if (currentState is PlayerDodgeState dodgeState)
             {
-                // Yellow 타입 공격이 아니면 데미지만 받고 경직은 무시합니다.
+                // 회피 판정 시간 내에 피격되었는지 확인합니다.
+                if (dodgeState.TimeSinceEntered <= _data.perfectDodgeWindow)
+                {
+                    // Yellow 타입 공격은 퍼펙트 회피를 무시하고 그대로 피격됩니다.
+                    if (attackType == MonsterSkillData.AttackType.Yellow)
+                    {
+                        Debug.Log("퍼펙트 회피 실패! (Yellow 타입 공격)");
+                        // 여기서 특별한 처리를 하지 않으면, 코드는 아래의 일반 피격 로직으로 넘어갑니다.
+                    }
+                    else // Yellow 타입이 아니면 퍼펙트 회피 성공!
+                    {
+                        Debug.Log("퍼펙트 회피 성공!");
+
+                        _animController.PlayDodgePerfect();
+                        _motor.Jump(2);
+                        // 불릿타임을 발동시킵니다.
+                        BulletTimeManager.Instance.StartBulletTime(_data.perfectDodgeBulletTimeDuration);
+
+                        // TODO: 여기에 퍼펙트 회피 성공 시의 시각/청각 효과(VFX, SFX) 재생 로직을 추가할 수 있습니다.
+
+                        // 데미지를 받지 않고, 상태도 변하지 않도록 여기서 메서드를 즉시 종료합니다.
+                        return;
+                    }
+                }
+                // 일반 회피 중 피격 로직 (Yellow가 아닐 때)
                 if (attackType != MonsterSkillData.AttackType.Yellow)
                 {
                     currentHp -= damage;
                     Debug.Log($"[회피 중 피격] 플레이어가 {damage}의 피해를 입었습니다!");
-                    // TODO: 데미지 UI 표시
                     if (currentHp <= 0) { /* TODO: 사망 처리 */ }
-                    return; // 경직 로직을 실행하지 않고 종료
+                    return; // 경직 없이 데미지만 받고 종료
                 }
-                // Yellow 타입 공격이면 회피에 실패하므로 아래의 기본 피격 로직을 따릅니다.
             }
 
             // 2. 가드 상태일 때
-            if (currentState is PlayerGuardState)
+            if (currentState is PlayerGuardState guardState)
             {
-                // Blue 타입 공격이 아니면 가드를 시도합니다.
+                if (guardState.TimeSinceEntered <= _data.perfectGuardWindow)
+                {
+                    // Blue 타입 공격을 받으면 퍼펙트 가드에 실패하고 즉시 피격됩니다.
+                    if (attackType == MonsterSkillData.AttackType.Blue)
+                    {
+                        Debug.Log("퍼펙트 가드 실패! (Blue 타입 공격)");
+                        // 아래의 일반 피격 로직으로 넘어갑니다.
+                    }
+                    else // Blue 타입이 아니면 퍼펙트 가드 성공!
+                    {
+                        Debug.Log("퍼펙트 가드 성공!");
+
+                        // 불릿타임을 발동시킵니다.
+                        BulletTimeManager.Instance.StartBulletTime(_data.perfectGuardBulletTimeDuration);
+
+                        // TODO: 여기에 퍼펙트 가드 성공 시의 시각/청각 효과(VFX, SFX) 재생 로직을 추가할 수 있습니다.
+                        // (예: 화면에 스파크 효과, "Clang!" 사운드 등)
+
+                        // 데미지, 게이지 소모, 넉백 없이 즉시 메서드를 종료합니다.
+                        return;
+                    }
+                }
+                    // Blue 타입 공격이 아니면 가드를 시도합니다.
                 if (attackType != MonsterSkillData.AttackType.Blue)
                 {
                     float guardCost = damage * 0.5f;
                     if (CurrentGuardGauge >= guardCost)
                     {
                         // 가드 성공
+                        _animController.PlayGuardHit();
                         CurrentGuardGauge -= guardCost;
                         float reducedDamage = damage * (1 - (_data.guardDamageReduction / 100f));
                         currentHp -= reducedDamage;
@@ -226,8 +315,14 @@ namespace Player
                         return; // 가드에 성공했으므로 경직 로직을 실행하지 않음
                     }
                 }
-                // Blue 타입 공격이거나, 가드 게이지가 부족하면 가드에 실패하므로 아래의 기본 피격 로직을 따릅니다.
-                Debug.Log($"[가드 실패] {attackType} 공격 또는 가드 게이지 부족!");
+                // Blue 타입 공격이거나, 가드 게이지가 부족하면 가드 브레이크 상태로 전환
+                Debug.Log($"[가드 브레이크!] {attackType} 공격 또는 가드 게이지 부족!");
+                // 데미지를 받고, 넉백을 적용한 후, GuardBreakState로 전환합니다.
+                currentHp -= damage;
+                _animController.PlayGuardBreak();
+                _motor.ApplyKnockback(attacker.position, _data.hitKnockbackForce);
+                _stateMachine.ForceChangeState(GetComponent<Player>().GuardBreakState);
+                return;
             }
 
             // 3. 경직 면역 상태가 아닐 때 (기본 피격, 회피/가드 실패)

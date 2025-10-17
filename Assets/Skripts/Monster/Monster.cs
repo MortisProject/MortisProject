@@ -1,6 +1,7 @@
 // Assets/Scripts/Monster/Monster.cs
 using Monster.Animation;
 using Monster.States;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI; 
 
@@ -32,6 +33,7 @@ namespace Monster
         [Tooltip("몬스터가 추적하거나 공격할 대상입니다.")]
         public Transform target;
 
+        private Coroutine _knockbackCoroutine;
         // --- 상태 클래스 인스턴스 ---
         public MonsterSpawnState SpawnState { get; private set; }
         public MonsterIdleState IdleState { get; private set; }
@@ -84,27 +86,31 @@ namespace Monster
         /// 지정된 양의 데미지를 받아 체력을 감소시킵니다.
         /// </summary>
         /// <param name="damage">입을 데미지의 양</param>
-        public void TakeDamage(float damage)
+        public void TakeDamage(float damage, Vector3 knockbackDirection, float knockbackForce)
         {
-            if (StateMachine.CurrentState is MonsterDieState || StateMachine.CurrentState is MonsterSpawnState)
             {
-                return;
-            }
+                if (StateMachine.CurrentState is MonsterDieState || StateMachine.CurrentState is MonsterSpawnState)
+                {
+                    return;
+                }
 
-            currentHp -= damage;
-            Debug.Log($"{gameObject.name}이(가) {damage}의 피해를 입었습니다! 현재 체력: {currentHp}");
+                currentHp -= damage;
+                ApplyKnockback(knockbackDirection, knockbackForce);
+                Debug.Log($"{gameObject.name}이(가) {damage}의 피해를 입었습니다! 현재 체력: {currentHp}");
 
-            if (currentHp <= 0)
-            {
-                // 체력이 0 이하면 Die 상태로 즉시 전환합니다.
-                StateMachine.ChangeState(DieState);
-            }
-            else
-            {
-                // 체력이 남아있다면 Hit 상태로 즉시 전환합니다.
-                StateMachine.ChangeState(HitState);
+                if (currentHp <= 0)
+                {
+                    // 체력이 0 이하면 Die 상태로 즉시 전환합니다.
+                    StateMachine.ChangeState(DieState);
+                }
+                else
+                {
+                    // 체력이 남아있다면 Hit 상태로 즉시 전환합니다.
+                    StateMachine.ChangeState(HitState);
+                }
             }
         }
+
         public void OnAttackFinished()
         {
             // 현재 상태가 BattleState일 때만 해당 상태의 OnAttackFinished를 호출합니다.
@@ -133,6 +139,41 @@ namespace Monster
             // 비활성화되었을 수 있는 컴포넌트들을 다시 활성화
             GetComponent<Collider>().enabled = true;
             Agent.enabled = true;
+        }
+
+        /// <summary>
+        /// 몬스터에게 넉백을 적용합니다. NavMeshAgent와 충돌을 피하기 위해 코루틴을 사용합니다.
+        /// </summary>
+        private void ApplyKnockback(Vector3 direction, float force)
+        {
+            if (_knockbackCoroutine != null)
+            {
+                StopCoroutine(_knockbackCoroutine);
+            }
+            _knockbackCoroutine = StartCoroutine(KnockbackCoroutine(direction, force));
+        }
+
+        private IEnumerator KnockbackCoroutine(Vector3 direction, float force)
+        {
+            // 넉백 시작 시 NavMeshAgent의 제어를 잠시 비활성화합니다.
+            Agent.enabled = false;
+
+            float timer = 0f;
+            float knockbackDuration = 0.2f; // 넉백이 지속될 시간
+            Vector3 startPosition = transform.position;
+            Vector3 targetPosition = startPosition + direction * (force * 0.1f); // 힘에 비례하여 거리 조절
+
+            while (timer < knockbackDuration)
+            {
+                // Lerp를 사용하여 부드럽게 목표 위치로 이동합니다.
+                transform.position = Vector3.Lerp(startPosition, targetPosition, timer / knockbackDuration);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            // 넉백이 끝나면 NavMeshAgent를 다시 활성화합니다.
+            Agent.enabled = true;
+            _knockbackCoroutine = null;
         }
 
 #if UNITY_EDITOR

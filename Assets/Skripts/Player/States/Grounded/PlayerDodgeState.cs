@@ -17,7 +17,7 @@ namespace Player.States
         private readonly PlayerSO _data;
         private readonly PlayerAnimationController _animController;
 
-        private float _dodgeTimer; // 회피 지속 시간을 계산할 타이머
+        public float TimeSinceEntered { get; private set; }
 
         public PlayerDodgeState(Player player, PlayerStateMachine stateMachine, PlayerMotor motor, PlayerSO data, PlayerAnimationController animController)
         {
@@ -33,6 +33,7 @@ namespace Player.States
         /// </summary>
         public void Enter()
         {
+            TimeSinceEntered = 0f;
             _animController.PlayDodge();
         }
 
@@ -41,8 +42,7 @@ namespace Player.States
         /// </summary>
         public void Update()
         {
-            // 닷지 시작후 1.0초 안에 피격시 퍼펙트 회피로 변경
-            // 퍼펙트 닷지 애니 트리거 활성화
+            TimeSinceEntered += Time.deltaTime;
         }
 
         /// <summary>

@@ -25,11 +25,14 @@ MonoBehaviour:
   stunImmunityDuration: 1
   guardDamageReduction: 50
   guardSuccessKnockbackForce: 2
-  guardGaugeRegenRate: 10
+  guardGaugeRegenRate: 0
+  perfectGuardWindow: 0.5
+  perfectGuardBulletTimeDuration: 0.1
   dodgeInitialSpeed: 1
   dodgeMaxSpeed: 10
   dodgeDeceleration: 7
-  dodgeDuration: 0.3
+  perfectDodgeWindow: 0.8
+  perfectDodgeBulletTimeDuration: 0.7
   mouseSensitivity: 4
   pitchMinMax: {x: -60, y: 85}
   wireHookPrefab: {fileID: 7671246574104627253, guid: 8e34fb559abb2c547b1d26edbf08fc18, type: 3}

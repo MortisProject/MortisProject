@@ -37,6 +37,10 @@ namespace Player.Animation
         private readonly int _hitHash = Animator.StringToHash("Hit");
         private readonly int _isGuardingHash = Animator.StringToHash("IsGuarding");
         private readonly int _dodgeHash = Animator.StringToHash("Dodge");
+        private readonly int _dodgePerfectHash = Animator.StringToHash("Dodge_Perfect");
+        private readonly int _guardHitHash = Animator.StringToHash("Guard_Hit");
+        private readonly int _guardBreakHash = Animator.StringToHash("Guard_Break");
+        private readonly int _guardPerfectHash = Animator.StringToHash("Guard_Parfect");
 
         // TODO: 추후 공격, 닷지 등의 애니메이션 해시값을 여기에 추가합니다.
         // private readonly int _attackTriggerHash = Animator.StringToHash("Attack");
@@ -94,6 +98,10 @@ namespace Player.Animation
         public void PlayHit() => _animator.SetTrigger(_hitHash);
         public void SetGuarding(bool isGuarding) => _animator.SetBool(_isGuardingHash, isGuarding);
         public void PlayDodge() => _animator.SetTrigger(_dodgeHash);
+        public void PlayDodgePerfect() => _animator.SetTrigger(_dodgePerfectHash);
+        public void PlayGuardHit() => _animator.SetTrigger(_guardHitHash);
+        public void PlayGuardBreak() => _animator.SetTrigger(_guardBreakHash);
+        public void PlayGuradPerfect() => _animator.SetTrigger(_guardPerfectHash);
 
         /// <summary>
         /// 이동 관련 애니메이터 파라미터와 내부 변수들을 즉시 0으로 초기화합니다.

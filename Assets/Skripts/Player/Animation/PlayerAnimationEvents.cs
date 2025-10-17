@@ -146,5 +146,14 @@ namespace Player.Animation
             // 현재 상태가 DodgeState일 때만 상태 종료를 요청합니다.
             GetCurrentDodgeState()?.FinishDodge();
         }
+
+        /// <summary>
+        /// (AnimEvent) 가드 브레이크 애니메이션 종료 시 호출됩니다.
+        /// </summary>
+        public void OnGuardBreakAnimationEnd()
+        {
+            // 현재 상태가 GuardBreakState일 때만 상태 종료를 요청합니다.
+            (_player.StateMachine.CurrentState as PlayerGuardBreakState)?.OnAnimationFinished();
+        }
     }
 }

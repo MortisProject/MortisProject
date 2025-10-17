@@ -14,8 +14,10 @@ namespace Player.Combat
     {
         private Collider _collider;
         private float _damage;
+        private float _knockbackForce;
         private float _lifeTimer; // 남은 활성화 시간을 체크할 타이머
         private List<Collider> _hitTargets = new List<Collider>();
+        private Transform _attacker; // 공격자(플레이어)의 Transform
 
         private void Awake()
         {
@@ -45,12 +47,14 @@ namespace Player.Combat
         /// <summary>
         /// 지정된 데미지와 지속 시간으로 히트박스를 활성화합니다.
         /// </summary>
-        public void Activate(float damage, float duration)
+        public void Activate(float damage, float knockbackForce, float duration, Transform attacker)
         {
             _damage = damage;
-            _lifeTimer = duration; // 타이머 설정
+            _knockbackForce = knockbackForce;
+            _lifeTimer = duration;
+            _attacker = attacker;
             _hitTargets.Clear();
-            gameObject.SetActive(true); // 스스로 활성화
+            gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -64,7 +68,8 @@ namespace Player.Combat
                 // Monster 스크립트를 가져와서 데미지를 입힘
                 if (other.TryGetComponent<Monster.Monster>(out var monster))
                 {
-                    monster.TakeDamage(_damage);
+                    Vector3 knockbackDirection = (other.transform.position - _attacker.position).normalized;
+                    monster.TakeDamage(_damage, knockbackDirection, _knockbackForce);
                     _hitTargets.Add(other);
                 }
             }

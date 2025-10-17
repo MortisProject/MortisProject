@@ -163,25 +163,6 @@ namespace Player
             IsGrounded = false;
         }
 
-        /// <summary>
-        /// 외부(예: Projectile)에서 호출하여 Pursuit 상태를 시작합니다.
-        /// </summary>
-        /// <param name="target">추격할 대상</param>
-        /// <param name="pursuitData">추격에 사용할 데이터</param>
-        public void StartPursuit(Transform target, PursuitData pursuitData)
-        {
-            // 현재 상태가 추격 상태가 아닐 때만 실행 (중복 방지)
-            if (!(CurrentState is PlayerPursuitState))
-            {
-                // 1. PursuitState에 필요한 데이터를 설정합니다.
-                var playerComponent = GetComponentInParent<Player>();
-                playerComponent.PursuitState.SetPursuitData(target, pursuitData);
-
-                // 2. PursuitState로 즉시 상태를 변경합니다.
-                ChangeState(playerComponent.PursuitState);
-            }
-        }
-
 #if UNITY_EDITOR
         /// <summary>
         /// 유니티 에디터의 Scene 뷰에서만 작동하며, 디버깅 목적으로 도형을 그려줍니다.

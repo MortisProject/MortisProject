@@ -46,7 +46,7 @@ namespace Player.Data
             if (targetGroup != null && hitboxIndex < targetGroup.hitboxes.Length)
             {
                 Hitbox targetHitbox = targetGroup.hitboxes[hitboxIndex];
-                targetHitbox.Activate(finalDamage, duration);
+                targetHitbox.Activate(finalDamage, knockbackForce, duration, performer.transform);
             }
             else
             {

@@ -18,11 +18,12 @@ namespace Player.Combat
         [SerializeField] private ProjectileData _data;
 
         private PlayerStateMachine _stateMachine;
-        private PursuitData _pursuitData;
         private Rigidbody _rigidbody;
         private float _finalDamage;
+        private float _knockbackForce;
         private float _lifeTimeTimer;
         private string _poolTag;
+        private Transform _attacker; 
 
         // 한 번의 활성화 동안 이미 공격한 대상을 저장하여 중복 피격을 방지합니다. (관통탄을 위함)
         private System.Collections.Generic.List<Collider> _hitTargets = new System.Collections.Generic.List<Collider>();
@@ -50,13 +51,14 @@ namespace Player.Combat
         /// <param name="initialDirection">발사될 방향</param>
         /// <param name="baseDamage">플레이어의 기본 공격력</param>
         /// <param name="data">발사체의 모든 속성을 담은 ScriptableObject</param>
-        public void Initialize(PlayerStateMachine stateMachine, string poolTag, Vector3 initialDirection, float finalDamage, ProjectileData data, PursuitData pursuitData)
+        public void Initialize(PlayerStateMachine stateMachine, Transform attacker, string poolTag, Vector3 initialDirection, float finalDamage, float knockbackForce, ProjectileData data)
         {
-            _stateMachine = stateMachine; // StateMachine 참조 저장
+            _stateMachine = stateMachine;
+            _attacker = attacker;
             _poolTag = poolTag;
             _finalDamage = finalDamage;
+            _knockbackForce = knockbackForce;
             _data = data;
-            _pursuitData = pursuitData; // PursuitData 저장
             _lifeTimeTimer = _data.projectileLifeTime;
             _hitTargets.Clear();
 
@@ -74,13 +76,9 @@ namespace Player.Combat
                 if (other.TryGetComponent<Monster.Monster>(out var monster))
                 {
                     // 최종 데미지 계산 (기본 데미지 * 발사체 데미지 배율)
-                    monster.TakeDamage(_finalDamage);
-                    _hitTargets.Add(other); // 공격한 대상으로 추가하여 중복 피격 방지
-
-                    if (_pursuitData != null && _stateMachine != null)
-                    {
-                        _stateMachine.StartPursuit(other.transform, _pursuitData);
-                    }
+                    Vector3 knockbackDirection = (other.transform.position - _attacker.position).normalized;
+                    monster.TakeDamage(_finalDamage, knockbackDirection, _knockbackForce);
+                    _hitTargets.Add(other);
 
                     HandleImpact(other.ClosestPoint(transform.position));
                 }

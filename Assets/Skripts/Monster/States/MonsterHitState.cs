@@ -19,9 +19,6 @@ namespace Monster.States
             Debug.Log("피격 상태 시작!");
             _hitTimer = HitDuration;
 
-            // 이동을 즉시 멈춥니다.
-            _monster.Agent.ResetPath();
-
             // 피격 애니메이션을 재생합니다.
             _monster.AnimController.PlayHit();
         }

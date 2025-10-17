@@ -371,7 +371,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""6b95f3b3-7951-42c1-a1d7-5c477aa52f0f"",
                     ""path"": ""<Keyboard>/g"",
-                    ""interactions"": ""Hold(duration=0.1,pressPoint=0.1)"",
+                    ""interactions"": ""Hold(duration=0.01,pressPoint=0.01)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Guard"",

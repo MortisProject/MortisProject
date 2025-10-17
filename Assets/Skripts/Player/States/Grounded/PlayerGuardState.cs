@@ -15,6 +15,8 @@ namespace Player.States
         private readonly PlayerInput _input;
         private readonly PlayerAnimationController _animController;
 
+        public float TimeSinceEntered { get; private set; }
+
         public PlayerGuardState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerAnimationController animController)
         {
             _player = player;
@@ -28,7 +30,7 @@ namespace Player.States
         /// </summary>
         public void Enter()
         {
-            // TODO: PlayerAnimationController에 가드 시작/유지 애니메이션 관련 메서드 추가
+            TimeSinceEntered = 0f;
             _animController.SetGuarding(true);
         }
 
@@ -37,6 +39,8 @@ namespace Player.States
         /// </summary>
         public void Update()
         {
+            TimeSinceEntered += Time.deltaTime;
+
             // 가드 키에서 손을 떼면 Idle 상태로 돌아갑니다.
             if (!_input.IsGuarding)
             {
