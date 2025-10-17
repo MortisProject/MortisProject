@@ -10,7 +10,6 @@ namespace Player.Data
     /// <summary>
     /// 근접 공격(히트박스 활성화)을 정의하는 AttackEffect입니다.
     /// </summary>
-    [CreateAssetMenu(fileName = "NewMeleeAttackEffect", menuName = "Data/Attack Effect/Melee Attack")]
     public class MeleeAttackEffect : AttackEffect
     {
         [Header("근접 공격 설정")]

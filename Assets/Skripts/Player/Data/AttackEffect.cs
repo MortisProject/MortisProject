@@ -1,6 +1,5 @@
 // Assets/Skripts/Player/Data/AttackEffect.cs
 using Player.Animation;
-using Player.Combat;
 using Player.States;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ namespace Player.Data
     /// 모든 공격 효과의 기반이 되는 추상 ScriptableObject입니다.
     /// 각 효과는 Execute 메서드를 통해 자신만의 로직을 실행합니다.
     /// </summary>
-    public abstract class AttackEffect : ScriptableObject
+    public abstract class AttackEffect
     {
         [Header("공통 데이터")]
         [Tooltip("스킬의 데미지 배율입니다. (예: 120% -> 120)")]

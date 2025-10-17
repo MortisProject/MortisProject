@@ -1,4 +1,5 @@
 // Assets/Scripts/Player/Data/SkillData.cs
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Player.Data
@@ -10,14 +11,11 @@ namespace Player.Data
     [CreateAssetMenu(fileName = "NewSkillData", menuName = "Data/Skill Data")]
     public class SkillData : ScriptableObject
     {
-        // --- 코드 블럭 단위로 제공 ---
         [Header("Skill Effects")]
         [Tooltip("이 스킬이 실행될 때 발동할 공격 효과 목록입니다.")]
-        public AttackEffect[] effects;
-        // --- 여기까지 추가 ---
+        [SerializeReference]
+        public List<AttackEffect> effects = new List<AttackEffect>();
 
-        [Header("Combat Data")]
-        // [삭제할 곳] public int damageMultiplier = 100;
         [Tooltip("스킬 사용 시 생성되는 버스트 게이지 양입니다.")]
         public int burstGeneration = 5;
 

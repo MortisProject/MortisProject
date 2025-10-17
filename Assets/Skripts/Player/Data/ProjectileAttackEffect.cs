@@ -10,7 +10,6 @@ namespace Player.Data
     /// <summary>
     /// 투사체 발사를 정의하는 AttackEffect입니다.
     /// </summary>
-    [CreateAssetMenu(fileName = "NewProjectileAttackEffect", menuName = "Data/Attack Effect/Projectile Attack")]
     public class ProjectileAttackEffect : AttackEffect
     {
         [Header("투사체 설정")]
