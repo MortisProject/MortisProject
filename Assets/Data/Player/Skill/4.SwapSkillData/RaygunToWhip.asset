@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d1b816bbb99f1d4484beab0baf308e2, type: 3}
+  m_Name: RaygunToWhip
+  m_EditorClassIdentifier: 
+  preSwapEffects:
+  - {fileID: 11400000, guid: e66ac6cacc9c7f042a14ad955e4fda15, type: 2}
+  targetWeaponType: 0
+  postSwapEffects:
+  - {fileID: 11400000, guid: 5074d7a2d12cbcd4fa2f74244b52b95a, type: 2}

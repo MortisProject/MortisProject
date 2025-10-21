@@ -262,8 +262,10 @@ namespace Player.States
                 // 해당 스킬의 모든 효과를 실행
                 foreach (var effect in currentSkill.effects)
                 {
-                    // effect가 null이 아닐 때만 Execute를 호출합니다.
-                    effect?.Execute(_player, hitboxProvider, this);
+                    if (effect != null)
+                    {
+                        effect.Execute(_player, hitboxProvider, this);
+                    }
                 }
             }
         }
