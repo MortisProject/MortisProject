@@ -71,9 +71,9 @@ namespace Player
             MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Data, Stats, AnimController);
             JumpState = new PlayerJumpState(this, StateMachine, Input, Motor, Data, AnimController);
             FallState = new PlayerFallState(this, StateMachine, Input, Motor, Data, AnimController);
-            WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data, Stats);
+            WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data);
             WireLaunchState = new PlayerWireLaunchState(this, StateMachine, Motor, Data, AnimController);
-            WireMoveState = new PlayerWireMoveState(this, StateMachine, Input, Motor, Data, AnimController);
+            WireMoveState = new PlayerWireMoveState(this, StateMachine, Input, Motor, Stats, Data, AnimController);
             GroundedAttackState = new PlayerGroundedAttackState(this, StateMachine, Input, Motor, Stats, AnimController);
             HitState = new PlayerHitState(this, StateMachine, Motor, Data, AnimController);
             GuardState = new PlayerGuardState(this, StateMachine, Input, AnimController);

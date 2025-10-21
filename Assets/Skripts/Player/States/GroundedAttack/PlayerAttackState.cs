@@ -64,6 +64,20 @@ namespace Player.States
 
         public virtual void Update()
         {
+            // 공격을 회피로 캔슬 가능하도록하기
+            if (_input.IsDodgePressed)
+            {
+                _stateMachine.ChangeState(_player.DodgeState);
+                return; // 상태가 변경되었으므로 즉시 종료
+            }
+
+            // 공격을 가드로 캔슬 가능하도록 하기
+            if(_input.IsGuarding)
+            {
+                _stateMachine.ChangeState(_player.GuardState);
+                return;
+            }
+
             if (_comboIndex >= 4)
             {
                 // 최대 콤보에 도달하면 더 이상 입력을 받지 않음

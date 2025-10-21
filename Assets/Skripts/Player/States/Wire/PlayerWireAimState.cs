@@ -13,8 +13,6 @@ namespace Player.States
         private readonly PlayerStateMachine _stateMachine;
         private readonly PlayerInput _input;
         private readonly PlayerSO _data;
-        private readonly Image _wireReticule;
-        private readonly CharacterStats _stats;
 
         // UI ฐüทร
         private readonly Image _bestReticule;
@@ -24,13 +22,12 @@ namespace Player.States
         private readonly List<Transform> _visibleTargets = new List<Transform>();
 
 
-        public PlayerWireAimState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerSO data, CharacterStats stats)
+        public PlayerWireAimState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerSO data)
         {
             _player = player;
             _stateMachine = stateMachine;
             _input = input;
             _data = data;
-            _stats = stats;
             _bestReticule = _player.BestWireReticuleUI;
         }
 
