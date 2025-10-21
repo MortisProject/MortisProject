@@ -286,8 +286,8 @@ namespace Player.States
         {
             if (_currentSwapAttackData == null) return;
             _stats.DeactivateAllWeaponModels();
-            _stats.ActivateCurrentWeaponModel();
             _stats.ChangeWeapon(_currentSwapAttackData.targetWeaponType);
+            _stats.ActivateCurrentWeaponModel();
         }
 
         /// <summary>

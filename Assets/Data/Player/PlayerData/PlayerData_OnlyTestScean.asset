@@ -36,12 +36,12 @@ MonoBehaviour:
   mouseSensitivity: 4
   pitchMinMax: {x: -60, y: 85}
   wireHookPrefab: {fileID: 7671246574104627253, guid: 8e34fb559abb2c547b1d26edbf08fc18, type: 3}
-  wireGrappleRange: 70
-  wireSwingLength: 50
+  wireGrappleRange: 100
+  wireSwingLength: 60
   wireAimSearchRadius: 0.7
-  wireLaunchSpeed: 30
-  wireAirDashSpeed: 30
-  wireDetachVerticalBonus: 10
-  wireLaunchBackwardImpulse: 10
+  wireLaunchSpeed: 60
+  wireAirDashSpeed: 120
+  wireDetachVerticalBonus: 15
+  wireLaunchBackwardImpulse: 15
   wireSpringForce: 300
   wireDamper: 80
