@@ -143,7 +143,17 @@ namespace Player
             CurrentWeaponData = availableWeapons[_currentWeaponIndex];
             Debug.Log($"{CurrentWeaponData.weaponType}으로 무기 교체!");
 
-            // TODO: 무기 모델을 바꾸거나, HUD UI를 업데이트하는 로직을 여기서 호출합니다.
+            if (availableWeapons.Count > 1)
+            {
+                int nextIndex = (_currentWeaponIndex + 1) % availableWeapons.Count;
+                WeaponData standbyWeapon = availableWeapons[nextIndex];
+
+                OnWeaponChanged?.Invoke(CurrentWeaponData, standbyWeapon);
+            }
+            else
+            {
+                OnWeaponChanged?.Invoke(CurrentWeaponData, null); // 보조 무기가 없음
+            }
         }
 
         /// <summary>
@@ -208,7 +218,7 @@ namespace Player
             if (CurrentAst >= amount)
             {
                 CurrentAst -= amount;
-                // TODO: UI 업데이트 이벤트 호출
+                OnAstChanged?.Invoke(CurrentAst, maxAst);
                 return true;
             }
             return false;
@@ -220,7 +230,7 @@ namespace Player
         public void AddAst(float amount)
         {
             CurrentAst = Mathf.Min(CurrentAst + amount, maxAst);
-            // TODO: UI 업데이트 이벤트 호출
+            OnAstChanged?.Invoke(CurrentAst, maxAst);
         }
 
         /// <summary>
@@ -287,6 +297,7 @@ namespace Player
                 if (attackType != MonsterSkillData.AttackType.Yellow)
                 {
                     currentHp -= damage;
+                    OnHpChanged?.Invoke(currentHp, maxHp);
                     Debug.Log($"[회피 중 피격] 플레이어가 {damage}의 피해를 입었습니다!");
                     if (currentHp <= 0) { /* TODO: 사망 처리 */ }
                     return; // 경직 없이 데미지만 받고 종료
@@ -329,6 +340,7 @@ namespace Player
                         CurrentGuardGauge -= guardCost;
                         float reducedDamage = damage * (1 - (_data.guardDamageReduction / 100f));
                         currentHp -= reducedDamage;
+                        OnHpChanged?.Invoke(currentHp, maxHp);
 
                         // TODO: PlayerMotor에 가드 넉백 메서드 추가
                         _motor.ApplyKnockback(attacker.position, _data.guardSuccessKnockbackForce);
@@ -343,6 +355,7 @@ namespace Player
                 Debug.Log($"[가드 브레이크!] {attackType} 공격 또는 가드 게이지 부족!");
                 // 데미지를 받고, 넉백을 적용한 후, GuardBreakState로 전환합니다.
                 currentHp -= damage;
+                OnHpChanged?.Invoke(currentHp, maxHp);
                 _animController.PlayGuardBreak();
                 _motor.ApplyKnockback(attacker.position, _data.hitKnockbackForce);
                 _stateMachine.ForceChangeState(GetComponent<Player>().GuardBreakState);
@@ -353,6 +366,7 @@ namespace Player
             if (!_isStunImmune)
             {
                 currentHp -= damage;
+                OnHpChanged?.Invoke(currentHp, maxHp);
                 Debug.Log($"플레이어가 {damage}의 피해를 입었습니다! ({attackType} 공격)");
 
                 if (currentHp <= 0)
@@ -370,6 +384,7 @@ namespace Player
             {
                 // 경직 면역 상태에서는 데미지만 받습니다.
                 currentHp -= damage;
+                OnHpChanged?.Invoke(currentHp, maxHp);
                 Debug.Log($"[경직 면역] 플레이어가 {damage}의 피해를 입었습니다!");
                 if (currentHp <= 0) { /* TODO: 사망 처리 */ }
             }
@@ -407,5 +422,19 @@ namespace Player
         /// 버스트 게이지가 변경될 때 UI 등에 알리기 위한 이벤트입니다. (현재값, 최대값)
         /// </summary>
         public event Action<float, float> OnBustChanged;
+        /// <summary>
+        /// 체력이 변경될 때 UI 등에 알리기 위한 이벤트입니다. (현재값, 최대값)
+        /// </summary>
+        public event Action<float, float> OnHpChanged;
+
+        /// <summary>
+        /// 아스트가 변경될 때 UI 등에 알리기 위한 이벤트입니다. (현재값, 최대값)
+        /// </summary>
+        public event Action<float, float> OnAstChanged;
+
+        /// <summary>
+        /// 무기가 교체될 때 UI 등에 알리기 위한 이벤트입니다. (새 주무기 데이터, 새 보조무기 데이터)
+        /// </summary>
+        public event Action<WeaponData, WeaponData> OnWeaponChanged;
     }
 }
