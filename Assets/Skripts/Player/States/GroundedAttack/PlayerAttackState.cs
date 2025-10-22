@@ -268,6 +268,12 @@ namespace Player.States
             if (skillArray != null && currentSkillIndex < skillArray.Length)
             {
                 SkillData currentSkill = skillArray[currentSkillIndex];
+
+                // 버스트 게이지를 획득합니다.
+                if (currentSkill.burstGeneration > 0)
+                {
+                    _stats.AddBust(currentSkill.burstGeneration);
+                }
                 if (currentSkill == null || currentSkill.effects == null) return;
 
                 var hitboxProvider = _player.GetComponentInChildren<PlayerAnimationEvents>();

@@ -201,7 +201,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Burst"",
+                    ""name"": ""BurstSkill"",
                     ""type"": ""Button"",
                     ""id"": ""f1a4b813-da43-45f4-927c-2b835939cc62"",
                     ""expectedControlType"": """",
@@ -394,7 +394,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": ""Press"",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Burst"",
+                    ""action"": ""BurstSkill"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -417,7 +417,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_SwapPrevWeapon = m_Player.FindAction("SwapPrevWeapon", throwIfNotFound: true);
         m_Player_Dodge = m_Player.FindAction("Dodge", throwIfNotFound: true);
         m_Player_Guard = m_Player.FindAction("Guard", throwIfNotFound: true);
-        m_Player_Burst = m_Player.FindAction("Burst", throwIfNotFound: true);
+        m_Player_BurstSkill = m_Player.FindAction("BurstSkill", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -510,7 +510,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SwapPrevWeapon;
     private readonly InputAction m_Player_Dodge;
     private readonly InputAction m_Player_Guard;
-    private readonly InputAction m_Player_Burst;
+    private readonly InputAction m_Player_BurstSkill;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -571,9 +571,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Guard => m_Wrapper.m_Player_Guard;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Burst".
+        /// Provides access to the underlying input action "Player/BurstSkill".
         /// </summary>
-        public InputAction @Burst => m_Wrapper.m_Player_Burst;
+        public InputAction @BurstSkill => m_Wrapper.m_Player_BurstSkill;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -636,9 +636,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Guard.started += instance.OnGuard;
             @Guard.performed += instance.OnGuard;
             @Guard.canceled += instance.OnGuard;
-            @Burst.started += instance.OnBurst;
-            @Burst.performed += instance.OnBurst;
-            @Burst.canceled += instance.OnBurst;
+            @BurstSkill.started += instance.OnBurstSkill;
+            @BurstSkill.performed += instance.OnBurstSkill;
+            @BurstSkill.canceled += instance.OnBurstSkill;
         }
 
         /// <summary>
@@ -686,9 +686,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Guard.started -= instance.OnGuard;
             @Guard.performed -= instance.OnGuard;
             @Guard.canceled -= instance.OnGuard;
-            @Burst.started -= instance.OnBurst;
-            @Burst.performed -= instance.OnBurst;
-            @Burst.canceled -= instance.OnBurst;
+            @BurstSkill.started -= instance.OnBurstSkill;
+            @BurstSkill.performed -= instance.OnBurstSkill;
+            @BurstSkill.canceled -= instance.OnBurstSkill;
         }
 
         /// <summary>
@@ -814,11 +814,11 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnGuard(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Burst" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "BurstSkill" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnBurst(InputAction.CallbackContext context);
+        void OnBurstSkill(InputAction.CallbackContext context);
     }
 }

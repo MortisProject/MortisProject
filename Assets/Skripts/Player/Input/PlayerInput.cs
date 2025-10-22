@@ -50,6 +50,9 @@ namespace Player
 
         [Tooltip("회피(Tab) 키를 '누르는 순간' 1프레임 동안 true 입니다.")]
         public bool IsDodgePressed { get; private set; }
+
+        [Tooltip("버스트 스킬(R) 키를 '누르는 순간' 1프레임 동안 true 입니다.")]
+        public bool IsBurstSkillPressed { get; private set; }
         // TODO: 공격, 닷지 등 추후 추가될 액션에 대한 프로퍼티를 여기에 선언합니다.
 
         private void Start()
@@ -91,6 +94,7 @@ namespace Player
 
             _input.Player.WeakAttack.performed += OnWeakAttack;
             _input.Player.StrongAttack.performed += OnStrongAttack;
+            _input.Player.BurstSkill.performed += OnBurstSkill;
 
             _input.Player.SwapNextWeapon.performed += OnSwapNextWeapon;
             _input.Player.SwapPrevWeapon.performed += OnSwapPrevWeapon;
@@ -126,6 +130,7 @@ namespace Player
 
             _input.Player.WeakAttack.performed -= OnWeakAttack;
             _input.Player.StrongAttack.performed -= OnStrongAttack;
+            _input.Player.BurstSkill.performed -= OnBurstSkill;
 
             _input.Player.SwapNextWeapon.performed -= OnSwapNextWeapon;
             _input.Player.SwapPrevWeapon.performed -= OnSwapPrevWeapon;
@@ -150,6 +155,7 @@ namespace Player
 
             IsSwapNextWeaponPressed = false;
             IsSwapPrevWeaponPressed = false;
+            IsBurstSkillPressed = false;
 
             IsDodgePressed = false;
         }
@@ -163,6 +169,7 @@ namespace Player
         private void OnWireFire(InputAction.CallbackContext context) => IsWireFirePressed = true;
         private void OnWeakAttack(InputAction.CallbackContext context) => IsWeakAttackPressed = true;
         private void OnStrongAttack(InputAction.CallbackContext context) => IsStrongAttackPressed = true;
+        private void OnBurstSkill(InputAction.CallbackContext context) => IsBurstSkillPressed = true;
         private void OnSwapNextWeapon(InputAction.CallbackContext context) => IsSwapNextWeaponPressed = true;
         private void OnSwapPrevWeapon(InputAction.CallbackContext context) => IsSwapPrevWeaponPressed = true;
         private void OnGuard(InputAction.CallbackContext context) => IsGuarding = context.ReadValueAsButton();

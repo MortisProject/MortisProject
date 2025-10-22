@@ -27,6 +27,6 @@ namespace Player.Data
         /// <param name="performer">공격을 실행하는 주체 (Player)</param>
         /// <param name="hitboxProvider">히트박스/총구 등 위치 정보를 제공하는 컴포넌트</param>
         /// <param name="attackState">현재 공격 상태</param>
-        public abstract void Execute(Player performer, PlayerAnimationEvents hitboxProvider, PlayerAttackState attackState);
+        public abstract void Execute(Player performer, PlayerAnimationEvents hitboxProvider, IState sourceState);
     }
 }

@@ -60,6 +60,8 @@ namespace Player
         public PlayerGuardState GuardState { get; private set; }
         public PlayerDodgeState DodgeState { get; private set; }
         public PlayerGuardBreakState GuardBreakState { get; private set; }
+        public PlayerBurstSkillState BurstSkillState { get; private set; }
+
         /// <summary>
         /// 게임이 시작되기 전, 모든 컴포넌트와 상태를 초기화합니다.
         /// </summary>
@@ -79,6 +81,7 @@ namespace Player
             GuardState = new PlayerGuardState(this, StateMachine, Input, AnimController);
             GuardBreakState = new PlayerGuardBreakState(this, StateMachine, AnimController);
             DodgeState = new PlayerDodgeState(this, StateMachine, Motor, Data, AnimController);
+            BurstSkillState = new PlayerBurstSkillState(this, StateMachine, Stats, AnimController);
         }
 
         /// <summary>

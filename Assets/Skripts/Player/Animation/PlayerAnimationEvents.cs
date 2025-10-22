@@ -48,6 +48,13 @@ namespace Player.Animation
         }
 
         /// <summary>
+        /// (애니메이션 이벤트) 현재 버스트 스킬 상태를 가져오는 도우미 메서드
+        /// </summary>
+        private PlayerBurstSkillState GetCurrentBurstSkillState()
+        {
+            return _player.StateMachine.CurrentState as PlayerBurstSkillState;
+        }
+        /// <summary>
         /// (애니메이션 이벤트) 다음 콤보 입력을 저장하기 시작하는 시점을 알립니다.
         /// </summary>
         public void OnStartInputSave()
@@ -77,7 +84,50 @@ namespace Player.Animation
         /// </summary>
         public void OnExecuteAttackEffect()
         {
-            GetCurrentAttackState()?.ExecuteAttackEffects();
+            var attackState = GetCurrentAttackState();
+            if (attackState != null)
+            {
+                attackState.ExecuteAttackEffects();
+            }
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 버스트 스킬의 공격 효과를 실행합니다.
+        /// (Animator의 버스트 스킬 클립에 이 이벤트를 추가해야 합니다)
+        /// </summary>
+        public void OnExecuteBurstEffect()
+        {
+            var burstState = GetCurrentBurstSkillState();
+            if (burstState == null) return;
+
+            // 현재 무기의 버스트 스킬 데이터를 가져옵니다.
+            SkillData burstSkill = _player.Stats.CurrentWeaponData.burstSkill;
+            if (burstSkill == null || burstSkill.effects == null)
+            {
+                Debug.LogWarning("현재 무기에 버스트 스킬 데이터가 없거나, 효과(effects)가 비어있습니다.");
+                return;
+            }
+
+            // 스킬의 모든 효과를 실행합니다.
+            foreach (var effect in burstSkill.effects)
+            {
+                if (effect != null)
+                {
+                    // 5-3에서 수정할 Execute 메서드를 호출합니다.
+                    // burstState는 IState로 취급되어 전달됩니다.
+                    effect.Execute(_player, this, burstState);
+                }
+            }
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 버스트 스킬 애니메이션이 끝났음을 알립니다.
+        /// (Animator의 버스트 스킬 클립 마지막 프레임에 이 이벤트를 추가해야 합니다)
+        /// </summary>
+        public void OnBurstSkillEnd()
+        {
+            // 현재 상태가 BurstSkillState일 때만 OnAnimationFinished()를 호출합니다.
+            GetCurrentBurstSkillState()?.OnAnimationFinished();
         }
 
         /// <summary>
@@ -155,5 +205,6 @@ namespace Player.Animation
             // 현재 상태가 GuardBreakState일 때만 상태 종료를 요청합니다.
             (_player.StateMachine.CurrentState as PlayerGuardBreakState)?.OnAnimationFinished();
         }
+
     }
 }

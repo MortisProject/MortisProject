@@ -23,7 +23,7 @@ namespace Player.Data
         [Tooltip("히트박스가 활성화될 시간(초)입니다.")]
         public float duration = 0.2f;
 
-        public override void Execute(Player performer, PlayerAnimationEvents hitboxProvider, PlayerAttackState attackState)
+        public override void Execute(Player performer, PlayerAnimationEvents hitboxProvider, IState sourceState)
         {
             // 1. 최종 데미지를 계산합니다.
             float baseDamage = performer.Stats.attackValue;

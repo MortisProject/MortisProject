@@ -30,6 +30,8 @@ namespace Player.Animation
         private readonly int _raygunAttackStartHash = Animator.StringToHash("Raygun_Attack_Start");
         private readonly int _weakAttackHash = Animator.StringToHash("Weak_Attack");
         private readonly int _strongAttackHash = Animator.StringToHash("Strong_Attack");
+        private readonly int _whipBurstHash = Animator.StringToHash("Whip_Burst");
+        private readonly int _raygunBurstHash = Animator.StringToHash("Raygun_Burst");
         private readonly int _whipSwapHash = Animator.StringToHash("Whip_Swap");
         private readonly int _raygunSwapHash = Animator.StringToHash("Raygun_Swap");
         private readonly int _noInputHash = Animator.StringToHash("No_Input");
@@ -91,7 +93,9 @@ namespace Player.Animation
         public void StartWhipAttack() => _animator.SetTrigger(_whipAttackStartHash);
         public void StartRaygunAttack() => _animator.SetTrigger(_raygunAttackStartHash);
         public void PlayWeakAttack() => _animator.SetTrigger(_weakAttackHash);
-        public void PlayStrongAttack() => _animator.SetTrigger(_strongAttackHash);
+        public void PlayStrongAttack() => _animator.SetTrigger(_strongAttackHash); 
+        public void PlayWhipBurst() => _animator.SetTrigger(_whipBurstHash);
+        public void PlayRaygunBurst() => _animator.SetTrigger(_raygunBurstHash);
         public void PlayWhipSwapAttack() => _animator.SetTrigger(_whipSwapHash);
         public void PlayRaygunSwapAttack() => _animator.SetTrigger(_raygunSwapHash);
         public void NoInput() => _animator.SetTrigger(_noInputHash);

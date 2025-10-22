@@ -25,3 +25,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9d7fd705505b06540b97f1434b495b74, type: 2}
   swapAttacks:
   - {fileID: 11400000, guid: da43206143f22064ea1c64b1ee3cd47f, type: 2}
+  burstSkill: {fileID: 11400000, guid: 531a151d6dfe90b419b0f2254b6f15f6, type: 2}

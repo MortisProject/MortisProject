@@ -25,7 +25,7 @@ namespace Player.Data
         public int muzzleIndex = 0;
         // TODO: 여러 총구에서 발사할 경우를 대비해 muzzleIndex를 추가할 수 있습니다.
 
-        public override void Execute(Player performer, PlayerAnimationEvents hitboxProvider, PlayerAttackState attackState)
+        public override void Execute(Player performer, PlayerAnimationEvents hitboxProvider, IState sourceState)
         {
             if (projectileData == null)
             {
@@ -38,14 +38,28 @@ namespace Player.Data
             if (projectileObject == null) return;
 
             // 2. 발사 위치와 방향을 설정합니다.
-            // muzzleIndex가 유효한 범위 내에 있는지 확인하고, 발사 위치를 선택합니다.
             if (muzzleIndex < 0 || muzzleIndex >= hitboxProvider.muzzles.Length)
             {
-                Debug.LogWarning($"Muzzle Index ({muzzleIndex})가 유효하지 않습니다. Muzzles 배열을 확인해주세요.");
+                Debug.LogWarning($"Muzzle Index ({muzzleIndex})가 유효하지 않습니다.");
                 return;
             }
             Transform muzzle = hitboxProvider.muzzles[muzzleIndex];
-            Vector3 fireDirection = attackState.AimDirection;
+
+            // 발사 방향을 현재 상태(State)에서 가져옵니다.
+            Vector3 fireDirection;
+            if (sourceState is PlayerAttackState attackState)
+            {
+                fireDirection = attackState.AimDirection;
+            }
+            else if (sourceState is PlayerBurstSkillState burstState)
+            {
+                fireDirection = burstState.GetAimDirection(); // BurstState에서 AimDirection을 가져옴
+            }
+            else
+            {
+                // 예외 처리: 조준 방향을 알 수 없으면 카메라 정면을 사용
+                fireDirection = Camera.main.transform.forward;
+            }
 
             projectileObject.transform.position = muzzle.position;
             projectileObject.transform.rotation = Quaternion.LookRotation(fireDirection);

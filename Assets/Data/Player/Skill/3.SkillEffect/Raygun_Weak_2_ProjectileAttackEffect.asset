@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Raygun_Weak_2_ProjectileAttackEffect
   m_EditorClassIdentifier: 
   damageMultiplier: 100
+  knockbackForce: 5
   projectileData: {fileID: 11400000, guid: 9841ce2e4e1c439439e5278d8931df51, type: 2}
   projectilePoolTag: Raygun_Weak
-  muzzleIndex: 0
+  muzzleIndex: 1

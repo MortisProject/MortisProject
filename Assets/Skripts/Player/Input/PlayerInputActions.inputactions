@@ -115,7 +115,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Burst",
+                    "name": "BurstSkill",
                     "type": "Button",
                     "id": "f1a4b813-da43-45f4-927c-2b835939cc62",
                     "expectedControlType": "",
@@ -308,7 +308,7 @@
                     "interactions": "Press",
                     "processors": "",
                     "groups": "",
-                    "action": "Burst",
+                    "action": "BurstSkill",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

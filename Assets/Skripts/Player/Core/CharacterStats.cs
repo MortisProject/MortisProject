@@ -7,6 +7,7 @@ using Monster.Data;
 using System.Collections;
 using Player.Animation;
 using World.Manager;
+using System;
 
 namespace Player
 {
@@ -33,9 +34,9 @@ namespace Player
         public float CurrentAst;
 
         [Tooltip("최대 버스트(Bust) 양입니다.")]
-        public float maxBust = 10f;
+        public float maxBurst = 10f;
         [Tooltip("현재 아스트(Bust) 양입니다.")]
-        public float CurrentBust;
+        public float CurrentBurst;
 
         [Tooltip("현재 공격력")]
         public float attackValue = 10;
@@ -223,6 +224,29 @@ namespace Player
         }
 
         /// <summary>
+        /// 지정된 양의 버스트 게이지를 소모합니다. 성공 시 true, 실패 시 false를 반환합니다.
+        /// </summary>
+        public bool ConsumeBust(float amount)
+        {
+            if (CurrentBurst >= amount)
+            {
+                CurrentBurst -= amount;
+                OnBustChanged?.Invoke(CurrentBurst, maxBurst); // UI 업데이트 이벤트 호출
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 지정된 양의 버스트 게이지를 획득합니다.
+        /// </summary>
+        public void AddBust(float amount)
+        {
+            CurrentBurst = Mathf.Min(CurrentBurst + amount, maxBurst);
+            OnBustChanged?.Invoke(CurrentBurst, maxBurst); // UI 업데이트 이벤트 호출
+        }
+
+        /// <summary>
         /// 지정된 양의 데미지를 받고, 공격 타입에 따라 추가 처리를 합니다.
         /// </summary>
         //넉백타입이 제거되지 않은 코드
@@ -378,5 +402,10 @@ namespace Player
                 CurrentGuardGauge = Mathf.Min(CurrentGuardGauge, maxGuardGauge);
             }
         }
+
+        /// <summary>
+        /// 버스트 게이지가 변경될 때 UI 등에 알리기 위한 이벤트입니다. (현재값, 최대값)
+        /// </summary>
+        public event Action<float, float> OnBustChanged;
     }
 }
