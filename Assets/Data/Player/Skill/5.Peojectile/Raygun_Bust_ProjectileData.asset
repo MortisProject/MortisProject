@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Raygun_Bust_ProjectileData
   m_EditorClassIdentifier: 
   projectileSpeed: 200
-  isPenetration: 0
+  isPenetration: 1
   projectileLifeTime: 5
-  damageMultiplier: 1
   impactVFXPrefab: {fileID: 0}

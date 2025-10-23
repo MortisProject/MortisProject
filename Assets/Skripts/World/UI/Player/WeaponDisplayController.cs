@@ -103,11 +103,17 @@ namespace Player.UI
                 // 메인 무기가 된 슬롯
                 if (slot.weaponType == mainWeapon.weaponType)
                 {
+                    // "Standby" 트리거가 혹시 켜져 있다면 강제로 끈다.
+                    slot.slotAnimator.ResetTrigger("BecomeStandby");
+                    // "Main" 트리거를 켠다.
                     slot.slotAnimator.SetTrigger("BecomeMain");
                 }
                 // 보조 무기가 된 슬롯
                 else if (slot.weaponType == standbyWeapon.weaponType)
                 {
+                    // "Main" 트리거가 혹시 켜져 있다면 강제로 끈다.
+                    slot.slotAnimator.ResetTrigger("BecomeMain");
+                    // "Standby" 트리거를 켠다.
                     slot.slotAnimator.SetTrigger("BecomeStandby");
 
                     // 보조 무기로 전환될 땐, 게이지와 이펙트를 즉시 끕니다.
