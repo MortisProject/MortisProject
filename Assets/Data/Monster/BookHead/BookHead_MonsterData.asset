@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b2623ab697b904c960c9671d55f395, type: 3}
   m_Name: BookHead_MonsterData
   m_EditorClassIdentifier: 
-  grade: 0
-  maxHp: 100
+  grade: 1
+  maxHp: 500
   attackValue: 10
-  patrolRange: 10
-  detectionRange: 15
+  patrolRange: 15
+  detectionRange: 20
   attackType: 0
   attackRange: 3
