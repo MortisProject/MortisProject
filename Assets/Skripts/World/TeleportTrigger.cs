@@ -51,14 +51,14 @@ namespace World
         /// <summary>
         /// 트리거 영역에서 누군가 빠져나갔을 때 호출됩니다.
         /// </summary>
-        private void OnTriggerExit(Collider other)
-        {
-            // 플레이어가 (텔레포트 등으로) 영역을 벗어났다면, 다시 트리거가 작동할 수 있도록 플래그를 해제
-            if (other.CompareTag("Player"))
-            {
-                _isTriggered = false;
-            }
-        }
+        //private void OnTriggerExit(Collider other)
+        //{
+        //    // 플레이어가 (텔레포트 등으로) 영역을 벗어났다면, 다시 트리거가 작동할 수 있도록 플래그를 해제
+        //    if (other.CompareTag("Player"))
+        //    {
+        //        _isTriggered = false;
+        //    }
+        //}
 
 #if UNITY_EDITOR
         /// <summary>
