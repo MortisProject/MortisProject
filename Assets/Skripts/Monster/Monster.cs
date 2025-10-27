@@ -86,7 +86,7 @@ namespace Monster
         /// 지정된 양의 데미지를 받아 체력을 감소시킵니다.
         /// </summary>
         /// <param name="damage">입을 데미지의 양</param>
-        public void TakeDamage(float damage, Vector3 knockbackDirection, float knockbackForce)
+        public void TakeDamage(float damage, Vector3 knockbackDirection, float knockbackForce, bool isKnockback)
         {
             {
                 if (StateMachine.CurrentState is MonsterDieState || StateMachine.CurrentState is MonsterSpawnState)
@@ -95,7 +95,6 @@ namespace Monster
                 }
 
                 currentHp -= damage;
-                ApplyKnockback(knockbackDirection, knockbackForce);
                 Debug.Log($"{gameObject.name}이(가) {damage}의 피해를 입었습니다! 현재 체력: {currentHp}");
 
                 if (currentHp <= 0)
@@ -103,9 +102,10 @@ namespace Monster
                     // 체력이 0 이하면 Die 상태로 즉시 전환합니다.
                     StateMachine.ChangeState(DieState);
                 }
-                else
+                else if (isKnockback)
                 {
                     // 체력이 남아있다면 Hit 상태로 즉시 전환합니다.
+                    ApplyKnockback(knockbackDirection, knockbackForce); // 넉백을 여기서 적용
                     StateMachine.ChangeState(HitState);
                 }
             }

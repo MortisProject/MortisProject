@@ -18,8 +18,10 @@ namespace Player.Data
 
         [Tooltip("이 공격이 몬스터에게 가하는 넉백의 힘입니다. 0이면 넉백이 발생하지 않습니다.")]
         [Range(0f, 50f)]
-        public float knockbackForce = 5f;
-        // TODO: 여기에 모든 공격 효과가 공통으로 사용할 데이터(사운드, 이펙트 등)를 추가할 수 있습니다.
+        public float knockbackForce = 5f; 
+        
+        [Tooltip("이 공격이 몬스터를 경직(HitState) 상태로 만들고 물리적으로 밀어낼지 여부입니다.")]
+        public bool isKnockback = true;
 
         /// <summary>
         /// 이 공격 효과의 실제 로직을 실행합니다.

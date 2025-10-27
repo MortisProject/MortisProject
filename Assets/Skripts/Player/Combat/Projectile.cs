@@ -23,7 +23,8 @@ namespace Player.Combat
         private float _knockbackForce;
         private float _lifeTimeTimer;
         private string _poolTag;
-        private Transform _attacker; 
+        private Transform _attacker;
+        private bool _isKnockback; 
 
         // 한 번의 활성화 동안 이미 공격한 대상을 저장하여 중복 피격을 방지합니다. (관통탄을 위함)
         private System.Collections.Generic.List<Collider> _hitTargets = new System.Collections.Generic.List<Collider>();
@@ -51,7 +52,7 @@ namespace Player.Combat
         /// <param name="initialDirection">발사될 방향</param>
         /// <param name="baseDamage">플레이어의 기본 공격력</param>
         /// <param name="data">발사체의 모든 속성을 담은 ScriptableObject</param>
-        public void Initialize(PlayerStateMachine stateMachine, Transform attacker, string poolTag, Vector3 initialDirection, float finalDamage, float knockbackForce, ProjectileData data)
+        public void Initialize(PlayerStateMachine stateMachine, Transform attacker, string poolTag, Vector3 initialDirection, float finalDamage, float knockbackForce, ProjectileData data, bool isKnockback)
         {
             _stateMachine = stateMachine;
             _attacker = attacker;
@@ -60,6 +61,7 @@ namespace Player.Combat
             _knockbackForce = knockbackForce;
             _data = data;
             _lifeTimeTimer = _data.projectileLifeTime;
+            _isKnockback = isKnockback;
             _hitTargets.Clear();
 
             _rigidbody.linearVelocity = initialDirection.normalized * _data.projectileSpeed;
@@ -77,7 +79,7 @@ namespace Player.Combat
                 {
                     // 최종 데미지 계산 (기본 데미지 * 발사체 데미지 배율)
                     Vector3 knockbackDirection = (other.transform.position - _attacker.position).normalized;
-                    monster.TakeDamage(_finalDamage, knockbackDirection, _knockbackForce);
+                    monster.TakeDamage(_finalDamage, knockbackDirection, _knockbackForce, _isKnockback);
                     _hitTargets.Add(other);
 
                     HandleImpact(other.ClosestPoint(transform.position));

@@ -71,7 +71,7 @@ namespace Player.Data
                 float finalDamage = performer.Stats.attackValue * (damageMultiplier / 100f);
 
                 // 계산된 최종 데미지를 Projectile에 직접 전달합니다.
-                projectile.Initialize(performer.StateMachine, performer.transform, projectilePoolTag, fireDirection, finalDamage, knockbackForce, projectileData);
+                projectile.Initialize(performer.StateMachine, performer.transform, projectilePoolTag, fireDirection, finalDamage, knockbackForce, projectileData, isKnockback); 
                 projectileObject.SetActive(true);
             }
         }
