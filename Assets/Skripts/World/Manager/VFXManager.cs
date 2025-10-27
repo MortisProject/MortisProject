@@ -56,7 +56,7 @@ namespace World.Manager
         {
             _poolDictionary = new Dictionary<string, Queue<GameObject>>();
             _poolParent = new GameObject("-----[ Pool VFX ]").transform;
-            _poolParent.SetParent(this.transform); // VFXManager 하위에 정리 (선택 사항)
+            //_poolParent.SetParent(this.transform); // VFXManager 하위에 정리 (선택 사항)
 
             foreach (Pool pool in pools)
             {

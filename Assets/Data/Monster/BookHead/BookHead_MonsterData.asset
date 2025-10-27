@@ -19,3 +19,6 @@ MonoBehaviour:
   detectionRange: 20
   attackType: 0
   attackRange: 3
+  blueAttackThreshold: 4
+  yellowAttackThreshold: 9
+  specialAttackReadyDuration: 2

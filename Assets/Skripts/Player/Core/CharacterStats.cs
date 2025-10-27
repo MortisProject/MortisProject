@@ -45,6 +45,13 @@ namespace Player
         [Tooltip("현재 공격 속도")]
         public float attackSpeed = 1;
 
+        [Header("VFX Target")]
+        [Tooltip("플레이어의 피격 및 퍼펙트회피 VFX 가 활성화될 위치.")]
+        public Transform HitEffectTarget;
+
+        [Tooltip("플레이어의 퍼펙트 가드 VFX가 활성화될 위치.")]
+        public Transform GuardEffectTarget;
+
         [Header("Guard Stats")]
         [Tooltip("최대 가드 게이지입니다.")]
         public float maxGuardGauge = 100f;
@@ -283,6 +290,7 @@ namespace Player
                         Debug.Log("퍼펙트 회피 성공!");
 
                         _animController.PlayDodgePerfect();
+                        VFXManager.Instance.PlayVFX("PlayerPerfectDodge", HitEffectTarget.position);
                         _motor.Jump(2);
                         // 불릿타임을 발동시킵니다.
                         BulletTimeManager.Instance.StartBulletTime(_data.perfectDodgeBulletTimeDuration);
@@ -298,6 +306,7 @@ namespace Player
                 {
                     currentHp -= damage;
                     OnHpChanged?.Invoke(currentHp, maxHp);
+                    VFXManager.Instance.PlayVFX("PlayerHit", HitEffectTarget.position);
                     Debug.Log($"[회피 중 피격] 플레이어가 {damage}의 피해를 입었습니다!");
                     if (currentHp <= 0) { /* TODO: 사망 처리 */ }
                     return; // 경직 없이 데미지만 받고 종료
@@ -319,13 +328,9 @@ namespace Player
                     {
                         Debug.Log("퍼펙트 가드 성공!");
 
+                        VFXManager.Instance.PlayVFX("PlayerPerfectGuard", GuardEffectTarget.position);
                         // 불릿타임을 발동시킵니다.
                         BulletTimeManager.Instance.StartBulletTime(_data.perfectGuardBulletTimeDuration);
-
-                        // TODO: 여기에 퍼펙트 가드 성공 시의 시각/청각 효과(VFX, SFX) 재생 로직을 추가할 수 있습니다.
-                        // (예: 화면에 스파크 효과, "Clang!" 사운드 등)
-
-                        // 데미지, 게이지 소모, 넉백 없이 즉시 메서드를 종료합니다.
                         return;
                     }
                 }
@@ -344,6 +349,7 @@ namespace Player
 
                         // TODO: PlayerMotor에 가드 넉백 메서드 추가
                         _motor.ApplyKnockback(attacker.position, _data.guardSuccessKnockbackForce);
+                        VFXManager.Instance.PlayVFX("PlayerGuard", GuardEffectTarget.position);
 
                         Debug.Log($"[가드 성공] {reducedDamage}의 감소된 피해를 입고, 가드 게이지 {guardCost} 소모. 현재 가드 게이지: {CurrentGuardGauge}");
                         // TODO: 가드 성공 이펙트(VFX, SFX) 재생
@@ -356,6 +362,7 @@ namespace Player
                 // 데미지를 받고, 넉백을 적용한 후, GuardBreakState로 전환합니다.
                 currentHp -= damage;
                 OnHpChanged?.Invoke(currentHp, maxHp);
+                VFXManager.Instance.PlayVFX("PlayerHit", HitEffectTarget.position);
                 _animController.PlayGuardBreak();
                 _motor.ApplyKnockback(attacker.position, _data.hitKnockbackForce);
                 _stateMachine.ForceChangeState(GetComponent<Player>().GuardBreakState);
@@ -367,6 +374,7 @@ namespace Player
             {
                 currentHp -= damage;
                 OnHpChanged?.Invoke(currentHp, maxHp);
+                VFXManager.Instance.PlayVFX("PlayerHit", HitEffectTarget.position);
                 Debug.Log($"플레이어가 {damage}의 피해를 입었습니다! ({attackType} 공격)");
 
                 if (currentHp <= 0)
@@ -385,6 +393,7 @@ namespace Player
                 // 경직 면역 상태에서는 데미지만 받습니다.
                 currentHp -= damage;
                 OnHpChanged?.Invoke(currentHp, maxHp);
+                VFXManager.Instance.PlayVFX("PlayerHit", HitEffectTarget.position);
                 Debug.Log($"[경직 면역] 플레이어가 {damage}의 피해를 입었습니다!");
                 if (currentHp <= 0) { /* TODO: 사망 처리 */ }
             }

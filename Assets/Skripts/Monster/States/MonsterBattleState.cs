@@ -61,30 +61,16 @@ namespace Monster.States
             // 항상 플레이어를 향해 몸을 돌립니다.
             FaceTarget();
 
-            // 공격 쿨다운을 감소시킵니다.
-            _attackCooldownTimer -= Time.deltaTime;
-
             // 쿨다운이 끝났고, 플레이어를 충분히 바라보고 있다면 공격을 시작합니다.
             if (_attackCooldownTimer <= 0f && IsFacingTarget())
             {
-                // --- 코드 블럭 단위로 제공 (수정된 공격 결정 로직) ---
-
-                // (기획서 ) 플레이어가 피격/경직 상태면 특수공격을 발동하지 않습니다.
-                var playerState = _monster.target.GetComponent<Player.Player>()?.StateMachine.CurrentState;
-                if (playerState is PlayerHitState || playerState is PlayerGuardBreakState)
-                {
-                    // 플레이어가 무방비 상태일 때는 일반 공격만 수행
-                    _isAttackFinished = false;
-                    _monster.AnimController.PlayAttack();
-                    return;
-                }
-
-                // (기획서 ) 우선순위 1: 노란 공격 (정예)
+                // 우선순위 1: 노란 공격 (정예)
                 if (_monster.IsYellowAttackReady)
                 {
-                    // (기획서 ) 그룹 쿨다운 확인
+                    // 그룹 쿨다운 확인
                     if (_monster.Spawner.RequestSpecialAttack())
                     {
+                        Debug.Log("노란 공격(YellowAttack) 준비!");
                         // 그룹 쿨다운 확보! 노란 공격 준비 상태로 전환
                         _isAttackFinished = false;
                         _monster.NextSpecialAttackType = MonsterSkillData.AttackType.Yellow;
@@ -93,6 +79,7 @@ namespace Monster.States
                     }
                     else
                     {
+                        Debug.Log("노란 공격(YellowAttack) 준비실패!");
                         // 그룹 쿨다운 실패 (다른 몬스터가 특수 공격 중) -> 일반 공격
                         _isAttackFinished = false;
                         _monster.AnimController.PlayAttack();
@@ -103,6 +90,7 @@ namespace Monster.States
                 {
                     if (_monster.Spawner.RequestSpecialAttack())
                     {
+                        Debug.Log("파란 공격(BlueAttack) 준비!");
                         // 그룹 쿨다운 확보! 파란 공격 준비 상태로 전환
                         _isAttackFinished = false;
                         _monster.NextSpecialAttackType = MonsterSkillData.AttackType.Blue;
@@ -111,7 +99,8 @@ namespace Monster.States
                     }
                     else
                     {
-                        // (유저 요청) 그룹 쿨다운 실패 시, '만약 노란 공격도 준비됐었다면' 페널티 적용
+                        Debug.Log("파란 공격(BlueAttack) 준비실패!");
+                        // 그룹 쿨다운 실패 시, '만약 노란 공격도 준비됐었다면' 페널티 적용
                         if (_monster.IsYellowAttackReady)
                         {
                             _monster.ApplyYellowAttackPenalty();

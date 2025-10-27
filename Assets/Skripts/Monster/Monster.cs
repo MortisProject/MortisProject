@@ -2,6 +2,7 @@
 using Monster.Animation;
 using Monster.States;
 using Monster.Data;
+using World.Manager;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI; 
@@ -34,6 +35,12 @@ namespace Monster
 
         [Tooltip("몬스터가 추적하거나 공격할 대상입니다.")]
         public Transform target;
+
+        [Tooltip("몬스터의 피격 VFX가 활성화될 위치.")]
+        public Transform HitEffectTarget;        
+        
+        [Tooltip("몬스터의 특수공격(Blue, Yellow) VFX가 활성화될 위치.")]
+        public Transform SpecialAttackEffectTarget;
 
         [Header("특수공격 콤보 (런타임)")]
         [Tooltip("현재 누적된 일반 공격 횟수입니다.")]
@@ -109,7 +116,8 @@ namespace Monster
                 // 정예 몬스터(Elite)이고, 노란 공격 횟수(Threshold)가 설정되어 있으며, 현재 콤보가 기준치를 넘었는지 확인
                 return Data.grade == MonsterGrade.Elite &&
                        Data.yellowAttackThreshold > 0 &&
-                       CurrentSkillCount >= Data.yellowAttackThreshold;
+                       CurrentSkillCount > 0 &&
+                       (CurrentSkillCount % Data.yellowAttackThreshold == 0);
             }
         }
 
@@ -122,7 +130,8 @@ namespace Monster
             {
                 // 파란 공격 횟수(Threshold)가 설정되어 있으며, 현재 콤보가 기준치를 넘었는지 확인
                 return Data.blueAttackThreshold > 0 &&
-                       CurrentSkillCount >= Data.blueAttackThreshold;
+                       CurrentSkillCount > 0 &&
+                       (CurrentSkillCount % Data.blueAttackThreshold == 0);
             }
         }
         /// <summary>
@@ -130,7 +139,7 @@ namespace Monster
         /// </summary>
         public void TakeDamage(float damage, Vector3 knockbackDirection, float knockbackForce, bool isKnockback)
         {
-            // (기획서 ) 특수 공격 중에는 경직 면역
+            // 특수 공격 중에는 경직 면역
             if (IsSpecialAttacking)
             {
                 isKnockback = false;
@@ -142,6 +151,7 @@ namespace Monster
             }
 
             currentHp -= damage;
+            VFXManager.Instance.PlayVFX("MonsterHit", HitEffectTarget.position);
             Debug.Log($"{gameObject.name}이(가) {damage}의 피해를 입었습니다! 현재 체력: {currentHp}");
 
             if (currentHp <= 0)
@@ -166,16 +176,15 @@ namespace Monster
 
             if (attackType == MonsterSkillData.AttackType.Normal)
             {
-                // (기획서 ) 일반 공격은 횟수를 1 누적합니다.
+                // 일반 공격은 횟수를 1 누적합니다.
                 IncrementSkillCount();
             }
             else
             {
-                // (기획서 ) 특수 공격(Blue, Yellow)은 횟수를 초기화합니다.
-                ResetSkillCount();
-
-                // (기획서 ) 이 몬스터가 사용한 특수 공격이 끝났으므로, 그룹 쿨다운을 해제합니다.
+                Debug.Log("이 몬스터가 사용한 특수 공격이 끝났으므로, 그룹 쿨다운을 해제합니다.");
+                // 이 몬스터가 사용한 특수 공격이 끝났으므로, 그룹 쿨다운을 해제합니다.
                 Spawner.ResetSpecialAttackCooldown();
+                IncrementSkillCount();
             }
 
             // 현재 상태가 BattleState가 아닐 수도 있으므로 (e.g., YellowAttackState),
@@ -208,7 +217,7 @@ namespace Monster
         public void ApplyYellowAttackPenalty()
         {
             // 0 미만으로 내려가지 않도록 보정
-            CurrentSkillCount = Mathf.Max(0, CurrentSkillCount - 2);
+            CurrentSkillCount = Mathf.Max(0, CurrentSkillCount - 1);
             Debug.Log($"[Skill Count] {name}: Yellow Attack Penalty (-2) -> {CurrentSkillCount}");
         }
 

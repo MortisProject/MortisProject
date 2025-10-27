@@ -1,5 +1,6 @@
 // Assets/Scripts/Monster/States/MonsterSpecialAttackReadyState.cs
 using Monster.Data;
+using World.Manager;
 using UnityEngine;
 
 namespace Monster.States
@@ -20,6 +21,8 @@ namespace Monster.States
 
         public void Enter()
         {
+            // 특수공격 대기 애니메이션 실행
+            _monster.AnimController.PlaySpecialAttackReady();
             // MonsterSO에 정의된 대기 시간을 가져옵니다.
             _readyTimer = _monster.Data.specialAttackReadyDuration;
 
@@ -29,9 +32,19 @@ namespace Monster.States
             // Monster.cs의 IsSpecialAttacking 플래그는 BattleState에서 이미 true로 설정됨
             Debug.Log($"[{_monster.NextSpecialAttackType}] 공격 준비! ({_readyTimer}초 대기)");
 
-            // TODO: 여기서 _monster.NextSpecialAttackType에 따라
-            //       노란색 또는 파란색 경고 VFX를 재생합니다.
-            // _warningVFX.Play(_monster.NextSpecialAttackType);
+            string vfxTag = "";
+            switch (_monster.NextSpecialAttackType)
+            {
+                case MonsterSkillData.AttackType.Yellow:
+                    vfxTag = "MonsterYellowAttackReady"; // Inspector에 설정한 태그
+                    break;
+                case MonsterSkillData.AttackType.Blue:
+                    vfxTag = "MonsterBlueAttackReady";   // Inspector에 설정한 태그
+                    break;
+            }
+
+
+            VFXManager.Instance.PlayVFX(vfxTag, _monster.SpecialAttackEffectTarget.position);
         }
 
         public void Update()
@@ -67,8 +80,6 @@ namespace Monster.States
 
         public void Exit()
         {
-            // TODO: 여기서 재생 중이던 경고 VFX를 중지합니다.
-            // _warningVFX.Stop();
         }
     }
 }
