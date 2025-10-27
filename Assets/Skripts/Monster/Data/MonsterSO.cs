@@ -46,8 +46,14 @@ namespace Monster
         [Tooltip("몬스터가 플레이어를 공격할 수 있는 최대 거리입니다.")]
         public float attackRange = 3f;
 
-        // TODO: 향후 몬스터 스킬 데이터를 연결할 부분을 추가할 수 있습니다.
-        // public MonsterSkillData skill1;
-        // public MonsterSkillData skill2;
+        [Header("특수공격 설정")]
+        [Tooltip("파란 공격(Blue Attack) 발동에 필요한 일반 공격 횟수입니다. (일반: 6, 정예: 4)")]
+        public int blueAttackThreshold = 6;
+
+        [Tooltip("노란 공격(Yellow Attack) 발동에 필요한 일반 공격 횟수입니다. (정예: 9, 일반: 0이면 사용 안함)")]
+        public int yellowAttackThreshold = 0;
+
+        [Tooltip("특수 공격(파랑/노랑)에 진입하기 전, 경고 VFX 등을 표시하며 대기하는 시간(초)입니다.")]
+        public float specialAttackReadyDuration = 1.0f;
     }
 }

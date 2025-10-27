@@ -24,6 +24,9 @@ namespace Monster.Animation
 
         private Monster _monster;
 
+        [Tooltip("현재 실행 중인 스킬의 공격 타입(Normal, Blue, Yellow)을 저장합니다.")]
+        private MonsterSkillData.AttackType _currentSkillType;
+
         private void Awake()
         {
             // 부모 오브젝트에서 Monster 컴포넌트를 찾아 할당합니다.
@@ -40,6 +43,18 @@ namespace Monster.Animation
                 Debug.Log($"{skillIndex} 번째 인덱스에 히트박스가 없습니다.");
                 return;
             }
+
+            // 실행할 스킬의 AttackType을 미리 저장합니다.
+            if (_skills[skillIndex] != null)
+            {
+                _currentSkillType = _skills[skillIndex].attackType;
+            }
+            else
+            {
+                // 스킬 데이터가 할당되지 않은 경우, 기본 'Normal' 타입으로 간주합니다.
+                _currentSkillType = MonsterSkillData.AttackType.Normal;
+            }
+
             _skills[skillIndex]?.Execute(_monster, this);
         }
 
@@ -78,7 +93,7 @@ namespace Monster.Animation
         /// </summary>
         public void OnAttackFinished()
         {
-            _monster.OnAttackFinished();
+            _monster.OnAttackFinished(_currentSkillType);
         }
     }
 }

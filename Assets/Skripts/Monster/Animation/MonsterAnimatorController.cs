@@ -16,6 +16,8 @@ namespace Monster.Animation
         private readonly int _attackHash = Animator.StringToHash("Attack");
         private readonly int _hitHash = Animator.StringToHash("Hit");
         private readonly int _dieHash = Animator.StringToHash("Die");
+        private readonly int _yellowAttackHash = Animator.StringToHash("YellowAttack");
+        private readonly int _blueAttackHash = Animator.StringToHash("BlueAttack");
 
         private void Awake()
         {
@@ -28,5 +30,7 @@ namespace Monster.Animation
         public void PlayAttack() => _animator.SetTrigger(_attackHash);
         public void PlayHit() => _animator.SetTrigger(_hitHash);
         public void PlayDie() => _animator.SetTrigger(_dieHash);
+        public void PlayYellowAttack() => _animator.SetTrigger(_yellowAttackHash);
+        public void PlayBlueAttack() => _animator.SetTrigger(_blueAttackHash);
     }
 }

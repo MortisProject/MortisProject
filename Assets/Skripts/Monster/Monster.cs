@@ -1,6 +1,7 @@
 // Assets/Scripts/Monster/Monster.cs
 using Monster.Animation;
 using Monster.States;
+using Monster.Data;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI; 
@@ -25,6 +26,7 @@ namespace Monster
         public MonsterStateMachine StateMachine { get; private set; }
         public NavMeshAgent Agent { get; private set; }
         public MonsterAnimatorController AnimController { get; private set; }
+        public MonsterSpawner Spawner { get; private set; }
 
         [Header("Runtime Variables")]
         [Tooltip("몬스터의 현재 체력입니다. (런타임에 자동 초기화)")]
@@ -32,6 +34,16 @@ namespace Monster
 
         [Tooltip("몬스터가 추적하거나 공격할 대상입니다.")]
         public Transform target;
+
+        [Header("특수공격 콤보 (런타임)")]
+        [Tooltip("현재 누적된 일반 공격 횟수입니다.")]
+        public int CurrentSkillCount { get; private set; } = 0;
+
+        [Tooltip("현재 특수 공격(Ready, Attack)을 시전 중인지 여부입니다. (경직 면역)")]
+        public bool IsSpecialAttacking { get; private set; } = false;
+
+        [Tooltip("이번에 실행할 특수 공격의 타입입니다. (Ready 상태가 설정)")]
+        public MonsterSkillData.AttackType NextSpecialAttackType { get; set; }
 
         private Coroutine _knockbackCoroutine;
         // --- 상태 클래스 인스턴스 ---
@@ -42,6 +54,9 @@ namespace Monster
         public MonsterBattleState BattleState { get; private set; }
         public MonsterHitState HitState { get; private set; }
         public MonsterDieState DieState { get; private set; }
+        public MonsterSpecialAttackReadyState SpecialAttackReadyState { get; private set; }
+        public MonsterYellowAttackState YellowAttackState { get; private set; }
+        public MonsterBlueAttackState BlueAttackState { get; private set; }
 
         public string PoolTag { get; private set; }
 
@@ -62,7 +77,9 @@ namespace Monster
             BattleState = new MonsterBattleState(this);
             HitState = new MonsterHitState(this);
             DieState = new MonsterDieState(this);
-            // TODO: 다른 상태들도 여기서 new 키워드로 생성해주어야 합니다.
+            SpecialAttackReadyState = new MonsterSpecialAttackReadyState(this);
+            YellowAttackState = new MonsterYellowAttackState(this);
+            BlueAttackState = new MonsterBlueAttackState(this);
         }
 
         /// <summary>
@@ -83,46 +100,133 @@ namespace Monster
         }
 
         /// <summary>
-        /// 지정된 양의 데미지를 받아 체력을 감소시킵니다.
+        /// 몬스터가 '노란 공격'을 할 준비가 되었는지 확인합니다.
         /// </summary>
-        /// <param name="damage">입을 데미지의 양</param>
-        public void TakeDamage(float damage, Vector3 knockbackDirection, float knockbackForce, bool isKnockback)
+        public bool IsYellowAttackReady
         {
+            get
             {
-                if (StateMachine.CurrentState is MonsterDieState || StateMachine.CurrentState is MonsterSpawnState)
-                {
-                    return;
-                }
-
-                currentHp -= damage;
-                Debug.Log($"{gameObject.name}이(가) {damage}의 피해를 입었습니다! 현재 체력: {currentHp}");
-
-                if (currentHp <= 0)
-                {
-                    // 체력이 0 이하면 Die 상태로 즉시 전환합니다.
-                    StateMachine.ChangeState(DieState);
-                }
-                else if (isKnockback)
-                {
-                    // 체력이 남아있다면 Hit 상태로 즉시 전환합니다.
-                    ApplyKnockback(knockbackDirection, knockbackForce); // 넉백을 여기서 적용
-                    StateMachine.ChangeState(HitState);
-                }
+                // 정예 몬스터(Elite)이고, 노란 공격 횟수(Threshold)가 설정되어 있으며, 현재 콤보가 기준치를 넘었는지 확인
+                return Data.grade == MonsterGrade.Elite &&
+                       Data.yellowAttackThreshold > 0 &&
+                       CurrentSkillCount >= Data.yellowAttackThreshold;
             }
         }
 
-        public void OnAttackFinished()
+        /// <summary>
+        /// 몬스터가 '파란 공격'을 할 준비가 되었는지 확인합니다.
+        /// </summary>
+        public bool IsBlueAttackReady
         {
-            // 현재 상태가 BattleState일 때만 해당 상태의 OnAttackFinished를 호출합니다.
-            (StateMachine.CurrentState as MonsterBattleState)?.OnAttackFinished();
+            get
+            {
+                // 파란 공격 횟수(Threshold)가 설정되어 있으며, 현재 콤보가 기준치를 넘었는지 확인
+                return Data.blueAttackThreshold > 0 &&
+                       CurrentSkillCount >= Data.blueAttackThreshold;
+            }
+        }
+        /// <summary>
+        /// 지정된 양의 데미지를 받아 체력을 감소시킵니다.
+        /// </summary>
+        public void TakeDamage(float damage, Vector3 knockbackDirection, float knockbackForce, bool isKnockback)
+        {
+            // (기획서 ) 특수 공격 중에는 경직 면역
+            if (IsSpecialAttacking)
+            {
+                isKnockback = false;
+            }
+
+            if (StateMachine.CurrentState is MonsterDieState || StateMachine.CurrentState is MonsterSpawnState)
+            {
+                return;
+            }
+
+            currentHp -= damage;
+            Debug.Log($"{gameObject.name}이(가) {damage}의 피해를 입었습니다! 현재 체력: {currentHp}");
+
+            if (currentHp <= 0)
+            {
+                StateMachine.ChangeState(DieState);
+            }
+            else if (isKnockback)
+            {
+                ApplyKnockback(knockbackDirection, knockbackForce);
+                StateMachine.ChangeState(HitState);
+            }
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트에서 호출됨) 공격 애니메이션이 종료되었을 때 호출됩니다.
+        /// </summary>
+        /// <param name="attackType">MonsterAnimationEvents가 전달한 공격의 타입 (Normal, Blue, Yellow)</param>
+        public void OnAttackFinished(MonsterSkillData.AttackType attackType)
+        {
+            // 특수 공격 상태(경직 면역)를 해제합니다.
+            SetSpecialAttacking(false);
+
+            if (attackType == MonsterSkillData.AttackType.Normal)
+            {
+                // (기획서 ) 일반 공격은 횟수를 1 누적합니다.
+                IncrementSkillCount();
+            }
+            else
+            {
+                // (기획서 ) 특수 공격(Blue, Yellow)은 횟수를 초기화합니다.
+                ResetSkillCount();
+
+                // (기획서 ) 이 몬스터가 사용한 특수 공격이 끝났으므로, 그룹 쿨다운을 해제합니다.
+                Spawner.ResetSpecialAttackCooldown();
+            }
+
+            // 현재 상태가 BattleState가 아닐 수도 있으므로 (e.g., YellowAttackState),
+            // 현재 상태에게 공격이 끝났음을 알립니다.
+            (StateMachine.CurrentState as IMonsterAttackState)?.OnAttackFinished();
+        }
+
+        /// <summary>
+        /// 일반 공격 횟수를 1 증가시킵니다.
+        /// </summary>
+        public void IncrementSkillCount()
+        {
+            CurrentSkillCount++;
+            Debug.Log($"[Skill Count] {name}: {CurrentSkillCount}");
+        }
+
+        /// <summary>
+        /// 일반 공격 횟수를 0으로 초기화합니다.
+        /// </summary>
+        public void ResetSkillCount()
+        {
+            CurrentSkillCount = 0;
+            Debug.Log($"[Skill Count] {name}: RESET (0)");
+        }
+
+        /// <summary>
+        /// (기획서 우선순위 로직) 파란 공격 쿨다운 중 노란 공격이 준비되면,
+        /// 노란 공격 횟수를 2 감소시킵니다.
+        /// </summary>
+        public void ApplyYellowAttackPenalty()
+        {
+            // 0 미만으로 내려가지 않도록 보정
+            CurrentSkillCount = Mathf.Max(0, CurrentSkillCount - 2);
+            Debug.Log($"[Skill Count] {name}: Yellow Attack Penalty (-2) -> {CurrentSkillCount}");
+        }
+
+        /// <summary>
+        /// 특수 공격 상태(경직 면역)를 설정합니다.
+        /// </summary>
+        public void SetSpecialAttacking(bool status)
+        {
+            IsSpecialAttacking = status;
         }
 
         /// <summary>
         /// 스포너가 몬스터를 활성화할 때 호출하여 기본 정보를 설정합니다.
         /// </summary>
-        public void Setup(string poolTag)
+        public void Setup(string poolTag, MonsterSpawner spawner)
         {
             PoolTag = poolTag;
+            Spawner = spawner; // 스포너 참조 저장
         }
 
         /// <summary>
@@ -130,15 +234,15 @@ namespace Monster
         /// </summary>
         public void ResetMonster()
         {
-            // 체력을 최대로 설정
             currentHp = Data.maxHp;
-
-            // FSM을 Spawn 상태부터 다시 시작
             StateMachine.Initialize(SpawnState);
-
-            // 비활성화되었을 수 있는 컴포넌트들을 다시 활성화
             GetComponent<Collider>().enabled = true;
             Agent.enabled = true;
+
+            // 콤보 카운트 및 상태 초기화
+            ResetSkillCount();
+            SetSpecialAttacking(false);
+            NextSpecialAttackType = MonsterSkillData.AttackType.Normal;
         }
 
         /// <summary>
