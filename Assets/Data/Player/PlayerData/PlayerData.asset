@@ -31,8 +31,8 @@ MonoBehaviour:
   dodgeInitialSpeed: 1
   dodgeMaxSpeed: 10
   dodgeDeceleration: 7
-  perfectDodgeWindow: 0.8
-  perfectDodgeBulletTimeDuration: 0.7
+  perfectDodgeWindow: 0.5
+  perfectDodgeBulletTimeDuration: 0.5
   mouseSensitivity: 4
   pitchMinMax: {x: -60, y: 85}
   wireHookPrefab: {fileID: 7671246574104627253, guid: 8e34fb559abb2c547b1d26edbf08fc18, type: 3}

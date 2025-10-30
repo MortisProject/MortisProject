@@ -22,7 +22,7 @@ namespace Monster.States
 
             // 테스트용 피격 성공시 잠깐의 불릿타임
             // 느낌 별로임
-            //BulletTimeManager.Instance.StartBulletTime(0.01f,0.05f,0.01f,0.01f);
+            BulletTimeManager.Instance.StartBulletTime(0f,0.03f,0f,0f);
 
             // 피격 애니메이션을 재생합니다.
             _monster.AnimController.PlayHit();

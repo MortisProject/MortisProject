@@ -282,6 +282,7 @@ namespace Player
                     // Yellow 타입 공격은 퍼펙트 회피를 무시하고 그대로 피격됩니다.
                     if (attackType == MonsterSkillData.AttackType.Yellow)
                     {
+                        CameraManager.Instance.PlayImpulse(CameraManager.ImpulseShakeType.StrongHit); // 큰 화면흔들림
                         Debug.Log("퍼펙트 회피 실패! (Yellow 타입 공격)");
                         // 여기서 특별한 처리를 하지 않으면, 코드는 아래의 일반 피격 로직으로 넘어갑니다.
                     }
@@ -321,6 +322,7 @@ namespace Player
                     // Blue 타입 공격을 받으면 퍼펙트 가드에 실패하고 즉시 피격됩니다.
                     if (attackType == MonsterSkillData.AttackType.Blue)
                     {
+                        CameraManager.Instance.PlayImpulse(CameraManager.ImpulseShakeType.StrongHit);
                         Debug.Log("퍼펙트 가드 실패! (Blue 타입 공격)");
                         // 아래의 일반 피격 로직으로 넘어갑니다.
                     }
@@ -341,6 +343,7 @@ namespace Player
                     if (CurrentGuardGauge >= guardCost)
                     {
                         // 가드 성공
+                        CameraManager.Instance.PlayImpulse(CameraManager.ImpulseShakeType.WeakHit);
                         _animController.PlayGuardHit();
                         CurrentGuardGauge -= guardCost;
                         float reducedDamage = damage * (1 - (_data.guardDamageReduction / 100f));
@@ -362,6 +365,7 @@ namespace Player
                 // 데미지를 받고, 넉백을 적용한 후, GuardBreakState로 전환합니다.
                 currentHp -= damage;
                 OnHpChanged?.Invoke(currentHp, maxHp);
+                CameraManager.Instance.PlayImpulse(CameraManager.ImpulseShakeType.WeakHit);
                 VFXManager.Instance.PlayVFX("PlayerHit", HitEffectTarget.position);
                 _animController.PlayGuardBreak();
                 _motor.ApplyKnockback(attacker.position, _data.hitKnockbackForce);
@@ -374,6 +378,7 @@ namespace Player
             {
                 currentHp -= damage;
                 OnHpChanged?.Invoke(currentHp, maxHp);
+                CameraManager.Instance.PlayImpulse(CameraManager.ImpulseShakeType.WeakHit);
                 VFXManager.Instance.PlayVFX("PlayerHit", HitEffectTarget.position);
                 Debug.Log($"플레이어가 {damage}의 피해를 입었습니다! ({attackType} 공격)");
 

@@ -46,7 +46,6 @@ namespace Player
                 }
                 _rigidbody.linearVelocity = _dodgeDirection * _currentDodgeSpeed;
             }
-            // --- 여기까지 추가 ---
             else // 회피 중이 아닐 때만 기존 속도 제한 로직을 적용합니다.
             {
                 LimitHorizontalVelocity();
