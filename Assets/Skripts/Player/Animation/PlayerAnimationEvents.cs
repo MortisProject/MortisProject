@@ -33,6 +33,10 @@ namespace Player.Animation
         [Tooltip("투사체가 발사될 위치(들)입니다. 오른손, 왼손 등 필요한 만큼 설정합니다.")]
         public Transform[] muzzles;
 
+        [Header("Weapon Trail References")]
+        [Tooltip("무기 궤적 효과를 위한 Trail Renderer입니다.")]
+        public TrailRenderer[] weaponTrail; // 인스펙터에서 Whip_Trail_FX를 연결
+
         private void Awake()
         {
             // 부모 오브젝트에서 Player 컴포넌트를 찾아 할당
@@ -164,7 +168,7 @@ namespace Player.Animation
         }
 
         /// <summary>
-        /// (AnimEvent) 회피 이동 시작을 모터에 알립니다.
+        /// (애니메이션 이벤트) 회피 이동 시작을 모터에 알립니다.
         /// </summary>
         public void OnDodgeMoveStart()
         {
@@ -172,7 +176,7 @@ namespace Player.Animation
         }
 
         /// <summary>
-        /// (AnimEvent) 회피 최대 속도 도달을 모터에 알립니다.
+        /// (애니메이션 이벤트) 회피 최대 속도 도달을 모터에 알립니다.
         /// </summary>
         public void OnDodgeReachMaxSpeed()
         {
@@ -180,7 +184,7 @@ namespace Player.Animation
         }
 
         /// <summary>
-        /// (AnimEvent) 회피 감속 시작을 모터에 알립니다.
+        /// (애니메이션 이벤트) 회피 감속 시작을 모터에 알립니다.
         /// </summary>
         public void OnDodgeStartDeceleration()
         {
@@ -188,7 +192,7 @@ namespace Player.Animation
         }
 
         /// <summary>
-        /// (AnimEvent) 회피 이동 종료를 모터에 알리고, 상태 전환을 요청합니다.
+        /// (애니메이션 이벤트) 회피 이동 종료를 모터에 알리고, 상태 전환을 요청합니다.
         /// </summary>
         public void OnDodgeMoveEnd()
         {
@@ -198,7 +202,7 @@ namespace Player.Animation
         }
 
         /// <summary>
-        /// (AnimEvent) 가드 브레이크 애니메이션 종료 시 호출됩니다.
+        /// (애니메이션 이벤트) 가드 브레이크 애니메이션 종료 시 호출됩니다.
         /// </summary>
         public void OnGuardBreakAnimationEnd()
         {
@@ -206,5 +210,25 @@ namespace Player.Animation
             (_player.StateMachine.CurrentState as PlayerGuardBreakState)?.OnAnimationFinished();
         }
 
+        /// <summary>
+        /// (애니메이션 이벤트) 공격 시작 시 무기 궤적을 활성화합니다.
+        /// </summary>
+        // ------------------ TODO: 하드코딩 수정 필요 ------------------
+        public void StartWeaponTrail() 
+        {
+            weaponTrail[0].Clear(); // 이전 궤적을 지웁니다.
+            weaponTrail[1].Clear(); // 이전 궤적을 지웁니다.
+            weaponTrail[0].emitting = true; // 궤적 그리기를 시작합니다.
+            weaponTrail[1].emitting = true; // 궤적 그리기를 시작합니다.
+        }
+
+        /// <summary>
+        /// (애니메이션 이벤트) 공격 종료 시 무기 궤적을 비활성화합니다.
+        /// </summary>
+        public void StopWeaponTrail()
+        {
+            weaponTrail[0].emitting = false; // 궤적 그리기를 중지합니다.
+            weaponTrail[1].emitting = false; // 궤적 그리기를 중지합니다.
+        }
     }
 }

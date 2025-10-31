@@ -1,5 +1,6 @@
 // Assets/Scripts/Monster/Core/MonsterSpawner.cs
 using Monster.Manager;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,17 +33,26 @@ namespace Monster
         /// </summary>
         public void ActivateSpawner()
         {
+            // [수정] 감시자(observer)가 없는 null 버전으로 내부 함수 호출
+            ActivateSpawner(null);
+        }
+
+        /// <summary>
+        /// (이벤트 시스템용) 감시자를 등록하며 몬스터 스폰을 시작합니다.
+        /// </summary>
+        public void ActivateSpawner(World.Event.EventStepMonitorSpawner observer)
+        {
             // 스폰된 적이 없을 때만 실행합니다.
             if (_hasSpawned) return;
 
-            SpawnMonsters();
+            SpawnMonsters(observer);
             _hasSpawned = true;
         }
 
         /// <summary>
-        /// 모든 스폰 포인트에 몬스터를 스폰합니다.
+        /// 모든 스폰 포인트에 몬스터를 스폰하고, 감시자를 설정합니다.
         /// </summary>
-        private void SpawnMonsters()
+        private void SpawnMonsters(World.Event.EventStepMonitorSpawner observer)
         {
             Debug.Log($"{name}에서 몬스터 스폰 시작!");
             foreach (var point in _spawnPoints)
@@ -59,8 +69,9 @@ namespace Monster
                     // 3. 몬스터 컴포넌트를 가져와 상태를 리셋하고 정보를 설정합니다.
                     if (monsterObj.TryGetComponent<Monster>(out Monster monster))
                     {
-                        monster.Setup(point.monsterTag, this); // 몬스터에게 태그를 알려줍니다.
-                        monster.ResetMonster();          // 몬스터의 모든 상태를 초기화합니다.
+                        // [수정] 몬스터에게 감시자(observer) 정보 전달
+                        monster.Setup(point.monsterTag, this, observer);
+                        monster.ResetMonster();
                     }
 
                     // 4. 몬스터를 활성화하고 목록에 추가합니다.
@@ -68,6 +79,15 @@ namespace Monster
                     _spawnedMonsters.Add(monsterObj);
                 }
             }
+        }
+
+        /// <summary>
+        /// (EventStepMonitorSpawner가 호출) 이 스포너가 스폰할 몬스터의 총 수를 반환합니다.
+        /// </summary>
+        public int GetSpawnPointCount()
+        {
+            if (_spawnPoints == null) return 0;
+            return _spawnPoints.Length;
         }
 
         /// <summary>

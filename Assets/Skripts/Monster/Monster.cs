@@ -53,6 +53,10 @@ namespace Monster
         public MonsterSkillData.AttackType NextSpecialAttackType { get; set; }
 
         private Coroutine _knockbackCoroutine;
+
+        // 자신의 죽음을 보고할 감시자(Observer)
+        private World.Event.EventStepMonitorSpawner _deathObserver;
+        
         // --- 상태 클래스 인스턴스 ---
         public MonsterSpawnState SpawnState { get; private set; }
         public MonsterIdleState IdleState { get; private set; }
@@ -230,12 +234,13 @@ namespace Monster
         }
 
         /// <summary>
-        /// 스포너가 몬스터를 활성화할 때 호출하여 기본 정보를 설정합니다.
+        /// 스포너가 몬스터를 활성화할 때 호출하여 기본 정보와 감시자를 설정합니다.
         /// </summary>
-        public void Setup(string poolTag, MonsterSpawner spawner)
+        public void Setup(string poolTag, MonsterSpawner spawner, World.Event.EventStepMonitorSpawner observer)
         {
             PoolTag = poolTag;
-            Spawner = spawner; // 스포너 참조 저장
+            Spawner = spawner;
+            _deathObserver = observer;
         }
 
         /// <summary>
@@ -252,6 +257,18 @@ namespace Monster
             ResetSkillCount();
             SetSpecialAttacking(false);
             NextSpecialAttackType = MonsterSkillData.AttackType.Normal;
+
+            // 감시자 참조 초기화
+            _deathObserver = null;
+        }
+
+        /// <summary>
+        /// (MonsterDieState가 호출) 감시자에게 자신의 죽음을 보고합니다.
+        /// </summary>
+        public void ReportDeathToObserver()
+        {
+            // 감시자가 설정되어 있을 때만(이벤트 씬일 때만) 호출
+            _deathObserver?.OnMonsterDied(); 
         }
 
         /// <summary>

@@ -16,6 +16,9 @@ namespace Monster.States
 
         public void Enter()
         {
+            // 이벤트 감시자에게 자신의 죽음을 즉시 보고
+            _monster.ReportDeathToObserver();
+
             Debug.Log("사망 상태 시작.");
 
             // 사망 애니메이션을 재생합니다.
