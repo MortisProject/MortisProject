@@ -30,9 +30,8 @@ namespace World.Event
         /// <summary>
         /// SequenceManager가 이 단계를 활성화할 때 호출됩니다.
         /// </summary>
-        public override void Begin()
+        protected override void Begin()
         {
-            // 콜라이더를 활성화하여 플레이어의 진입을 감지할 준비를 합니다.
             _collider.enabled = true;
             Debug.Log($"[EventStep] '{targetTag}'의 진입을 대기합니다...", this);
         }
@@ -42,6 +41,8 @@ namespace World.Event
         /// </summary>
         private void OnTriggerEnter(Collider other)
         {
+            if (!IsActive) return;
+
             if (other.CompareTag(targetTag))
             {
                 Debug.Log($"[EventStep] '{targetTag}' 진입 감지!", this);

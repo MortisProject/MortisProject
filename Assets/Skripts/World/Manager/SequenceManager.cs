@@ -11,10 +11,20 @@ namespace World.Event
     /// </summary>
     public class SequenceManager : MonoBehaviour
     {
+
         [Header("이벤트 순서")]
         [Tooltip("이 시퀀스 매니저가 실행할 이벤트 단계(EventStep)들입니다. 리스트의 순서대로 실행됩니다.")]
         [SerializeField]
         private List<EventStep> eventSteps;
+        
+        [Header("Runtime Status (Read-Only)")]
+        [Tooltip("현재 활성화된 단계의 태그(이름)입니다.")]
+        [SerializeField]
+        private string currentStepName = "None";
+
+        [Tooltip("현재 활성화된 단계의 오브젝트입니다.")]
+        [SerializeField]
+        private EventStep currentActiveStep;
 
         // 현재 몇 번째 단계를 실행 중인지 추적하는 인덱스
         private int currentStepIndex = -1;
@@ -24,20 +34,20 @@ namespace World.Event
         /// </summary>
         private void Awake()
         {
-            if (eventSteps == null || eventSteps.Count == 0)
+            eventSteps = new List<EventStep>();
+            foreach (Transform child in transform)
             {
-                Debug.LogWarning($"[SequenceManager] '{gameObject.name}'에 실행할 이벤트 단계(EventStep)가 등록되지 않았습니다.", this);
-                return;
+                // 자식이 활성화되어 있고, EventStep 컴포넌트를 가지고 있다면
+                if (child.gameObject.activeSelf && child.TryGetComponent<EventStep>(out var step))
+                {
+                    eventSteps.Add(step);
+                }
             }
 
-            // 옵저버 패턴: 모든 자식 단계(EventStep)의 OnStepCompleted 이벤트를 구독합니다.
+            // 모든 자식 단계(EventStep)의 OnStepCompleted 이벤트를 구독합니다.
             foreach (var step in eventSteps)
             {
-                if (step != null)
-                {
-                    // "자식이 'NotifyCompletion()'을 호출하면, 이 매니저의 'OnNextStep()'을 실행해라"
-                    step.OnStepCompleted.AddListener(OnNextStep);
-                }
+                step.OnStepCompleted.AddListener(OnNextStep);
             }
         }
 
@@ -49,7 +59,15 @@ namespace World.Event
         public void StartSequence()
         {
             Debug.Log($"[SequenceManager] 시퀀스 시작: {gameObject.name} (총 {eventSteps.Count} 단계)", this);
-            currentStepIndex = -1; // 인덱스 초기화
+
+            // 모든 단계를 비활성화 상태로 초기화 (재시작 대비)
+            foreach (var step in eventSteps)
+            {
+                step.Deactivate();
+            }
+
+            currentStepIndex = -1;
+            currentStepName = "Initializing...";
             OnNextStep(); // 첫 번째 단계를 실행
         }
 
@@ -58,32 +76,43 @@ namespace World.Event
         /// </summary>
         private void OnNextStep()
         {
-            // 1. 다음 단계로 인덱스를 증가시킵니다.
+            // 이전 단계(있었다면)를 비활성화(Deactivate)시킵니다.
+            if (currentActiveStep != null)
+            {
+                currentActiveStep.Deactivate();
+            }
+
+            // 다음 단계로 인덱스를 증가시킵니다.
             currentStepIndex++;
 
-            // 2. 아직 실행할 다음 단계가 리스트에 남아있는지 확인합니다.
+            // 아직 실행할 다음 단계가 리스트에 남아있는지 확인합니다.
             if (currentStepIndex < eventSteps.Count)
             {
-                EventStep nextStep = eventSteps[currentStepIndex];
-                if (nextStep != null)
-                {
-                    Debug.Log($"[SequenceManager] {currentStepIndex + 1}번째 단계 시작 -> {nextStep.gameObject.name}");
+                currentActiveStep = eventSteps[currentStepIndex];
 
-                    // 3. 다음 단계의 Begin() 메서드를 호출하여 임무를 시작시킵니다.
-                    nextStep.Begin();
+                // EventStep이 null이 아닌지 다시 확인 (안전 코드)
+                if (currentActiveStep != null)
+                {
+                    currentStepName = currentActiveStep.eventTag;
+                    Debug.Log($"[SequenceManager] {currentStepIndex + 1}번째 단계 시작 -> {currentStepName}");
+
+                    // Begin() 대신 Activate()를 호출하여 상태를 변경
+                    currentActiveStep.Activate();
                 }
                 else
                 {
-                    // 3-1. 리스트에 단계가 null로 비어있다면 경고를 출력하고 다음 단계로 넘어갑니다.
+                    // GetComponentsInChildren에서 null이 올 수 없지만, 안전을 위해
                     Debug.LogWarning($"[SequenceManager] {currentStepIndex + 1}번째 단계가 비어있습니다(null). 이 단계를 건너뜁니다.");
+                    currentStepName = "Skipped (Null)";
                     OnNextStep(); // 즉시 다음 단계 시도
                 }
             }
             else
             {
-                // 4. 리스트의 모든 단계를 완료했습니다.
+                // 리스트의 모든 단계를 완료했습니다.
                 Debug.Log($"[SequenceManager] 시퀀스 모든 단계 완료: {gameObject.name}");
-                // TODO: 필요시 모든 시퀀스 완료 후 특정 로직 실행 (예: 보상 지급, 문 열기)
+                currentStepName = "Sequence Completed";
+                currentActiveStep = null;
             }
         }
     }

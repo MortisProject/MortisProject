@@ -27,7 +27,7 @@ namespace World.Event
         /// <summary>
         /// SequenceManager가 이 단계를 활성화할 때 호출됩니다.
         /// </summary>
-        public override void Begin()
+        protected override void Begin()
         {
             Debug.Log("[EventStep] 바닥 붕괴 연출을 시작합니다...", this);
 

@@ -20,7 +20,7 @@ namespace World.Event
         /// <summary>
         /// SequenceManager가 이 단계를 활성화할 때 호출됩니다.
         /// </summary>
-        public override void Begin()
+        protected override void Begin()
         {
             if (spawner == null)
             {
