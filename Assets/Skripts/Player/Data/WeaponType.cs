@@ -2,7 +2,7 @@
 namespace Player.Data
 {
     /// <summary>
-    /// 플레이어가 사용하는 무기의 종류를 정의하는 열거형입니다.
+    /// 플레이어가 사용하는 무기의 종류를 정의하는 열거형
     /// </summary>
     public enum WeaponType
     {

@@ -56,7 +56,7 @@ namespace Monster.Combat
                     float finalDamage = _performer.Data.attackValue * (_skillData.damageMultiplier / 100f);
 
                     // 플레이어에게 데미지와 스킬 정보를 전달
-                    playerStats.TakeDamage(finalDamage, _skillData.attackType);
+                    playerStats.TakeDamage(finalDamage, _performer.transform, _skillData.attackType);
 
                     //넉백타입이 제거되지 않은 코드
                     //playerStats.TakeDamage(finalDamage, _skillData.attackType, _skillData.knockbackType);

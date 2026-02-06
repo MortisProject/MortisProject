@@ -93,15 +93,14 @@ public class AnimationClipExtractor : EditorWindow
                     AnimationClip newClip = Object.Instantiate(originalClip);
 
                     // 저장할 경로와 파일명을 조합합니다. (예: Assets/Animations/MyModel.anim)
-                    string fbxName = Path.GetFileNameWithoutExtension(assetPath);
-                    string newPath = Path.Combine(destinationFolderPath, fbxName + ".anim");
+
+                    string newFileName = $"{originalClip.name}.anim";
+                    string newPath = Path.Combine(destinationFolderPath, newFileName);
 
                     // 에셋 데이터베이스에 새로운 애니메이션 클립 에셋을 생성(저장)합니다.
                     AssetDatabase.CreateAsset(newClip, newPath);
 
                     extractedCount++;
-                    break; // FBX 하나당 하나의 클립만 추출한다고 가정하고 루프를 빠져나갑니다.
-                           // 만약 FBX 안에 클립이 여러 개이고 모두 추출하고 싶다면 이 'break'를 지우세요.
                 }
             }
         }

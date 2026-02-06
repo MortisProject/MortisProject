@@ -9,13 +9,13 @@ public class WireRenderer : MonoBehaviour
     private State _currentState = State.Hidden;
 
     [Header("Settings")]
-    [Tooltip("라인 렌더러의 점 개수입니다. 높을수록 부드럽습니다.")]
+    [Tooltip("라인 렌더러의 점 개수입니다. 높을수록 부드러움")]
     [SerializeField] private int _pointCount = 20;
-    [Tooltip("발사 시 와이어가 출렁이는 강도입니다.")]
+    [Tooltip("발사 시 와이어가 출렁이는 강도")]
     [SerializeField] private float _wobbleStrength = 4f;
-    [Tooltip("출렁임이 원래 위치로 돌아오려는 탄성입니다.")]
+    [Tooltip("출렁임이 원래 위치로 돌아오려는 탄성")]
     [SerializeField] private float _springiness = 60f;
-    [Tooltip("출렁임이 점차 멈추는 정도입니다.")]
+    [Tooltip("출렁임이 점차 멈추는 정도")]
     [SerializeField] private float _damping = 4f;
 
     private LineRenderer _lineRenderer;
@@ -61,7 +61,7 @@ public class WireRenderer : MonoBehaviour
     }
 
     /// <summary>
-    /// 와이어를 활성화하고 발사 연출을 시작합니다.
+    /// 와이어를 활성화하고 발사 연출을 시작
     /// </summary>
     public void Activate(Transform start, Transform end, Transform hook)
     {
@@ -80,7 +80,7 @@ public class WireRenderer : MonoBehaviour
     }
 
     /// <summary>
-    /// 와이어를 비활성화합니다.
+    /// 와이어를 비활성화
     /// </summary>
     public void Deactivate()
     {
@@ -97,7 +97,7 @@ public class WireRenderer : MonoBehaviour
     }
 
     /// <summary>
-    /// 출렁이는 와이어의 각 점 위치를 계산하고 그립니다.
+    /// 출렁이는 와이어의 각 점 위치를 계산하고 그림
     /// </summary>
     private void DrawWobble()
     {

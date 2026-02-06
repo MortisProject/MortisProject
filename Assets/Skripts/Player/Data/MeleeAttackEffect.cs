@@ -14,16 +14,16 @@ namespace Player.Data
     public class MeleeAttackEffect : AttackEffect
     {
         [Header("근접 공격 설정")]
-        [Tooltip("사용할 히트박스 그룹의 태그입니다. PlayerAnimationEvents에 설정된 태그와 일치해야 합니다.")]
+        [Tooltip("사용할 히트박스 그룹의 태그입니다. PlayerAnimationEvents에 설정된 태그와 일치해야함")]
         public string groupTag = "Weak";
 
-        [Tooltip("선택된 그룹 내에서 활성화할 히트박스의 인덱스입니다.")]
+        [Tooltip("선택된 그룹 내에서 활성화할 히트박스의 인덱스")]
         public int hitboxIndex;
 
-        [Tooltip("히트박스가 활성화될 시간(초)입니다.")]
+        [Tooltip("히트박스가 활성화될 시간(초")]
         public float duration = 0.2f;
 
-        public override void Execute(Player performer, PlayerAnimationEvents hitboxProvider, PlayerAttackState attackState)
+        public override void Execute(Player performer, PlayerAnimationEvents hitboxProvider, IState sourceState)
         {
             // 1. 최종 데미지를 계산합니다.
             float baseDamage = performer.Stats.attackValue;
@@ -36,7 +36,7 @@ namespace Player.Data
                 case WeaponType.Whip:
                     sourceGroups = hitboxProvider.whipHitboxGroups;
                     break;
-                    // TODO: 다른 근접 무기 타입이 추가되면 여기에 case를 추가합니다.
+                    // TODO: 다른 근접 무기 타입이 추가되면 여기에 case를 추가
             }
             if (sourceGroups == null) return;
 
@@ -46,7 +46,7 @@ namespace Player.Data
             if (targetGroup != null && hitboxIndex < targetGroup.hitboxes.Length)
             {
                 Hitbox targetHitbox = targetGroup.hitboxes[hitboxIndex];
-                targetHitbox.Activate(finalDamage, duration);
+                targetHitbox.Activate(finalDamage, knockbackForce, duration, performer.transform, isKnockback);
             }
             else
             {

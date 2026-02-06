@@ -4,8 +4,8 @@ using UnityEngine;
 namespace Player.Data
 {
     /// <summary>
-    /// 변환 공격의 모든 단계를 정의하는 ScriptableObject입니다.
-    /// 이 에셋 하나로 'A무기 공격 -> B무기로 교체 -> B무기 공격'의 전체 흐름을 관리합니다.
+    /// 변환 공격의 모든 단계를 정의하는 ScriptableObject
+    /// 이 에셋 하나로 'A무기 공격 -> B무기로 교체 -> B무기 공격'의 전체 흐름을 관리
     /// </summary>
     [CreateAssetMenu(fileName = "NewSwapAttackData", menuName = "Data/Swap Attack Data")]
     public class SwapAttackData : ScriptableObject

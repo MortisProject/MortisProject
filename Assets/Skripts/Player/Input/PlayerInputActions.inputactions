@@ -95,6 +95,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Dodge",
+                    "type": "Button",
+                    "id": "8e439ec7-9526-4b2e-be6c-a08a4af6f8aa",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Guard",
+                    "type": "Button",
+                    "id": "d038daba-9fc0-4211-b794-d04cc2c72c49",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BurstSkill",
+                    "type": "Button",
+                    "id": "f1a4b813-da43-45f4-927c-2b835939cc62",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -249,6 +276,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "SwapPrevWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c911aa68-511a-46c0-8513-611af508f21f",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dodge",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6b95f3b3-7951-42c1-a1d7-5c477aa52f0f",
+                    "path": "<Keyboard>/g",
+                    "interactions": "Hold(duration=0.01,pressPoint=0.01)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Guard",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f874ee97-4bbe-432a-ae09-26aa7ac1a9f3",
+                    "path": "<Keyboard>/r",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BurstSkill",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

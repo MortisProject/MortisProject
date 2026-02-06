@@ -44,6 +44,15 @@ namespace Player
         [Tooltip("무기 스왑(E) 키를 '누르는 순간' 1프레임 동안 true 입니다.")]
         public bool IsSwapPrevWeaponPressed { get; private set; }
 
+        [Header("Defensive Inputs")]
+        [Tooltip("가드(G) 키를 '누르고 있는 동안' true 입니다.")]
+        public bool IsGuarding { get; private set; }
+
+        [Tooltip("회피(Tab) 키를 '누르는 순간' 1프레임 동안 true 입니다.")]
+        public bool IsDodgePressed { get; private set; }
+
+        [Tooltip("버스트 스킬(R) 키를 '누르는 순간' 1프레임 동안 true 입니다.")]
+        public bool IsBurstSkillPressed { get; private set; }
         // TODO: 공격, 닷지 등 추후 추가될 액션에 대한 프로퍼티를 여기에 선언합니다.
 
         private void Start()
@@ -85,9 +94,14 @@ namespace Player
 
             _input.Player.WeakAttack.performed += OnWeakAttack;
             _input.Player.StrongAttack.performed += OnStrongAttack;
+            _input.Player.BurstSkill.performed += OnBurstSkill;
 
             _input.Player.SwapNextWeapon.performed += OnSwapNextWeapon;
             _input.Player.SwapPrevWeapon.performed += OnSwapPrevWeapon;
+
+            _input.Player.Guard.performed += OnGuard;
+            _input.Player.Guard.canceled += OnGuard;
+            _input.Player.Dodge.performed += OnDodge;
         }
 
         /// <summary>
@@ -116,9 +130,14 @@ namespace Player
 
             _input.Player.WeakAttack.performed -= OnWeakAttack;
             _input.Player.StrongAttack.performed -= OnStrongAttack;
+            _input.Player.BurstSkill.performed -= OnBurstSkill;
 
             _input.Player.SwapNextWeapon.performed -= OnSwapNextWeapon;
             _input.Player.SwapPrevWeapon.performed -= OnSwapPrevWeapon;
+
+            _input.Player.Guard.performed -= OnGuard;
+            _input.Player.Guard.canceled -= OnGuard;
+            _input.Player.Dodge.performed -= OnDodge;
         }
 
         /// <summary>
@@ -136,6 +155,9 @@ namespace Player
 
             IsSwapNextWeaponPressed = false;
             IsSwapPrevWeaponPressed = false;
+            IsBurstSkillPressed = false;
+
+            IsDodgePressed = false;
         }
 
         // 각 콜백 메서드는 private으로 선언하여 외부에서 직접 호출하지 않도록 합니다.
@@ -147,9 +169,11 @@ namespace Player
         private void OnWireFire(InputAction.CallbackContext context) => IsWireFirePressed = true;
         private void OnWeakAttack(InputAction.CallbackContext context) => IsWeakAttackPressed = true;
         private void OnStrongAttack(InputAction.CallbackContext context) => IsStrongAttackPressed = true;
+        private void OnBurstSkill(InputAction.CallbackContext context) => IsBurstSkillPressed = true;
         private void OnSwapNextWeapon(InputAction.CallbackContext context) => IsSwapNextWeaponPressed = true;
         private void OnSwapPrevWeapon(InputAction.CallbackContext context) => IsSwapPrevWeaponPressed = true;
-        
+        private void OnGuard(InputAction.CallbackContext context) => IsGuarding = context.ReadValueAsButton();
+        private void OnDodge(InputAction.CallbackContext context) => IsDodgePressed = true;
 
         /// <summary>
         /// 마우스 커서를 숨기고 화면 중앙에 고정합니다.

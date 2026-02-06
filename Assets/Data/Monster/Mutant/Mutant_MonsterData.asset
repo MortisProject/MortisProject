@@ -15,7 +15,7 @@ MonoBehaviour:
   grade: 0
   maxHp: 100
   attackValue: 10
-  patrolRange: 10
-  detectionRange: 15
+  patrolRange: 30
+  detectionRange: 35
   attackType: 0
-  attackRange: 3
+  attackRange: 12

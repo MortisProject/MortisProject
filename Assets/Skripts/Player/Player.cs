@@ -56,9 +56,11 @@ namespace Player
         public PlayerWireLaunchState WireLaunchState { get; private set; }
         public PlayerWireMoveState WireMoveState { get; private set; }
         public PlayerGroundedAttackState GroundedAttackState { get; private set; }
-        public PlayerPursuitState PursuitState { get; private set; }
-        //public PlayerPullState PullState { get; private set; }
-        // TODO: 추후 Attack, Dodge 등의 상태를 여기에 추가합니다.
+        public PlayerHitState HitState { get; private set; }
+        public PlayerGuardState GuardState { get; private set; }
+        public PlayerDodgeState DodgeState { get; private set; }
+        public PlayerGuardBreakState GuardBreakState { get; private set; }
+        public PlayerBurstSkillState BurstSkillState { get; private set; }
 
         /// <summary>
         /// 게임이 시작되기 전, 모든 컴포넌트와 상태를 초기화합니다.
@@ -71,12 +73,15 @@ namespace Player
             MoveState = new PlayerMoveState(this, StateMachine, Input, Motor, Data, Stats, AnimController);
             JumpState = new PlayerJumpState(this, StateMachine, Input, Motor, Data, AnimController);
             FallState = new PlayerFallState(this, StateMachine, Input, Motor, Data, AnimController);
-            WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data, Stats);
+            WireAimState = new PlayerWireAimState(this, StateMachine, Input, Data);
             WireLaunchState = new PlayerWireLaunchState(this, StateMachine, Motor, Data, AnimController);
-            WireMoveState = new PlayerWireMoveState(this, StateMachine, Input, Motor, Data, AnimController);
+            WireMoveState = new PlayerWireMoveState(this, StateMachine, Input, Motor, Stats, Data, AnimController);
             GroundedAttackState = new PlayerGroundedAttackState(this, StateMachine, Input, Motor, Stats, AnimController);
-            PursuitState = new PlayerPursuitState(this, StateMachine, Motor, AnimController);
-            // PullState = new PlayerPullState(this, StateMachine, Input, Motor, Data, Stats, AnimController);
+            HitState = new PlayerHitState(this, StateMachine, Motor, Data, AnimController);
+            GuardState = new PlayerGuardState(this, StateMachine, Input, AnimController);
+            GuardBreakState = new PlayerGuardBreakState(this, StateMachine, AnimController);
+            DodgeState = new PlayerDodgeState(this, StateMachine, Motor, Data, AnimController);
+            BurstSkillState = new PlayerBurstSkillState(this, StateMachine, Stats, AnimController);
         }
 
         /// <summary>

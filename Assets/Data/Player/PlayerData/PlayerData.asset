@@ -13,14 +13,27 @@ MonoBehaviour:
   m_Name: PlayerData
   m_EditorClassIdentifier: 
   walkSpeed: 5
-  runSpeed: 9
+  runSpeed: 15
   maxSlopeAngle: 45
   jumpForce: 10
   doubleJumpForce: 12
   doubleJumpDashForce: 8
   airControlForce: 2
   maxHorizontalSpeed: 35
-  mouseSensitivity: 4
+  hitStunDuration: 0.5
+  hitKnockbackForce: 5
+  stunImmunityDuration: 1
+  guardDamageReduction: 50
+  guardSuccessKnockbackForce: 2
+  guardGaugeRegenRate: 0
+  perfectGuardWindow: 0.5
+  perfectGuardBulletTimeDuration: 0.1
+  dodgeInitialSpeed: 1
+  dodgeMaxSpeed: 10
+  dodgeDeceleration: 7
+  perfectDodgeWindow: 0.5
+  perfectDodgeBulletTimeDuration: 0.5
+  mouseSensitivity: 12
   pitchMinMax: {x: -60, y: 85}
   wireHookPrefab: {fileID: 7671246574104627253, guid: 8e34fb559abb2c547b1d26edbf08fc18, type: 3}
   wireGrappleRange: 60

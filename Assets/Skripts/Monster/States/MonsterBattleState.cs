@@ -1,9 +1,11 @@
 // Assets/Scripts/Monster/States/MonsterBattleState.cs
+using Player.States;
 using UnityEngine;
+using Monster.Data;
 
 namespace Monster.States
 {
-    public class MonsterBattleState : IMonsterState
+    public class MonsterBattleState : IMonsterState, IMonsterAttackState
     {
         private readonly Monster _monster;
         private bool _isAttackFinished = true; // 공격 애니메이션이 끝났는지 확인하는 플래그
@@ -31,8 +33,7 @@ namespace Monster.States
 
             // 공격이 끝났다면, 쿨다운 타이머를 감소시킵니다.
             _attackCooldownTimer -= Time.deltaTime;
-            
-            // 타겟이 없다면 순찰상태로 전환
+
             if (!_monster.target)
             {
                 _monster.StateMachine.ChangeState(_monster.PatrolState);
@@ -48,19 +49,72 @@ namespace Monster.States
                 _monster.StateMachine.ChangeState(_monster.ChaseState);
                 return;
             }
-
-            if (_isAttackFinished)
+            // 2. 플레이어가 인식 범위를 완전히 벗어났다면, 순찰 상태로 전환합니다.
+            else if (distanceToPlayer > _monster.Data.detectionRange)
             {
-                // 항상 플레이어를 향해 몸을 돌립니다.
-                FaceTarget();
+                _monster.target = null;
+                _monster.StateMachine.ChangeState(_monster.PatrolState);
+                return;
+            }
 
-                // 공격 쿨다운을 감소시킵니다.
-                _attackCooldownTimer -= Time.deltaTime;
+            // 3. 공격 범위 내에 있다면,
+            // 항상 플레이어를 향해 몸을 돌립니다.
+            FaceTarget();
 
-                // 쿨다운이 끝났고, 플레이어를 충분히 바라보고 있다면 공격을 시작합니다.
-                if (_attackCooldownTimer <= 0f && IsFacingTarget())
+            // 쿨다운이 끝났고, 플레이어를 충분히 바라보고 있다면 공격을 시작합니다.
+            if (_attackCooldownTimer <= 0f && IsFacingTarget())
+            {
+                // 우선순위 1: 노란 공격 (정예)
+                if (_monster.IsYellowAttackReady)
                 {
-                    _isAttackFinished = false; // 공격 시작 플래그
+                    // 그룹 쿨다운 확인
+                    if (_monster.Spawner.RequestSpecialAttack())
+                    {
+                        Debug.Log("노란 공격(YellowAttack) 준비!");
+                        // 그룹 쿨다운 확보! 노란 공격 준비 상태로 전환
+                        _isAttackFinished = false;
+                        _monster.NextSpecialAttackType = MonsterSkillData.AttackType.Yellow;
+                        _monster.SetSpecialAttacking(true); // 경직 면역 시작
+                        _monster.StateMachine.ChangeState(_monster.SpecialAttackReadyState);
+                    }
+                    else
+                    {
+                        Debug.Log("노란 공격(YellowAttack) 준비실패!");
+                        // 그룹 쿨다운 실패 (다른 몬스터가 특수 공격 중) -> 일반 공격
+                        _isAttackFinished = false;
+                        _monster.AnimController.PlayAttack();
+                    }
+                }
+                // 우선순위 2: 파란 공격
+                else if (_monster.IsBlueAttackReady)
+                {
+                    if (_monster.Spawner.RequestSpecialAttack())
+                    {
+                        Debug.Log("파란 공격(BlueAttack) 준비!");
+                        // 그룹 쿨다운 확보! 파란 공격 준비 상태로 전환
+                        _isAttackFinished = false;
+                        _monster.NextSpecialAttackType = MonsterSkillData.AttackType.Blue;
+                        _monster.SetSpecialAttacking(true); // 경직 면역 시작
+                        _monster.StateMachine.ChangeState(_monster.SpecialAttackReadyState);
+                    }
+                    else
+                    {
+                        Debug.Log("파란 공격(BlueAttack) 준비실패!");
+                        // 그룹 쿨다운 실패 시, '만약 노란 공격도 준비됐었다면' 페널티 적용
+                        if (_monster.IsYellowAttackReady)
+                        {
+                            _monster.ApplyYellowAttackPenalty();
+                        }
+
+                        // 그룹 쿨다운 실패 -> 일반 공격
+                        _isAttackFinished = false;
+                        _monster.AnimController.PlayAttack();
+                    }
+                }
+                // 우선순위 3: 일반 공격
+                else
+                {
+                    _isAttackFinished = false;
                     _monster.AnimController.PlayAttack();
                 }
             }
@@ -76,7 +130,7 @@ namespace Monster.States
         /// </summary>
         public void OnAttackFinished()
         {
-            _attackCooldownTimer = 0f;
+            _attackCooldownTimer = 3.5f;
             _isAttackFinished = true;
             Debug.Log("몬스터 공격 애니메이션 종료.");
         }

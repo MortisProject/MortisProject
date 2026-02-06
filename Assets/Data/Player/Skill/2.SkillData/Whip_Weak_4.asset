@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Whip_Weak_4
   m_EditorClassIdentifier: 
   effects:
-  - {fileID: 11400000, guid: 445137e5c2552764d9ce28c9acec0ceb, type: 2}
+  - {fileID: 11400000, guid: 0cd9bb383c394ad46990babe634b6cb5, type: 2}
   burstGeneration: 5

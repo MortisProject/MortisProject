@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1d8cfebf5565a34f86f3193eba4cd31, type: 3}
+  m_Name: PlayerData_OnlyTestScean
+  m_EditorClassIdentifier: 
+  walkSpeed: 5
+  runSpeed: 15
+  maxSlopeAngle: 45
+  jumpForce: 10
+  doubleJumpForce: 12
+  doubleJumpDashForce: 8
+  airControlForce: 2
+  maxHorizontalSpeed: 35
+  hitStunDuration: 0.5
+  hitKnockbackForce: 5
+  stunImmunityDuration: 1
+  guardDamageReduction: 50
+  guardSuccessKnockbackForce: 2
+  guardGaugeRegenRate: 0
+  perfectGuardWindow: 0.5
+  perfectGuardBulletTimeDuration: 0.1
+  dodgeInitialSpeed: 1
+  dodgeMaxSpeed: 10
+  dodgeDeceleration: 7
+  perfectDodgeWindow: 0.8
+  perfectDodgeBulletTimeDuration: 0.7
+  mouseSensitivity: 4
+  pitchMinMax: {x: -60, y: 85}
+  wireHookPrefab: {fileID: 7671246574104627253, guid: 8e34fb559abb2c547b1d26edbf08fc18, type: 3}
+  wireGrappleRange: 90
+  wireSwingLength: 50
+  wireAimSearchRadius: 0.7
+  wireLaunchSpeed: 60
+  wireAirDashSpeed: 120
+  wireDetachVerticalBonus: 15
+  wireLaunchBackwardImpulse: 15
+  wireSpringForce: 300
+  wireDamper: 80

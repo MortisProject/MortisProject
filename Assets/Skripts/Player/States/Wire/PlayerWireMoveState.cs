@@ -13,17 +13,20 @@ namespace Player.States
         private readonly PlayerMotor _motor;
         private readonly PlayerSO _data;
         private readonly PlayerAnimationController _animController;
+        private readonly CharacterStats _stats;
+
 
         private Vector3 _currentVelocity; // 현재 관성 속도
         private bool _canAirDash; // 추가 대쉬 사용 가능 여부
         private SpringJoint _springJoint;
 
-        public PlayerWireMoveState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, PlayerSO data, PlayerAnimationController animController)
+        public PlayerWireMoveState(Player player, PlayerStateMachine stateMachine, PlayerInput input, PlayerMotor motor, CharacterStats stats, PlayerSO data, PlayerAnimationController animController)
         {
             _player = player;
             _stateMachine = stateMachine;
             _input = input;
             _motor = motor;
+            _stats = stats;
             _data = data;
             _animController = animController;
         }
@@ -57,6 +60,7 @@ namespace Player.States
 
             // 추가 대쉬 사용 가능으로 초기화
             _canAirDash = true;
+            _stats.ResetDoubleJump();
 
             // TODO: 와이어 이동 애니메이션 시작
         }

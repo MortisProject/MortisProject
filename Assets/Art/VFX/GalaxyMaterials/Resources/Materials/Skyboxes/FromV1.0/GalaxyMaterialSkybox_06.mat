@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GalaxyMaterialSkybox_06
+  m_Shader: {fileID: -6465566751694194690, guid: 29374541fd657c4438fcd64a4648d5c9, type: 3}
+  m_Parent: {fileID: 2100000, guid: 89b3ffeab65e0c6478bc23b8d19a992e, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _EMISSION
+  - _KEYWORD0_ON
+  - _REFRECTIONCASECONDMODE_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _CloudsRamp:
+        m_Texture: {fileID: 2800000, guid: af492fd72fe40bb4ca88d6c49f976e8e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RimNoiseDistortionTexture:
+        m_Texture: {fileID: 2800000, guid: 7d5f6337ffe5dfa4c99c39298646caae, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StarsTexture:
+        m_Texture: {fileID: 8900000, guid: 9708633a9f5c57e4da4c142c85e63c9e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TextureSample0:
+        m_Texture: {fileID: 2800000, guid: 739a0ed670307844a812b1b032ea60e1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _CloudsEmissionPower: 3
+    - _CloudsOpacityExp: 2
+    - _CloudsOpacityPower: 20
+    - _CloudsRampTilingMultiply: 1
+    - _RimExp: 4
+    - _RimNoiseRefraction: 0
+    m_Colors:
+    - _CloudsRampColorTint: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
+--- !u!114 &8637513825765648436
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 10

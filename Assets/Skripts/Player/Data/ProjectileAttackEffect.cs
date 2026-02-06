@@ -8,28 +8,24 @@ using World;
 namespace Player.Data
 {
     /// <summary>
-    /// 투사체 발사를 정의하는 AttackEffect입니다.
+    /// 투사체 발사를 정의하는 AttackEffect
     /// </summary>
     [CreateAssetMenu(fileName = "NewProjectileAttackEffect", menuName = "Data/Attack Effect/Projectile Attack")]
     public class ProjectileAttackEffect : AttackEffect
     {
         [Header("투사체 설정")]
-        [Tooltip("발사할 투사체의 데이터입니다.")]
+        [Tooltip("발사할 투사체의 데이터")]
         public ProjectileData projectileData;
 
-        [Tooltip("ProjectilePoolManager에서 사용할 투사체의 태그입니다.")]
+        [Tooltip("ProjectilePoolManager에서 사용할 투사체의 태그")]
         public string projectilePoolTag = "RaygunProjectile";
 
         [Header("발사 위치 설정")]
-        [Tooltip("사용할 발사 위치의 인덱스입니다. 0: 오른손, 1: 왼손")]
+        [Tooltip("사용할 발사 위치의 인덱스 0: 오른손, 1: 왼손")]
         public int muzzleIndex = 0;
+        // TODO: 여러 총구에서 발사할 경우를 대비해 muzzleIndex를 추가할 수 있음
 
-        [Header("Chaining Options")]
-        [Tooltip("이 투사체가 적에게 명중했을 때 발동할 추격 데이터입니다. (선택 사항)")]
-        public PursuitData pursuitDataOnHit;
-        // TODO: 여러 총구에서 발사할 경우를 대비해 muzzleIndex를 추가할 수 있습니다.
-
-        public override void Execute(Player performer, PlayerAnimationEvents hitboxProvider, PlayerAttackState attackState)
+        public override void Execute(Player performer, PlayerAnimationEvents hitboxProvider, IState sourceState)
         {
             if (projectileData == null)
             {
@@ -37,31 +33,45 @@ namespace Player.Data
                 return;
             }
 
-            // 1. 발사체 풀에서 발사체를 가져옵니다.
+            // 1. 발사체 풀에서 발사체를 가져옴
             GameObject projectileObject = ProjectilePoolManager.Instance.GetFromPool(projectilePoolTag);
             if (projectileObject == null) return;
 
-            // 2. 발사 위치와 방향을 설정합니다.
-            // muzzleIndex가 유효한 범위 내에 있는지 확인하고, 발사 위치를 선택합니다.
+            // 2. 발사 위치와 방향을 설정
             if (muzzleIndex < 0 || muzzleIndex >= hitboxProvider.muzzles.Length)
             {
-                Debug.LogWarning($"Muzzle Index ({muzzleIndex})가 유효하지 않습니다. Muzzles 배열을 확인해주세요.");
+                Debug.LogWarning($"Muzzle Index ({muzzleIndex})가 유효하지 않습니다.");
                 return;
             }
             Transform muzzle = hitboxProvider.muzzles[muzzleIndex];
-            Vector3 fireDirection = attackState.AimDirection;
+
+            // 발사 방향을 현재 상태(State)에서 가져옴
+            Vector3 fireDirection;
+            if (sourceState is PlayerAttackState attackState)
+            {
+                fireDirection = attackState.AimDirection;
+            }
+            else if (sourceState is PlayerBurstSkillState burstState)
+            {
+                fireDirection = burstState.GetAimDirection(); // BurstState에서 AimDirection을 가져옴
+            }
+            else
+            {
+                // 예외 처리: 조준 방향을 알 수 없으면 카메라 정면을 사용
+                fireDirection = Camera.main.transform.forward;
+            }
 
             projectileObject.transform.position = muzzle.position;
             projectileObject.transform.rotation = Quaternion.LookRotation(fireDirection);
 
-            // 3. 발사체를 초기화하고 발사합니다.
+            // 3. 발사체를 초기화하고 발사
             if (projectileObject.TryGetComponent<Projectile>(out Projectile projectile))
             {
-                // 최종 데미지를 여기서 계산합니다.
+                // 최종 데미지를 여기서 계산
                 float finalDamage = performer.Stats.attackValue * (damageMultiplier / 100f);
 
-                // 계산된 최종 데미지를 Projectile에 직접 전달합니다.
-                projectile.Initialize(performer.StateMachine, projectilePoolTag, fireDirection, finalDamage, projectileData, pursuitDataOnHit);
+                // 계산된 최종 데미지를 Projectile에 직접 전달
+                projectile.Initialize(performer.StateMachine, performer.transform, projectilePoolTag, fireDirection, finalDamage, knockbackForce, projectileData, isKnockback); 
                 projectileObject.SetActive(true);
             }
         }
