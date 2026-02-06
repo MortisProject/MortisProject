@@ -6,8 +6,8 @@ using UnityEngine;
 namespace Player.Combat
 {
     /// <summary>
-    /// 재사용 가능한 피격 판정 스크립트입니다.
-    /// 정해진 시간 동안 활성화되어 'Monster' 태그를 가진 대상을 공격합니다.
+    /// 재사용 가능한 피격 판정 스크립트
+    /// 정해진 시간 동안 활성화되어 'Monster' 태그를 가진 대상을 공격
     /// </summary>
     [RequireComponent(typeof(Collider))]
     public class Hitbox : MonoBehaviour
@@ -26,7 +26,7 @@ namespace Player.Combat
         }
 
         /// <summary>
-        /// 매 프레임 호출되어 활성화 시간을 체크합니다.
+        /// 매 프레임 호출되어 활성화 시간을 체크
         /// </summary>
         private void Update()
         {
@@ -46,7 +46,7 @@ namespace Player.Combat
             }
         }
         /// <summary>
-        /// 지정된 데미지와 지속 시간으로 히트박스를 활성화합니다.
+        /// 지정된 데미지와 지속 시간으로 히트박스를 활성화
         /// </summary>
         public void Activate(float damage, float knockbackForce, float duration, Transform attacker, bool isKnockback)
         {
@@ -60,7 +60,7 @@ namespace Player.Combat
         }
 
         /// <summary>
-        /// 다른 콜라이더가 이 히트박스의 트리거 영역에 들어왔을 때 호출됩니다.
+        /// 다른 콜라이더가 이 히트박스의 트리거 영역에 들어왔을 때 호출
         /// </summary>
         private void OnTriggerEnter(Collider other)
         {

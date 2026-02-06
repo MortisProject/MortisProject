@@ -2,7 +2,7 @@
 namespace Player.Data
 {
     /// <summary>
-    /// 공격의 종류를 정의하는 열거형입니다.
+    /// 공격의 종류를 정의하는 열거형
     /// </summary>
     public enum AttackType
     {
